@@ -1,0 +1,52 @@
+{
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.default.cStandard": "c11",
+    "C_Cpp.default.intelliSenseMode": "gcc-x64",
+    "cmakeExplorer.buildDir": "build",
+    "breadcrumbs.enabled": true,
+    "files.exclude": {
+	"**/boilerplate": true,
+        "**/.vscode": true,
+        "**/*.licenseheader": true,
+        "**/*.sln": true,
+        "**/*.vcxproj*": true,
+        "**/build": true,
+        "**/CMakeLists.txt.user*": true,
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true,
+        "**/.gitignore": true,
+        "**/.gitmodules": true,
+        "**/.gitconfig": true
+    },
+    "cmake.configureArgs": ["-Wno-dev"],
+    "cmake.configureOnOpen": true,
+    "cmake.generator": "Unix Makefiles",
+    "cmake.debugConfig": {},
+    "cmake.configureSettings" : {},
+    "doxdocgen.file.customTag": ["______________________________________________________"],
+    "doxdocgen.file.fileTemplate": "@file         {name}",
+    "doxdocgen.file.copyrightTag":
+    [
+        "@copyright   2020 NETTSI Informatics Technology Inc.",
+        "",
+        "Unauthorized copying of this file, via any medium is strictly prohibited",
+        "Proprietary and confidential"
+    ],
+    "doxdocgen.generic.authorTag": "@author       {author} <{email}>",
+    "doxdocgen.file.fileOrder": [
+        "custom",
+        "empty",
+        "empty",
+        "file",
+        "author",
+        "date",
+        "empty",
+        "copyright",
+        "custom"
+    ],
+    "doxdocgen.generic.dateFormat": "DD.MM.YYYY",
+    "doxdocgen.generic.dateTemplate": "@date         {date}",
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+}

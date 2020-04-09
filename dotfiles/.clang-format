@@ -1,0 +1,160 @@
+# ______________________________________________________
+# `clang-format` file of the boilerplate project.
+# Style enforced by this clang-format file is based on
+# NETTSI C++ Code Standards. 
+#
+# @see https://clang.llvm.org/docs/ClangFormatStyleOptions.html 
+# for the detailed description of parameters.
+# 
+# @file 		.clang-format
+# @author 		Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date 		05.03.2020
+# 
+# @copyright   2020 NETTSI Informatics Technology Inc.
+# 
+# Unauthorized copying of this file, via any medium is strictly prohibited
+# Proprietary and confidential
+# ______________________________________________________
+
+---
+Language: Cpp
+# BasedOnStyle: Google
+
+
+Standard: c++20     # C++20 
+IndentWidth: 2      # Each `indent` is indented to 2 spaces
+TabWidth: 4         # Each `tab` is indented to 4 spaces
+UseTab: Never       # Do not use tab for indentation
+UseCRLF: false      # Do not use windows style (CRLF) line endings
+ColumnLimit: 80     # Each line is 80 characters
+
+# ###################
+# Macro related stuff
+# ###################
+
+# #define SHORT_NAME       42
+# #define LONGER_NAME      0x007f
+AlignConsecutiveMacros: true            # Align consecutive macro values
+
+# #define A                                                                     \
+#  int aaaa;                                                                    \
+#  int b;                                                                       \
+#  int dddddddddd;
+AlignEscapedNewlines: Right             # Align escaped newlines to right
+
+# #####################
+# Comment related stuff
+# #####################
+AlignTrailingComments: true             # Align comments
+
+
+# int aaaa = 12;
+# int b    = 23;
+# int ccc  = 23;
+AlignConsecutiveAssignments: true  
+
+# while (true) { continue; }
+AllowShortBlocksOnASingleLine: Always
+
+# someLongFunction(argument1,
+#                  argument2);
+AlignAfterOpenBracket: Align
+
+# class Foo {
+#   void f() { foo(); }
+# };
+# void f() {
+#   foo();
+# }
+# void f() {
+# }
+AllowShortFunctionsOnASingleLine: InlineOnly    # Short functions single line (inline only)
+
+# if (a) return;
+# else
+#   return;
+AllowShortIfStatementsOnASingleLine: WithoutElse
+
+
+# template <typename T>
+# T foo() {
+# }
+# template <typename T>
+# T foo(int aaaaaaaaaaaaaaaaaaaaa,
+#       int bbbbbbbbbbbbbbbbbbbbb) {
+# }
+AlwaysBreakTemplateDeclarations: Yes
+
+# Brace wrapping configuration
+BraceWrapping: 
+    AfterEnum: false
+    AfterStruct: false
+    AfterClass: false
+    AfterFunction: false
+    AfterNamespace: false
+    AfterUnion: false
+    AfterExternBlock: false
+    BeforeCatch: true
+    BeforeElse: true
+    # BeforeLambdaBody: false
+
+    # int f()
+    # {} 
+    SplitEmptyFunction: false
+
+    # namespace foo
+    # {}
+    SplitEmptyNamespace: false
+
+    # class foo
+    # {}
+    SplitEmptyRecord: false
+
+BreakBeforeBraces: Custom
+
+# LooooooooooongType loooooooooooooooooooooongVariable =
+# someLooooooooooooooooongFunction();
+# 
+# bool value = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa +
+#                     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ==
+#                 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa &&
+#             aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa >
+#                 ccccccccccccccccccccccccccccccccccccccccc;
+BreakBeforeBinaryOperators: None
+
+# Constructor() :
+#     initializer1(),
+#     initializer2()
+BreakConstructorInitializers: AfterColon
+
+# true:
+# void f(int aaaaaaaaaaaaaaaaaaaa, int aaaaaaaaaaaaaaaaaaaa,
+#        int aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa) {}
+BinPackParameters: true
+
+
+# namespace Foo { namespace Bar {
+# }}
+CompactNamespaces: true
+
+NamespaceIndentation: All
+
+Cpp11BracedListStyle: true              # Function call like braced list style  
+FixNamespaceComments: true              # Correct invalid namespace ending comments and add if not existing
+IndentGotoLabels: false                 # Flush goto labels to leftmost
+
+SpaceBeforeParens: ControlStatements    # Space before control statement parantheses
+SpaceBeforeRangeBasedForLoopColon: true # Space before range-based loop colon
+SpaceBeforeSquareBrackets: true         # Space before square brackets (except lambdas)
+SpaceInEmptyParentheses: false          # Do not put space in empty parantheses
+SpacesInAngles: false                   # Do not put space before-after angle brackets
+SpacesInConditionalStatement: false     # Do not put space around conditional statements (if/while/for)
+SpacesInParentheses: false              # Do not put space before ) and after (
+SpacesInSquareBrackets: false           # Do not put space before ] and after [
+SpaceAfterCStyleCast: true              # Put space after C-style cast
+SpaceAfterTemplateKeyword: true         # Put space after template keyword
+ 
+
+AccessModifierOffset: -2                # Do not indent access modifiers (public: private: protected:)
+
+---

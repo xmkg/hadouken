@@ -1,0 +1,49 @@
+# ______________________________________________________
+# `clang-tidy` file of the boilerplate project.
+# Style enforced by this clang-tidy file is based on
+# NETTSI C++ Code Standards. 
+# 
+# @file         .clang-format
+# @author       Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date         05.03.2020
+# 
+# @copyright   2020 NETTSI Informatics Technology Inc.
+# 
+# Unauthorized copying of this file, via any medium is strictly prohibited
+# Proprietary and confidential
+# ______________________________________________________
+
+---
+Checks:          'clang-analyzer.core*, readability-identifier-naming, bugprone-*, cert-dcl58-cpp, cert-env33-c, cert-err34-c, cert-err52-cpp, cert-err58-cpp, cert-err60-cpp, cert-flp30-c, cert-msc50-cpp, cert-msc51-cpp'
+WarningsAsErrors: ''
+HeaderFilterRegex: ''
+AnalyzeTemporaryDtors: false
+FormatStyle:     none
+User:            g
+CheckOptions:    
+  - key:             bugprone-argument-comment.StrictMode
+    value:           '1'
+  - key:             bugprone-argument-comment.CommentBoolLiterals
+    value:           '1'
+  - key:             bugprone-argument-comment.CommentIntegerLiterals
+    value:           '1'
+  - key:             bugprone-argument-comment.CommentFloatLiterals
+    value:           '1'
+  - key:             bugprone-argument-comment.CommentStringLiterals
+    value:           '1'
+  - key:             bugprone-argument-comment.CommentCharacterLiterals
+    value:           '1'
+  - key:             bugprone-argument-comment.CommentUserDefinedLiterals
+    value:           '1'
+  - key:             bugprone-argument-comment.CommentNullPtrs
+    value:           '1'
+
+  - { key: readability-identifier-naming.ClassCase,             value: lower_case }
+  - { key: readability-identifier-naming.StructCase,            value: lower_case }
+  - { key: readability-identifier-naming.EnumCase,              value: lower_case }
+  - { key: readability-identifier-naming.VariableCase,          value: lower_case }
+  - { key: readability-identifier-naming.FunctionCase,          value: lower_case }
+  - { key: readability-identifier-naming.ParameterCase,         value: lower_case }
+  - { key: readability-identifier-naming.TemplateParameterCase, value: UPPER_CASE }
+...
+

@@ -1,0 +1,15 @@
+# ______________________________________________________
+# `cppcheck-suppress` file of the boilerplate project.
+# Contains configuration for suppressing cppcheck warnings based on
+# NETTSI C++ Code Standards. 
+# 
+# @file         .cppcheck-suppress
+# @author       Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date         11.03.2020
+# 
+# @copyright   2020 NETTSI Informatics Technology Inc.
+# 
+# Unauthorized copying of this file, via any medium is strictly prohibited
+# Proprietary and confidential
+# ______________________________________________________
+
