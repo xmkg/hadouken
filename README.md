@@ -105,15 +105,9 @@ Hadouken is very easy to install. You can integrate it with your project in matt
 
 ### Installing `hadouken` to a project
 
-You're lucky, I've prepared a video illustrating this: 
+You're lucky, I've prepared a video illustrating this:
 
-<!-- blank line -->
-<figure class="video_container">
-  <video controls="true" allowfullscreen="true" poster="res/img/nettsi-logo.png">
-    <source src="res/video/howto-use-hadouken-trTR.mp4" type="video/mp4">
-  </video>
-</figure>
-<!-- blank line -->
+![Sample Video](res/video/howto-use-hadouken-trTR.mp4)
 
 Hadouken is designed as to be a git submodule. First, you need to add it as a submodule to your existing git project. In order to do that, issue following command at your git project root:
 
