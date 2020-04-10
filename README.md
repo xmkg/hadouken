@@ -1,6 +1,6 @@
 ****
 
-![nettsi-logo](img/nettsi-logo.png)
+![Nettsi corporate logo.png][nettsi-logo]
 
 ****
 
@@ -99,11 +99,21 @@ Hadouken is a CMake- Bash shell script project which is created to resolve three
 
 The name `hadouken` comes from the Street Fighter hero, Ryu's iconic fight move. It's simple, powerful and super effective against the common enemies of C++ projects. Just hadouken away all of your problems! ;)
 
-![nettsi-logo](img/hadouken.jpg)
+![Ryu doing hadouken.jpg][hadouken]
 
 Hadouken is very easy to install. You can integrate it with your project in matter of seconds. Pre-requirements for the hadouken are minimal. In order to be able to use `hadouken` in a project, the project has to be version controlled in `Git`, and the project must be a `CMake` project. There are no requirements other than that.
 
 ### Installing `hadouken` to a project
+
+You're lucky, I've prepared a video illustrating this: 
+
+<!-- blank line -->
+<figure class="video_container">
+  <video controls="true" allowfullscreen="true" poster="res/img/nettsi-logo.png">
+    <source src="res/video/howto-use-hadouken-trTR.mp4" type="video/mp4">
+  </video>
+</figure>
+<!-- blank line -->
 
 Hadouken is designed as to be a git submodule. First, you need to add it as a submodule to your existing git project. In order to do that, issue following command at your git project root:
 
@@ -158,11 +168,11 @@ The container is designed to be used with `Visual Studio Code - Remote - Contain
 
 While running on VSCode with `Remote - Containers` extension, the extension will automatically recognize the `Dockerfile` and `devcontainer.json` files located in `.devcontainer` folder.
 
-![vscode-docker-1](img/vscode-remote-docker-1.png)
+![Remote-Containers notification box][vscode-docker-1]
 
 If that is not the case, you can still open your project in development container by pressing F1 (or Ctrl + Shift + P) and selecting `Remote-Containers: Reopen in Container` menu item.
 
-![vscode-docker-1](img/vscode-remote-docker-2.png)
+![Remote-Containers: Reopen in container][vscode-docker-2]
 
 This will open the project in development container. In first time, the extension will automatically build the docker image from the `Dockerfile` and then install a VSCode Server equipped with extensions specified in `devcontainer.json` file. This may take a while.
 
@@ -241,7 +251,7 @@ Ubuntu/Debian
     sudo apt-get install clang-tidy
 ```
 
-> ![excl](img/symbols/info-16.png) If you are using `vscode` for development, you can install the `vscode-clangd` extension in order to be able to apply quick fixes suggested by the `clang-tidy`. `vscode-clangd` requires clang language server `clangd` to be availabe in your environment. You will need to install `clangd` separately.
+> ![Exclamation mark][exclamation-mark] If you are using `vscode` for development, you can install the `vscode-clangd` extension in order to be able to apply quick fixes suggested by the `clang-tidy`. `vscode-clangd` requires clang language server `clangd` to be availabe in your environment. You will need to install `clangd` separately.
 >  
 > For distros with apt based package managers:
 >  
@@ -302,7 +312,7 @@ Ubuntu/Debian
 ```
 
 Example code coverage output of an unit test is shown below(gcovr/html):
-![gcovr-report](img/code-coverage-report-gcovr.png)
+![Gcov result report][gcovr-report]
 
 #### GoogleTest/GoogleMock
 
@@ -751,3 +761,10 @@ You can use Pthreads as a reference when creating new feature check modules.
 ## Closing words
 
 Hadouken will continue to evolve, and you may contribute to it. Don't hesitate to issue a PR.
+
+[nettsi-logo]: res/img/nettsi-logo.png
+[hadouken]: res/img/hadouken.jpg
+[vscode-docker-1]: res/img/vscode-remote-docker-1.png
+[vscode-docker-2]: res/img/vscode-remote-docker-2.png
+[gcovr-report]: res/img/code-coverage-report-gcovr.png
+[exclamation-mark]: res/img/symbols/info-16.png
