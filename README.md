@@ -105,18 +105,18 @@ Hadouken is very easy to install. You can integrate it with your project in matt
 
 ### Installing `hadouken` to a project
 
-You're lucky, I've prepared a video guide illustrating this. Check out [tutorials](res/tutorials.md) to watch it.
+You're lucky, I've prepared a video guide illustrating this. Check out [Video tutorial: How to install hadouken on new projects?](https://gitlab.nettsi.com/internal-projects/video-tutorials/-/tree/master/hadouken) to watch it.
 
 Hadouken is designed as to be a git submodule. First, you need to add it as a submodule to your existing git project. In order to do that, issue following command at your git project root:
 
 ```bash
-    git submodule add -b master git@gitlab.com:mustafakemalgilor/cpp-project-boilerplate.git boilerplate
+    git submodule add -b master git@gitlab.nettsi.com:internal-projects/cpp-project-boilerplate.git boilerplate
 ```
 
 This will add boilerplate project to your project, to boilerplate folder. `master` branch will be tracked by default. After this, run following command from terminal in your project root. The name for the submodule has to be `boilerplate`. After adding the submodule, invoke the following command at project root to setup boilerplate to your project:
 
 ```bash
-    bash boilerplate/setup.sh
+    bash boilerplate/script/setup.sh
 ```
 
 After running the script, your project root should have the following symbolic links, mapped to the boilerplate content:
@@ -126,8 +126,10 @@ After running the script, your project root should have the following symbolic l
     .gitconfig -> boilerplate/.gitconfig
     .clang-format -> boilerplate/.clang-format
     .clang-tidy -> boilerplate/.clang-tidy
+    .cppcheck-suppress -> boilerplate/.cppcheck-suppress
+    .devcontainer -> boilerplate/.devcontainer
     .vscode -> boilerplate/.vscode
-    hadouken -> boilerplate/project-build.sh
+    hadouken -> boilerplate/script/hadouken.sh
 ```
 
 If any of the file(s) specified above already exist on project root, they will not be overridden.
