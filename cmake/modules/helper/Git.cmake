@@ -111,7 +111,7 @@ function (git_print_status)
 endfunction()
 
 function (git_export_to_macro)
-    cmake_parse_arguments(ARGS "" "PREFIX;" "" ${ARGN}
+    cmake_parse_arguments(ARGS "" "PREFIX;" "" ${ARGN})
 
     git_get_branch_name(
         DIRECTORY ${CMAKE_SOURCE_DIR}
