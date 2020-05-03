@@ -47,7 +47,7 @@ endfunction()
 
 # Add options passed as arguments to given target.
 function(add_target_options)
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;SUFFIX;PREFIX;NAME;PARTOF;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;" ${ARGN})
+    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;SUFFIX;PREFIX;NAME;PARTOF;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;" ${ARGN})
 
     if(NOT DEFINED ARGS_TARGET_NAME)
         message(FATAL_ERROR "add_target_options() requires TARGET_NAME parameter.")
@@ -75,6 +75,10 @@ function(add_target_options)
             target_compile_options(${TARGET_NAME} PUBLIC ${ARGS_COMPILE_OPTIONS})
         endif()
         
+        if(ARGS_SYMBOL_VISIBILITY)
+            target_compile_options(${TARGET_NAME} PUBLIC -fvisibility=${ARGS_SYMBOL_VISIBILITY})
+        endif()
+
     endif()
 
     if(ARGS_COMPILE_DEFINITIONS)
@@ -127,7 +131,7 @@ endfunction()
 # removing code repetition in cmake files.
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;" ${ARGN})
+    cmake_parse_arguments(ARGS "WITH_COVERAGE;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -168,6 +172,7 @@ function(make_target)
         COMPILE_DEFINITIONS ${ARGS_COMPILE_DEFINITIONS}
         DEPENDS ${ARGS_DEPENDS}
         PARTOF ${ARGS_PARTOF}
+        SYMBOL_VISIBILITY ${ARGS_SYMBOL_VISIBILITY}
     )
 
 
