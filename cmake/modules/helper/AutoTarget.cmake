@@ -79,6 +79,11 @@ function(add_target_options)
             target_compile_options(${TARGET_NAME} PUBLIC -fvisibility=${ARGS_SYMBOL_VISIBILITY})
         endif()
 
+        # Project metadata exposure
+        project_metadata_exposure(
+            TARGET_NAME ${PROJECT_NAME}
+        )
+
     endif()
 
     if(ARGS_COMPILE_DEFINITIONS)
@@ -222,14 +227,14 @@ function(make_target)
                 COMMENT "Running `clang-tidy` on compilation unit of `${TARGET_NAME}`"
             )
         endif()
-    endif()
 
-    # This is not required as top level CMAKE_CXX_INCLUDE_WHAT_YOU_USE implies the desired behaviour.
-    if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
+
         # Include what you use integration
         if(CMAKE_CXX_INCLUDE_WHAT_YOU_USE)
+            # This is not required as top level CMAKE_CXX_INCLUDE_WHAT_YOU_USE implies the desired behaviour.
             #set_property(TARGET ${TARGET_NAME} PROPERTY CXX_INCLUDE_WHAT_YOU_USE ${CMAKE_CXX_INCLUDE_WHAT_YOU_USE})
         endif()
+       
     endif()
 
     # post options
@@ -238,8 +243,4 @@ function(make_target)
         gtest_discover_tests(${TARGET_NAME})
     endif()
 
-    project_metadata_exposure(
-        TARGET_NAME ${PROJECT_NAME}
-    )
-    
 endfunction()
