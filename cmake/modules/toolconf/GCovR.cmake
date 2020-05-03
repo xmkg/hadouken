@@ -11,9 +11,9 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-option(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_GCOVR "Use gcovr in project" OFF)
+option(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR "Use gcovr in project" OFF)
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_GCOVR)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR)
     message(STATUS "[*] Configuring `gcovr`")
 
     find_program(GCOVR "gcovr")

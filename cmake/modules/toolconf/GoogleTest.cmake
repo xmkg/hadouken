@@ -11,7 +11,7 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_GOOGLE_TEST)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
     message(STATUS "[*] Configuring `googletest & googlemock`")
 
     project(${PB_PARENT_PROJECT_NAME}.test VERSION 1.0.0 LANGUAGES CXX)

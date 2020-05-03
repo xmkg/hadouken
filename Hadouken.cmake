@@ -12,6 +12,11 @@
 # ______________________________________________________
 
 set(PB_PARENT_PROJECT_NAME ${PROJECT_NAME})
+string(TOUPPER ${PB_PARENT_PROJECT_NAME} PB_PARENT_PROJECT_NAME_UPPER)
+
+# Maket it C preprocessor macro friently
+string(REGEX REPLACE "[^a-zA-Z0-9]" "_" PB_PARENT_PROJECT_NAME_UPPER ${PB_PARENT_PROJECT_NAME_UPPER})
+
 
 # Enable testing for the project
 enable_testing()

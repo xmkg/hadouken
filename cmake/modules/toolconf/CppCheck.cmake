@@ -11,7 +11,7 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_CPPCHECK)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK)
     message(STATUS "[*] Configuring `cppcheck`")
     # Adding clang-format target if executable is found
     find_program(CPPCHECK "cppcheck")

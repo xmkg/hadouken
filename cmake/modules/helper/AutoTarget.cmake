@@ -107,16 +107,16 @@ function(setup_coverage_targets)
     endif()
 
     if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
-        if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_GCOV AND GCOV)
+        if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND GCOV)
             target_compile_options(${TARGET_NAME} PUBLIC -fprofile-arcs -ftest-coverage)
             target_link_libraries(${TARGET_NAME} PRIVATE gcov)
             
-            if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_GCOVR AND GCOVR)
+            if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND GCOVR)
                 SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(NAME ${TARGET_NAME}.gcovr.xml EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../)
                 SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(NAME ${TARGET_NAME}.gcovr.html EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../)
             endif()
 
-            if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_LCOV AND LCOV)
+            if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND LCOV)
                 # dummy.component-x
                 SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${TARGET_NAME}.lcov EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external)
             endif()

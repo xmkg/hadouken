@@ -13,9 +13,9 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-option(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_CLANG_TIDY "Use clang-tidy in project" OFF)
+option(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_TIDY "Use clang-tidy in project" OFF)
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_CLANG_TIDY)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_TIDY)
     message(STATUS "[*] Configuring `clang-tidy`")
     # Adding clang-format target if executable is found
     find_program(CLANG_TIDY NAMES "clang-tidy" "clang-tidy-10" "clang-tidy-9" "clang-tidy-8" "clang-tidy-7" "clang-tidy-6" "clang-tidy-5" "clang-tidy-4" "clang-tidy-3")

@@ -88,6 +88,10 @@ hadouken.bootstrap_cmake_project(){
     echo -e "Project name:"
     read PROJECT_NAME
 
+    # Replace non-alphanumeric characters with an underscore
+    PROJECT_NAME_SANITIZED="${PROJECT_NAME//[^[:alnum:]]/_}"
+    # Convert to uppercase
+    PROJECT_NAME_SANITIZED=""${PROJECT_NAME_SANITIZED^^}
     GIT_CFG_USER_NAME=$(git -C $TARGET_FOLDER config user.name)
     GIT_CFG_USER_EMAIL=$(git -C $TARGET_FOLDER config user.email)
 
@@ -127,16 +131,16 @@ cmake_minimum_required(VERSION 3.00)
 project($PROJECT_NAME)
 
 # Turn on any desired tool/feature below.
-SET(${PROJECT_NAME}_MISC_NO_HADOUKEN_BANNER FALSE CACHE BOOL "Enable/disable hadouken banner printing" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_IWYU FALSE CACHE BOOL "Enable/disable include what you use integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_GOOGLE_TEST FALSE CACHE BOOL "Enable/disable gtest/gmock integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_CLANG_FORMAT FALSE CACHE BOOL "Enable/disable clang-format integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_CLANG_TIDY FALSE CACHE BOOL "Enable/disable clang-tidy integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_CPPCHECK FALSE CACHE BOOL "Enable/disable cppcheck integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_CCACHE FALSE CACHE BOOL "Enable/disable ccache integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_GCOV FALSE CACHE BOOL "Enable/disable gcov integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_LCOV FALSE CACHE BOOL "Enable/disable lcov integration" FORCE)
-SET(${PROJECT_NAME}_TOOLCONF_USE_GCOVR FALSE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_MISC_NO_HADOUKEN_BANNER FALSE CACHE BOOL "Enable/disable hadouken banner printing" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_IWYU FALSE CACHE BOOL "Enable/disable include what you use integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GOOGLE_TEST FALSE CACHE BOOL "Enable/disable gtest/gmock integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_FORMAT FALSE CACHE BOOL "Enable/disable clang-format integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_TIDY FALSE CACHE BOOL "Enable/disable clang-tidy integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CPPCHECK FALSE CACHE BOOL "Enable/disable cppcheck integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CCACHE FALSE CACHE BOOL "Enable/disable ccache integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOV FALSE CACHE BOOL "Enable/disable gcov integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LCOV FALSE CACHE BOOL "Enable/disable lcov integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOVR FALSE CACHE BOOL "Enable/disable gcovr integration" FORCE)
 
 # Include boilerplate
 include(boilerplate/Hadouken.cmake)
@@ -145,15 +149,15 @@ include(boilerplate/Hadouken.cmake)
 git_print_status()
 
 # Components of the project
-add_subdirectory(application)
+add_subdirectory(app)
 
 EOF
     # Prompt for project name
-    mkdir $TARGET_FOLDER/application
-    mkdir $TARGET_FOLDER/application/include
-    mkdir $TARGET_FOLDER/application/src
+    mkdir $TARGET_FOLDER/app
+    mkdir $TARGET_FOLDER/app/include
+    mkdir $TARGET_FOLDER/app/src
 
-    cat > $TARGET_FOLDER/application/CMakeLists.txt << EOF
+    cat > $TARGET_FOLDER/app/CMakeLists.txt << EOF
 # ______________________________________________________
 # Example application project CMakeLists file
 #
@@ -167,13 +171,13 @@ EOF
 # Proprietary and confidential
 # ______________________________________________________
 
-project($PROJECT_NAME.application)
+project($PROJECT_NAME.app)
 
 # Create an executagble target
 make_target(TYPE EXECUTABLE)
 EOF
 
-    cat > $TARGET_FOLDER/application/src/main.cpp << EOF
+    cat > $TARGET_FOLDER/app/src/main.cpp << EOF
 /**
  * ______________________________________________________
  * Example application.

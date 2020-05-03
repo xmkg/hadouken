@@ -12,9 +12,9 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-option(${PB_PARENT_PROJECT_NAME}_MISC_NO_HADOUKEN_BANNER "Enable/disable banner" OFF)
+option(${PB_PARENT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER "Enable/disable banner" OFF)
 
-if(NOT ${PB_PARENT_PROJECT_NAME}_MISC_NO_HADOUKEN_BANNER)
+if(NOT ${PB_PARENT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER)
 
 message(STATUS [=[
 ################################################################################

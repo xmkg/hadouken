@@ -188,6 +188,8 @@ Development environment is based on Debian Sid, and contains the following tools
 
 Boilerplate provides several modules to help with external tool integration and ease of use. All tools are included in `devenv` container, so skip any installation related stuff if you are using the `devenv` container.
 
+`<project_name>` is capitalized and non-alphanumeric characters replaced (with an underscore) version of top level project name. The term `top level` here refers to the cmake project declaration prior to hadouken module inclusion. 
+
 #### ClangFormat
 
 Controlled by `<project_name>_TOOLCONF_USE_CLANG_FORMAT` option.
@@ -730,14 +732,14 @@ check_cxx_source_compiles("
         return result;
     }
     "
-    ${PB_PARENT_PROJECT_NAME}_FEATURE_HAS_PTHREADS
+    ${PB_PARENT_PROJECT_NAME_UPPER}_FEATURE_HAS_PTHREADS
 )
 # <project_name>_FEATURE_HAS_PTHREADS is set to true or false after this, indicating the compilation status.
 ```
 
-The result variable has a specific naming convention too. `FeatureCheck.cmake` expects the result variable to be defined in a specific way: (the actual check code is `if (NOT ${PB_PARENT_PROJECT_NAME}_HAS_${ARG_AS_UPPER})`)
+The result variable has a specific naming convention too. `FeatureCheck.cmake` expects the result variable to be defined in a specific way: (the actual check code is `if (NOT ${PB_PARENT_PROJECT_NAME_UPPER}_HAS_${ARG_AS_UPPER})`)
 
- `${PB_PARENT_PROJECT_NAME}` is a CMake variable defined by hadouken which contains the top level project name. The glue `_HAS_` have to come after this. The last word should match with the feature check module (capitalized).
+ `${PB_PARENT_PROJECT_NAME_UPPER}` is a CMake variable defined by hadouken which contains the top level project name, converted to uppercase and all non-alphanumeric characters replaced with an underscore (_). The glue `_HAS_` have to come after this. The last word should match with the feature check module (capitalized).
 
 Feature check modules have a specific naming convention. Every feature check module file name has to start with `Check`. The letters between `Check` and `.cmake` determines the feature check module name. The user will use this name to invoke feature check functions.
 

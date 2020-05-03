@@ -11,9 +11,9 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-option(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_LCOV "Use lcov in project" OFF)
+option(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV "Use lcov in project" OFF)
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_LCOV)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV)
     message(STATUS "[*] Configuring `lcov`")
 
     find_program(LCOV NAMES lcov lcov.bat lcov.exe lcov.perl)

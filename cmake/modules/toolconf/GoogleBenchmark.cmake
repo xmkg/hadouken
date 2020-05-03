@@ -11,7 +11,7 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_GOOGLE_BENCH)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
     message(STATUS "[*] Configuring `googlebench`")
 
     project(${PB_PARENT_PROJECT_NAME}.benchmark VERSION 1.0.0 LANGUAGES CXX)

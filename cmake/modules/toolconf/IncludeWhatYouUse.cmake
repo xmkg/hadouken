@@ -11,7 +11,7 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_IWYU)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_IWYU)
     get_property(HADOUKEN_COMPILER GLOBAL PROPERTY HADOUKEN_COMPILER)
     if(${CMAKE_VERSION} VERSION_LESS "3.3.0") 
         message(WARNING "Include what you use support requires at least version 3.3 of CMake.")

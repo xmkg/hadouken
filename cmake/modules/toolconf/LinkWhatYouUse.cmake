@@ -11,7 +11,7 @@
 # Proprietary and confidential
 # ______________________________________________________
 
-if(${PB_PARENT_PROJECT_NAME}_TOOLCONF_USE_LWYU)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LWYU)
     # LinkWhatYouUse requires at least 3.7.0 version of CMake.
     if(${CMAKE_VERSION} VERSION_LESS "3.7.0") 
         message(WARNING "Include what you use support requires at least version 3.7 of CMake.")
