@@ -40,6 +40,7 @@
           - [SHARED](#shared)
           - [UNIT_TEST](#unittest)
           - [INTERFACE](#interface)
+          - [BENCHMARK](#benchmark)
         - [LINK (optional)](#link-optional)
         - [COMPILE_OPTIONS (optional)](#compileoptions-optional)
         - [COMPILE_DEFINITIONS (optional)](#compiledefinitions-optional)
@@ -434,7 +435,7 @@ The created target's compilation unit will be automatically gathered using AutoC
 
 ```cmake
 
-    make_target(TYPE <EXECUTABLE|STATIC|SHARED|UNIT_TEST|INTERFACE>
+    make_target(TYPE <EXECUTABLE|STATIC|SHARED|UNIT_TEST|INTERFACE|BENCHMARK>
                 [LINK [<target_name|library_name> ...]]
                 [COMPILE_OPTIONS [<options> ...]]
                 [COMPILE_DEFINITIONS[<definitions> ...]]
@@ -473,6 +474,10 @@ Unit test target. Performs additional steps to make unit test discoverable by CT
 ###### INTERFACE
 
 Header-only library target (add_library(INTERFACE))
+
+###### BENCHMARK
+
+Benchmark target. Similar to UNIT_TEST target, target is automagically linked to `google benchmark` library for convenience.
 
 ##### LINK (optional)
 

@@ -155,6 +155,9 @@ function(make_target)
     elseif(${ARGS_TYPE} STREQUAL "UNIT_TEST")
         add_executable(${TARGET_NAME} ${COMPILATION_UNIT} ${ARGS_SOURCES})
         target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.test)
+    elseif(${ARGS_TYPE} STREQUAL "BENCHMARK")
+        add_executable(${TARGET_NAME} ${COMPILATION_UNIT} ${ARGS_SOURCES})
+        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.benchmark)
     endif()
 
     # Add project's include directory to target's include directories
