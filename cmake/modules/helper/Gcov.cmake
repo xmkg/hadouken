@@ -68,60 +68,65 @@
 #      make my_coverage_target
 #
 
-include(CMakeParseArguments)
+if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
 
-# Check prereqs
-find_program( GCOV_PATH gcov )
-find_program( LCOV_PATH  NAMES lcov lcov.bat lcov.exe lcov.perl)
-find_program( GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat )
-find_program( GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
-find_package(Python COMPONENTS Interpreter)
+    include(CMakeParseArguments)
 
-if(NOT GCOV_PATH)
-    message(FATAL_ERROR "gcov not found! Aborting...")
-endif() # NOT GCOV_PATH
-# message(STATUS ${CMAKE_CXX_COMPILER_ID})
-# if("${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
-#     if("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS 3)
-#         message(FATAL_ERROR "Clang version must be 3.0.0 or greater! Aborting...")
-#     endif()
-# elseif(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "[gG][nN][uU]")
-#     message(FATAL_ERROR "Compiler is not GNU gcc! Aborting...")
-# endif()
+    # Check prereqs
+    find_program( GCOV_PATH gcov )
+    find_program( LCOV_PATH  NAMES lcov lcov.bat lcov.exe lcov.perl)
+    find_program( GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat )
+    find_program( GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
+    find_package(Python COMPONENTS Interpreter)
 
-set(COVERAGE_COMPILER_FLAGS "-g --coverage -fprofile-arcs -ftest-coverage"
-    CACHE INTERNAL "")
+    if(NOT GCOV_PATH)
+        message(FATAL_ERROR "gcov not found! Aborting...")
+    endif() # NOT GCOV_PATH
+    # message(STATUS ${CMAKE_CXX_COMPILER_ID})
+    # if("${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
+    #     if("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS 3)
+    #         message(FATAL_ERROR "Clang version must be 3.0.0 or greater! Aborting...")
+    #     endif()
+    # elseif(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "[gG][nN][uU]")
+    #     message(FATAL_ERROR "Compiler is not GNU gcc! Aborting...")
+    # endif()
 
-set(CMAKE_CXX_FLAGS_COVERAGE
-    ${COVERAGE_COMPILER_FLAGS}
-    CACHE STRING "Flags used by the C++ compiler during coverage builds."
-    FORCE )
-set(CMAKE_C_FLAGS_COVERAGE
-    ${COVERAGE_COMPILER_FLAGS}
-    CACHE STRING "Flags used by the C compiler during coverage builds."
-    FORCE )
-set(CMAKE_EXE_LINKER_FLAGS_COVERAGE
-    ""
-    CACHE STRING "Flags used for linking binaries during coverage builds."
-    FORCE )
-set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE
-    ""
-    CACHE STRING "Flags used by the shared libraries linker during coverage builds."
-    FORCE )
-mark_as_advanced(
-    CMAKE_CXX_FLAGS_COVERAGE
-    CMAKE_C_FLAGS_COVERAGE
-    CMAKE_EXE_LINKER_FLAGS_COVERAGE
-    CMAKE_SHARED_LINKER_FLAGS_COVERAGE )
+    set(COVERAGE_COMPILER_FLAGS "-g --coverage -fprofile-arcs -ftest-coverage"
+        CACHE INTERNAL "")
 
-if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "Code coverage results with an optimised (non-Debug) build may be misleading")
-endif() # NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
+    set(CMAKE_CXX_FLAGS_COVERAGE
+        ${COVERAGE_COMPILER_FLAGS}
+        CACHE STRING "Flags used by the C++ compiler during coverage builds."
+        FORCE )
+    set(CMAKE_C_FLAGS_COVERAGE
+        ${COVERAGE_COMPILER_FLAGS}
+        CACHE STRING "Flags used by the C compiler during coverage builds."
+        FORCE )
+    set(CMAKE_EXE_LINKER_FLAGS_COVERAGE
+        ""
+        CACHE STRING "Flags used for linking binaries during coverage builds."
+        FORCE )
+    set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE
+        ""
+        CACHE STRING "Flags used by the shared libraries linker during coverage builds."
+        FORCE )
+    mark_as_advanced(
+        CMAKE_CXX_FLAGS_COVERAGE
+        CMAKE_C_FLAGS_COVERAGE
+        CMAKE_EXE_LINKER_FLAGS_COVERAGE
+        CMAKE_SHARED_LINKER_FLAGS_COVERAGE )
 
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    link_libraries(gcov)
-else()
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        message(STATUS "Code coverage results with an optimised (non-Debug) build may be misleading")
+    endif() # NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
+
+    if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
+        link_libraries(gcov)
+    else()
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+    endif()
+
+
 endif()
 
 # Defines a target for running and collection code coverage information
@@ -314,3 +319,4 @@ function(APPEND_COVERAGE_COMPILER_FLAGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_COMPILER_FLAGS}" PARENT_SCOPE)
     message(STATUS "Appending code coverage compiler flags: ${COVERAGE_COMPILER_FLAGS}")
 endfunction() # APPEND_COVERAGE_COMPILER_FLAGS
+
