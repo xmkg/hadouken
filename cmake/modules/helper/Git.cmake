@@ -135,10 +135,12 @@ function (git_export_to_macro)
         CONFIG_KEY user.email    
     )
 
-    string(TOUPPER ${ARGS_PREFIX} TARGET_NAME_UPPER)
+    if(ARGS_PREFIX)
+        string(TOUPPER ${ARGS_PREFIX} ARGS_PREFIX)
 
-    # Maket it C preprocessor macro friently
-    string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_PREFIX ${ARGS_PREFIX})
+        # Maket it C preprocessor macro friently
+        string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_PREFIX ${ARGS_PREFIX})
+    endif()
 
     add_compile_definitions(${ARGS_PREFIX}GIT_BRANCH_NAME="${GIT_BRANCH_NAME}")
     add_compile_definitions(${ARGS_PREFIX}GIT_COMMIT_ID="${GIT_HEAD_COMMIT_HASH}")
