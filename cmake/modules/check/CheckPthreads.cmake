@@ -48,5 +48,5 @@ check_cxx_source_compiles("
         return result;
     }
     "
-    ${PB_PARENT_PROJECT_NAME}_HAS_PTHREADS
+    ${PB_PARENT_PROJECT_NAME}_FEATURE_HAS_PTHREADS
 )

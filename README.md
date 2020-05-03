@@ -730,9 +730,9 @@ check_cxx_source_compiles("
         return result;
     }
     "
-    ${PB_PARENT_PROJECT_NAME}_HAS_PTHREADS
+    ${PB_PARENT_PROJECT_NAME}_FEATURE_HAS_PTHREADS
 )
-# <project_name>_HAS_PTHREADS is set to true or false after this, indicating the compilation status.
+# <project_name>_FEATURE_HAS_PTHREADS is set to true or false after this, indicating the compilation status.
 ```
 
 The result variable has a specific naming convention too. `FeatureCheck.cmake` expects the result variable to be defined in a specific way: (the actual check code is `if (NOT ${PB_PARENT_PROJECT_NAME}_HAS_${ARG_AS_UPPER})`)
