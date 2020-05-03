@@ -45,6 +45,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/boilerplate/cma
 # Banner module
 include(misc/Banner)
 
+message(STATUS "[*] Configuring project: ${PB_PARENT_PROJECT_NAME} with CMake ${CMAKE_VERSION}")
+
 # Discover all helper modules
 file(GLOB HELPER_MODULES "${PROJECT_SOURCE_DIR}/boilerplate/cmake/modules/helper/*.cmake")
 # Discover all toolconf modules
