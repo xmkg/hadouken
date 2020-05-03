@@ -78,12 +78,6 @@ function(add_target_options)
         if(ARGS_SYMBOL_VISIBILITY)
             target_compile_options(${TARGET_NAME} PUBLIC -fvisibility=${ARGS_SYMBOL_VISIBILITY})
         endif()
-
-        # Project metadata exposure
-        project_metadata_exposure(
-            TARGET_NAME ${TARGET_NAME}
-        )
-
     endif()
 
     if(ARGS_COMPILE_DEFINITIONS)
@@ -136,7 +130,7 @@ endfunction()
 # removing code repetition in cmake files.
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;" ${ARGN})
+    cmake_parse_arguments(ARGS "WITH_COVERAGE;EXPOSE_PROJECT_METADATA;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -187,6 +181,19 @@ function(make_target)
     # Add coverage option if set
     if(ARGS_WITH_COVERAGE)    
         setup_coverage_targets(TARGET_NAME ${TARGET_NAME} TYPE ${ARGS_TYPE} LINK ${ARGS_LINK})
+    endif()
+
+    # Expose project metadata
+    if(ARGS_EXPOSE_PROJECT_METADATA)
+        if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
+            # Project metadata exposure
+            project_metadata_exposure(
+                TARGET_NAME ${TARGET_NAME}
+                PREFIX ${ARGS_PROJECT_METADATA_PREFIX}
+            )
+        else()
+            message(WARNING "EXPOSE_PROJECT_METADATA cannot be used with INTERFACE type targets.")
+        endif()
     endif()
 
     # Add format target (if clang-format is available)
