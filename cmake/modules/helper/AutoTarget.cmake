@@ -81,7 +81,7 @@ function(add_target_options)
 
         # Project metadata exposure
         project_metadata_exposure(
-            TARGET_NAME ${PROJECT_NAME}
+            TARGET_NAME ${TARGET_NAME}
         )
 
     endif()
