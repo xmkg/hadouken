@@ -55,6 +55,7 @@
         - [WITH_COVERAGE (optional)](#withcoverage-optional)
         - [EXPOSE_PROJECT_METADATA (optional)](#exposeprojectmetadata-optional)
         - [PROJECT_METADATA_PREFIX (optional)](#projectmetadataprefix-optional)
+        - [NO_AUTO_COMPILATION_UNIT (optional)](#noautocompilationunit-optional)
       - [Git](#git)
         - [git_get_branch_name(DIRECTORY \<dir\>)](#gitgetbranchnamedirectory-dir)
         - [git_get_head_commit_hash(DIRECTORY \<dir\>)](#gitgetheadcommithashdirectory-dir)
@@ -595,6 +596,12 @@ Defines the following C/C++ preprocessor macros for the target created.
 The information is gathered from the `project()` info.
 
 ##### PROJECT_METADATA_PREFIX (optional)
+
+Prefix to prepend created project metadata macros.
+
+##### NO_AUTO_COMPILATION_UNIT (optional)
+
+Disable automatic compilation unit gathering from include/ and src/ directories.
 
 Prefix to prepend created project metadata macros.
 
