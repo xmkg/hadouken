@@ -113,8 +113,9 @@ function (git_print_status)
     message(STATUS "\tDirty: ${GIT_IS_WORKTREE_DIRTY}")
 endfunction()
 
-
 function (git_export_to_macro)
+    cmake_parse_arguments(ARGS "" "PREFIX;" "" ${ARGN}
+
     git_get_branch_name(
         DIRECTORY ${CMAKE_SOURCE_DIR}
     )
@@ -137,9 +138,14 @@ function (git_export_to_macro)
         CONFIG_KEY user.email    
     )
 
-    add_compile_definitions(SPECTRE_GIT_BRANCH_NAME="${GIT_BRANCH_NAME}")
-    add_compile_definitions(SPECTRE_GIT_COMMIT_ID="${GIT_HEAD_COMMIT_HASH}")
-    add_compile_definitions(SPECTRE_GIT_WORKTREE_DIRTY="${GIT_IS_WORKTREE_DIRTY}")
-    add_compile_definitions(SPECTRE_GIT_AUTHOR_NAME="${GIT_CONFIG_USER_NAME}")
-    add_compile_definitions(SPECTRE_GIT_AUTHOR_EMAIL="${GIT_CONFIG_USER_EMAIL}")
+    string(TOUPPER ${ARGS_PREFIX} TARGET_NAME_UPPER)
+
+    # Maket it C preprocessor macro friently
+    string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_PREFIX ${ARGS_PREFIX})
+
+    add_compile_definitions(${ARGS_PREFIX}GIT_BRANCH_NAME="${GIT_BRANCH_NAME}")
+    add_compile_definitions(${ARGS_PREFIX}GIT_COMMIT_ID="${GIT_HEAD_COMMIT_HASH}")
+    add_compile_definitions(${ARGS_PREFIX}GIT_WORKTREE_DIRTY="${GIT_IS_WORKTREE_DIRTY}")
+    add_compile_definitions(${ARGS_PREFIX}GIT_AUTHOR_NAME="${GIT_CONFIG_USER_NAME}")
+    add_compile_definitions(${ARGS_PREFIX}GIT_AUTHOR_EMAIL="${GIT_CONFIG_USER_EMAIL}")
 endfunction()

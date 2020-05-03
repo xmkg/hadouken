@@ -53,6 +53,8 @@
         - [SOURCES (optional)](#sources-optional)
         - [HEADERS (optional)](#headers-optional)
         - [WITH_COVERAGE (optional)](#withcoverage-optional)
+        - [EXPOSE_PROJECT_METADATA (optional)](#exposeprojectmetadata-optional)
+        - [PROJECT_METADATA_PREFIX (optional)](#projectmetadataprefix-optional)
       - [Git](#git)
         - [git_get_branch_name(DIRECTORY \<dir\>)](#gitgetbranchnamedirectory-dir)
         - [git_get_head_commit_hash(DIRECTORY \<dir\>)](#gitgetheadcommithashdirectory-dir)
@@ -575,6 +577,26 @@ Extra header files to be appended to created target's headers.
 ##### WITH_COVERAGE (optional)
 
 Generate code coverage report for the project (useful for unit test targets)
+
+##### EXPOSE_PROJECT_METADATA (optional)
+
+Defines the following C/C++ preprocessor macros for the target created.
+
+```C
+  <prefix>MODULE_NAME
+  <prefix>MODULE_DESC
+  <prefix>MODULE_VERSION_MAJOR
+  <prefix>MODULE_VERSION_MINOR
+  <prefix>MODULE_VERSION_PATCH
+  <prefix>MODULE_VERSION_TWEAK
+
+```
+
+The information is gathered from the `project()` info.
+
+##### PROJECT_METADATA_PREFIX (optional)
+
+Prefix to prepend created project metadata macros.
 
 #### Git
 
