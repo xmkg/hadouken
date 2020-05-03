@@ -21,7 +21,6 @@ function (git_get_branch_name)
         WORKING_DIRECTORY ${ARGS_DIRECTORY}
         OUTPUT_VARIABLE GIT_BRANCH
         OUTPUT_STRIP_TRAILING_WHITESPACE
-        OUTPUT_QUIET
         ERROR_QUIET
     )
     set(GIT_BRANCH_NAME ${GIT_BRANCH} PARENT_SCOPE)
@@ -39,7 +38,6 @@ function (git_get_head_commit_hash)
         RESULT_VARIABLE GIT_RESULT_VAR
         OUTPUT_VARIABLE GIT_COMMIT_HASH
         OUTPUT_STRIP_TRAILING_WHITESPACE
-        OUTPUT_QUIET
         ERROR_QUIET
   )
     if(GIT_RESULT_VAR EQUAL "0")
@@ -61,7 +59,6 @@ function (git_is_worktree_dirty)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         RESULT_VARIABLE GIT_WORKTREE_DIRTY
         OUTPUT_STRIP_TRAILING_WHITESPACE
-        OUTPUT_QUIET
         ERROR_QUIET
   )
   
