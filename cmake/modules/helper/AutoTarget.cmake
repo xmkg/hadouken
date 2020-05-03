@@ -238,4 +238,8 @@ function(make_target)
         gtest_discover_tests(${TARGET_NAME})
     endif()
 
+    project_metadata_exposure(
+        TARGET_NAME ${PROJECT_NAME}
+    )
+    
 endfunction()
