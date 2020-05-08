@@ -72,28 +72,13 @@ do
     fi
 done
 
-if [[ $(which docker) && $(docker --version) ]]; then
-    echo "Docker exist in system"
-    # TODO: Check whether current user is in docker group
-  else
-    echo "Devenv container requires docker. Do you want to install it?"
-    # TODO: Prompt yes-no
+# Check & prompt docker installation
+. $SCRIPT_ROOT/install-docker.sh
 
-    # command
-fi
+# Check & prompt vscode installation
+. $SCRIPT_ROOT/install-vscode.sh
 
-# code-insiders --list-extensions -> grep
-# code-insiders --install-extension ms-vscode-remote.remote-containers
-
-
-# TODO: Check if docker is installed on the system
-# TODO: Check visual studio code is installed on the system
-# TODO: Check vscode remote docker extension installed on vscode
-# (sudo apt install docker.io)
-
-
-# sudo usermod -a -G docker mustafa
-# logout, or somehow reflect group changes to active session?
-# (apt ?)
+# Check vscode extensions
+. $SCRIPT_ROOT/install-vscode-extensions.sh
 
 echo -e "Done! You're all set up."
