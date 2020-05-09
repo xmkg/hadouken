@@ -35,6 +35,8 @@
 # - Added support for Clang.
 # - Some additional usage instructions.
 #
+#!/usr/bin/env cmake
+
 # 2016-02-03, Lars Bilke
 # - Refactored functions to use named parameters
 #

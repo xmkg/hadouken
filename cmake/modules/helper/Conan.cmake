@@ -1,3 +1,5 @@
+#!/usr/bin/env cmake
+
 # The MIT License (MIT)
 
 # Copyright (c) 2018 JFrog

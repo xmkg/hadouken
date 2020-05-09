@@ -1,3 +1,16 @@
+# ______________________________________________________
+# .gitignore file for ignoring common c++ junk. 
+# 
+# @file     .gitignore
+# @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date     11.03.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
 
 # Created by https://www.gitignore.io/api/c,git,c++,gcov,cmake,ninja,valgrind,qtcreator,sonarqube,visualstudio,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=c,git,c++,gcov,cmake,ninja,valgrind,qtcreator,sonarqube,visualstudio,visualstudiocode

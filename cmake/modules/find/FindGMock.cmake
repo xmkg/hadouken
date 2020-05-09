@@ -1,3 +1,5 @@
+#!/usr/bin/env cmake
+
 # Get the Google C++ Mocking Framework.
 # (This file is almost an copy of the original FindGTest.cmake file,
 #  altered to download and compile GMock and GTest if not found

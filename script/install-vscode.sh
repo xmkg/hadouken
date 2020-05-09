@@ -1,7 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+# ______________________________________________________
 # Bash script to install vscode to the system.
-# Author: Mustafa Kemal GILOR <mgilor@nettsi.com>
+#
+# @file 	install-vscode.sh
+# @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date 	14.02.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
 
 declare -a vscode_alts=(code code-insiders)
 
