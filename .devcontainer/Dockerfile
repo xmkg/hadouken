@@ -16,52 +16,18 @@ ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
+ARG apt_extra_package_list
+ARG pip_extra_package_list
+
+COPY bootstrap.sh /scripts/
+
+ENV apt_extra_package_list=${apt_extra_package_list}
+ENV pip_extra_package_list=${pip_extra_package_list}
+
 # Configure apt and install packages
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
-    # 
-    # Verify git, process tools, lsb-release (useful for CLI installs) installed
-    && apt-get -y install git git-flow iproute2 procps lsb-release \
-    #
-    # Install GNU GCC Toolchain, version 10
-    && apt-get -y install gcc-10 g++-10 gdb libstdc++-10-dev libc6-dev \
-    #
-    # Install LLVM Toolchain, version 10
-    && apt-get -y install llvm-10 lldb-10 clang-10 clangd libc++-10-dev \
-    #
-    # Install build generator & dependency resolution tools
-    && apt-get -y install make ninja-build autoconf automake libtool m4 cmake \
-    #
-    # Install python & pip
-    && apt-get -y install python3 python3-pip \
-    #
-    # Install conan
-    && pip3 install conan \
-    #
-    # Install misc tools
-    && apt-get -y install clang-format-10 clang-tidy-10 iwyu cppcheck valgrind ccache \
-    #
-    # Install test framework & benchmark 
-    && apt-get -y install libgtest-dev libgmock-dev libbenchmark-dev \
-    #
-    # Install code coverage
-    && apt-get -y install lcov gcovr \
-    #
-    # Documentation & graphing
-    && apt-get -y install doxygen doxygen-doc doxygen-latex doxygen-doxyparse graphviz \
-    #
-    # Create a non-root user to use if preferred - see https://aka.ms/vscode-remote/containers/non-root-user.
-    && groupadd --gid $USER_GID $USERNAME \
-    && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    # [Optional] Add sudo support for the non-root user
-    && apt-get install -y sudo \
-    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME\
-    && chmod 0440 /etc/sudoers.d/$USERNAME \
-    #
-    # Clean up
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/*
+RUN chmod +x /scripts/bootstrap.sh
+RUN env
+RUN /scripts/bootstrap.sh  
 
 # Switch back to dialog for any ad-hoc use of apt-get
 ENV DEBIAN_FRONTEND=dialog

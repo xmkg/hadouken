@@ -22,6 +22,7 @@
   - [Updating the boilerplate](#updating-the-boilerplate)
   - [Boilerplate manual](#boilerplate-manual)
     - [Development environment container](#development-environment-container)
+      - [Installing project-specific tools to development environment container](#installing-project-specific-tools-to-development-environment-container)
     - [Tool integration modules](#tool-integration-modules)
       - [ClangFormat](#clangformat)
       - [ClangTidy](#clangtidy)
@@ -187,11 +188,24 @@ Development environment is based on Debian Sid, and contains the following tools
 - Code Coverage Analysis (lcov, gcovr)
 - Documentation (doxygen, doxygen-doc, doxygen-latex, doxygen-doxyparse, graphviz)
 
+#### Installing project-specific tools to development environment container
+
+It is possible to run post-install commands in development environment container. To do that, create a script file named `hadouken.bootstrap.sh` at project root directory. This script file will be run when development environment container is built for first time.
+
+You can use `apt` or `pip` to install the packages you desire. As a rule of thumb, always check whether the third party dependency is available as conan package. If so, use conan to satisfy your project's dependency.
+
+```bash
+# Project requires boost, so install it.
+apt install libboost-all-dev
+```
+
+If you already built the development environment container, the container is needed to be rebuilt in order to reflect the changes. To do that, Press F1 and type `Remote-Containers: Rebuild Container` and press Enter. This will re-create the container from scratch.
+
 ### Tool integration modules
 
 Boilerplate provides several modules to help with external tool integration and ease of use. All tools are included in `devenv` container, so skip any installation related stuff if you are using the `devenv` container.
 
-`<project_name>` is capitalized and non-alphanumeric characters replaced (with an underscore) version of top level project name. The term `top level` here refers to the cmake project declaration prior to hadouken module inclusion. 
+`<project_name>` is capitalized and non-alphanumeric characters replaced (with an underscore) version of top level project name. The term `top level` here refers to the cmake project declaration prior to hadouken module inclusion.
 
 #### ClangFormat
 

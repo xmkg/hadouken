@@ -1,5 +1,6 @@
 {
-	"name": "NETTSI C++ Build Container",
+        "name": "NETTSI C++ Build Container",
+        // TODO(mgilor): Use pre-built image instead.
 	"dockerFile": "Dockerfile",
 	"runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined"],
 
@@ -7,8 +8,19 @@
 	// You can edit these settings after create using File > Preferences > Settings > Remote.
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash"
-	},
-
+        },
+        "containerEnv": {
+        },
+        "remoteEnv": {
+        },
+        "build": { 
+                "args": 
+                { 
+                        "apt_extra_package_list": "${localEnv:HADOUKEN_APT_EXTRA_PACKAGES}",
+                        "pip_extra_package_list": "${localEnv:HADOUKEN_PIP_EXTRA_PACKAGES}"
+                } 
+        },
+        "postCreateCommand": "bash hadouken.bootstrap.sh",
 	// Use 'appPort' to create a container with published ports. If the port isn't working, be sure
 	// your server accepts connections from all interfaces (0.0.0.0 or '*'), not just localhost.
 	// "appPort": [],

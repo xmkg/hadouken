@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Bash script to install vscode to the system.
-
 # Author: Mustafa Kemal GILOR <mgilor@nettsi.com>
 
 declare -a vscode_alts=(code code-insiders)
