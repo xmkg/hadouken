@@ -38,8 +38,8 @@
 		"twxs.cmake",
 		// CMake Tools
 		"ms-vscode.cmake-tools",
-		// Docker
-		"ms-azuretools.vscode-docker",
+		// Python extension
+		"ms-python.python",
 		// GitLens
 		"eamodio.gitlens",
 		// Doxygen Language Support
