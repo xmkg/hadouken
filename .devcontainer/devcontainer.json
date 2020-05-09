@@ -24,7 +24,7 @@
 	},
 	// Run user-specified post creation script (if exist)
 	// Also initialize git flow for repository.
-	"postCreateCommand": "git flow config || git flow init;  ( test -f .hadouken.bootstrap.sh && sudo apt update && sudo bash .hadouken.bootstrap.sh ) || true",
+	"postCreateCommand": "git flow config || git flow init -d;  ( test -f .hadouken.bootstrap.sh && sudo apt update && sudo bash .hadouken.bootstrap.sh ) || true",
 	// Run as user `vscode`
 	"remoteUser": "vscode",
 	// Add the IDs of extensions you want installed when the container is created in the array below.
