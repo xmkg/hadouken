@@ -17,7 +17,7 @@ set -e
 
 readonly apt_command='apt-get'
 readonly apt_args='-y install'
-readonly pip_command='pip3 install'
+readonly pip_command='pip3'
 readonly pip_args='install'
 
 # Packages to be installed via apt
