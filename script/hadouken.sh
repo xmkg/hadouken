@@ -103,6 +103,9 @@ case $1 in
     -p|--pack)
       ${RP["SCRIPT"]}/project-pack.sh ${@:2}
     ;;
+    -t|--test)
+      ${RP["SCRIPT"]}/project-test.sh ${@:2}
+    ;;
     -u|--upgrade)
       ${RP["SCRIPT"]}/update-boilerplate.sh ${@:2}
     ;;
@@ -110,6 +113,7 @@ case $1 in
       ${RP["SCRIPT"]}/project-clean.sh 
       ${RP["SCRIPT"]}/project-configure.sh ${@:2}
       ${RP["SCRIPT"]}/project-build.sh ${@:2}
+      ${RP["SCRIPT"]}/project-test.sh ${@:2}
     ;;
     *)
       echo "¯\_(ツ)_/¯ ... i can't hadouken with that. "
@@ -133,6 +137,9 @@ case $1 in
       echo -e "\t-p|--pack\tpack project (using cpack)"
       echo -e "\t\t| package previously build project. Any extra arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --pack\`\t\t# pack via CMake."
+      echo -e "\t-t|--test\trun unit tests for project (using ctest)"
+      echo -e "\t\t| run unit tests of previously build project. Any extra arguments will be forwarded to CTest."
+      echo -e "\t\t| example: \`hadouken --test\`\t\t# pack via CMake."
       echo -e "\t-a|--all\tclean->configure->build->pack project"
       echo -e "Boilerplate:"
       echo -e "\t-u|--upgrade\tupgrade project boilerplate to latest release"

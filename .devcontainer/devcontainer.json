@@ -85,6 +85,8 @@
         // Word Count
         "ms-vscode.wordcount",
         // vscode-clangd
-        "llvm-vs-code-extensions.vscode-clangd"
+        "llvm-vs-code-extensions.vscode-clangd",
+        // Resource monitor
+        "mutantdino.resourcemonitor"
     ]
 }
