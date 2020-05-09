@@ -61,6 +61,12 @@ declare -A symlinks=(
     ["boilerplate/script/hadouken.sh"]="${RP["PROJECT"]}/hadouken"    
 )
 
+# docker-compose extension file
+( touch ${RP["PROJECT"]}/.hadouken.docker-compose.extend.yml && echo "version: '3'" | tee ${RP["PROJECT"]}/.hadouken.docker-compose.extend.yml ) || true
+
+# devenv container post-install script
+touch ${RP["PROJECT"]}/.hadouken.bootstrap.sh || true
+
 for key in "${!symlinks[@]}"
 do
     value=${symlinks[$key]}

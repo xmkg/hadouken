@@ -1,0 +1,20 @@
+version: '3'
+services:
+    devenv:
+      build: 
+          context: .
+          dockerfile: Dockerfile  
+          
+      volumes:
+        # This is where VS Code should expect to find your project's source code
+        # and the value of "workspaceFolder" in .devcontainer/devcontainer.json
+        - ..:/workspace:cached
+
+      # Required for PTRACE based debuggers (such as C++ debuggers)
+      cap_add:
+        - SYS_PTRACE
+      security_opt:
+        - seccomp:unconfined
+
+      # Overrides default command so things don't shut down after the process ends.
+      command: /bin/sh -c "while sleep 1000; do :; done"  

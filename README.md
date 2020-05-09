@@ -23,6 +23,9 @@
   - [Boilerplate manual](#boilerplate-manual)
     - [Development environment container](#development-environment-container)
       - [Installing project-specific tools to development environment container](#installing-project-specific-tools-to-development-environment-container)
+        - [Method 1: Using .hadouken.bootstrap.sh](#method-1-using-hadoukenbootstrapsh)
+        - [Method 2: Using .hadouken.docker-compose.extend.yml](#method-2-using-hadoukendocker-composeextendyml)
+    - [Hey, wait a second, what about git?](#hey-wait-a-second-what-about-git)
     - [Tool integration modules](#tool-integration-modules)
       - [ClangFormat](#clangformat)
       - [ClangTidy](#clangtidy)
@@ -69,6 +72,9 @@
     - [Finders](#finders)
     - [Feature check](#feature-check)
   - [Closing words](#closing-words)
+  - [References](#references)
+  - [Acknowledgements](#acknowledgements)
+  - [Licenses](#licenses)
 
 ## Preface
 
@@ -137,6 +143,13 @@ After running the script, your project root should have the following symbolic l
     hadouken -> boilerplate/script/hadouken.sh
 ```
 
+The following hidden file(s) will be added to your project root:
+
+```bash
+.hadouken.docker-compose.extend.yml # docker-compose extension file
+.hadouken-bootstrap.sh              # container post-installation script
+```
+
 If any of the file(s) specified above already exist on project root, they will not be overridden.
 
 ****
@@ -190,9 +203,11 @@ Development environment is based on Debian Sid, and contains the following tools
 
 #### Installing project-specific tools to development environment container
 
-It is possible to run post-install commands in development environment container. To do that, create a script file named `hadouken.bootstrap.sh` at project root directory. This script file will be run when development environment container is built for first time.
+##### Method 1: Using .hadouken.bootstrap.sh
 
-You can use `apt` or `pip` to install the packages you desire. As a rule of thumb, always check whether the third party dependency is available as conan package. If so, use conan to satisfy your project's dependency.
+It is possible to run post-install commands in development environment container. To do that, edit the script file named `.hadouken.bootstrap.sh` at project root directory. This script file will be run when development environment container is built for first time.
+
+ > ![exclamation-mark] You can use `apt` or `pip` to install the packages you desire. As a rule of thumb, always check whether the third party dependency is available as conan package. If so, use conan to satisfy your project's dependency.
 
 ```bash
 # Project requires boost, so install it.
@@ -200,6 +215,14 @@ apt install libboost-all-dev
 ```
 
 If you already built the development environment container, the container is needed to be rebuilt in order to reflect the changes. To do that, Press F1 and type `Remote-Containers: Rebuild Container` and press Enter. This will re-create the container from scratch.
+
+##### Method 2: Using .hadouken.docker-compose.extend.yml
+
+You can extend base `docker-compose.yml` file to add more functionality, and even more images.
+
+### Hey, wait a second, what about git?
+
+I asked the similar question myself and was going to implement a mechanism that exposes local git configuration and credentials to docker image, but realized that VSCode remote containers extension already does that. You can work with `git` as if you are on your local machine.
 
 ### Tool integration modules
 
@@ -812,3 +835,16 @@ Hadouken will continue to evolve, and you may contribute to it. Don't hesitate t
 [vscode-docker-2]: res/img/vscode-remote-docker-2.png
 [gcovr-report]: res/img/code-coverage-report-gcovr.png
 [exclamation-mark]: res/img/symbols/info-16.png
+
+## References
+
+VSCode Remote Containers Documentation: <https://code.visualstudio.com/docs/remote/containers>
+
+## Acknowledgements
+
+* vscode developers: for creating such a flexible, versatile code editor and a huge ecosystem. <https://github.com/microsoft/vscode>
+* vscode-remote-containers team: <https://github.com/microsoft/vscode-dev-containers>
+
+## Licenses
+
+See LICENSE file for project license
