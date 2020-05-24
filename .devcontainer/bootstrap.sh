@@ -27,7 +27,7 @@ SCRIPT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 set -e
 
 readonly apt_command='apt-get'
-readonly apt_args='-y install'
+readonly apt_args='-y install --no-install-recommends'
 readonly pip_command='pip3'
 readonly pip_args='install'
 
