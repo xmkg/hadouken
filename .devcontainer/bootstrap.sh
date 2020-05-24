@@ -32,7 +32,11 @@ readonly pip_command='pip3'
 readonly pip_args='install'
 
 # Packages to be installed via apt
+# TODO(mgilor): In order to save space, it might be a good idead to separate these tools 
+# to their own containers, then layer them as needed (make them opt-in).
 apt_package_list=(
+    # Prerequisites
+    apt-utils dialog
     # Editors
     nano vim
     # Verify git, process tools, lsb-release (useful for CLI installs) installed
@@ -54,7 +58,7 @@ apt_package_list=(
     # Install code coverage
     lcov gcovr
     # Documentation & graphing
-    doxygen doxygen-doc doxygen-latex doxygen-doxyparse graphviz
+    doxygen doxygen-doxyparse graphviz
     # User-specified packages
     ${apt_extra_package_list[@]}
 )
@@ -66,7 +70,7 @@ pip_package_list=(
     ${pip_extra_package_list[@]}
 )
 
-apt-get update && apt-get -y install --no-install-recommends apt-utils dialog 2>&1 \
+apt-get update \
 && 
 # Install apt packages
 $apt_command $apt_args ${apt_package_list[@]} \
