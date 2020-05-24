@@ -39,12 +39,12 @@
           - [EXECUTABLE](#executable)
           - [STATIC](#static)
           - [SHARED](#shared)
-          - [UNIT_TEST](#unittest)
+          - [UNIT_TEST](#unit_test)
           - [INTERFACE](#interface)
           - [BENCHMARK](#benchmark)
         - [LINK (optional)](#link-optional)
-        - [COMPILE_OPTIONS (optional)](#compileoptions-optional)
-        - [COMPILE_DEFINITIONS (optional)](#compiledefinitions-optional)
+        - [COMPILE_OPTIONS (optional)](#compile_options-optional)
+        - [COMPILE_DEFINITIONS (optional)](#compile_definitions-optional)
         - [DEPENDS (optional)](#depends-optional)
         - [NAME (optional)](#name-optional)
         - [PREFIX (optional)](#prefix-optional)
@@ -53,16 +53,16 @@
         - [PARTOF (optional)](#partof-optional)
         - [SOURCES (optional)](#sources-optional)
         - [HEADERS (optional)](#headers-optional)
-        - [WITH_COVERAGE (optional)](#withcoverage-optional)
-        - [EXPOSE_PROJECT_METADATA (optional)](#exposeprojectmetadata-optional)
-        - [PROJECT_METADATA_PREFIX (optional)](#projectmetadataprefix-optional)
-        - [NO_AUTO_COMPILATION_UNIT (optional)](#noautocompilationunit-optional)
+        - [WITH_COVERAGE (optional)](#with_coverage-optional)
+        - [EXPOSE_PROJECT_METADATA (optional)](#expose_project_metadata-optional)
+        - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
+        - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
       - [Git](#git)
-        - [git_get_branch_name(DIRECTORY \<dir\>)](#gitgetbranchnamedirectory-dir)
-        - [git_get_head_commit_hash(DIRECTORY \<dir\>)](#gitgetheadcommithashdirectory-dir)
-        - [git_is_worktree_dirty(DIRECTORY \<dir\>)](#gitisworktreedirtydirectory-dir)
-        - [git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)](#gitgetconfigdirectory-dir-configkey-keytoberetrieved)
-        - [git_print_status()](#gitprintstatus)
+        - [git_get_branch_name(DIRECTORY \<dir\>)](#git_get_branch_namedirectory-dir)
+        - [git_get_head_commit_hash(DIRECTORY \<dir\>)](#git_get_head_commit_hashdirectory-dir)
+        - [git_is_worktree_dirty(DIRECTORY \<dir\>)](#git_is_worktree_dirtydirectory-dir)
+        - [git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)](#git_get_configdirectory-dir-config_key-key_to_be_retrieved)
+        - [git_print_status()](#git_print_status)
       - [Conan](#conan)
       - [HardwareConcurrency](#hardwareconcurrency)
     - [Build variant determination](#build-variant-determination)
@@ -205,7 +205,35 @@ You can extend base `docker-compose.yml` file to add more functionality, and eve
 
 ### Hey, wait a second, what about git?
 
-I asked the similar question myself and was going to implement a mechanism that exposes local git configuration and credentials to docker image, but realized that VSCode remote containers extension already does that. You can work with `git` as if you are on your local machine.
+I asked the similar question myself and was going to implement a mechanism that exposes local git configuration and credentials to docker image, but realized that VSCode remote containers extension already does that. Your local git configuration is copied to the container as-is. If you are using http authentication, you can still proceed to authenticate using it. For authenticating with ssh keys, there is an extra step to take. Because of the security reasons, the extension does not copy the ssh keys to the container. Instead, it uses ssh-agent running on the host machine when ssh authentication is needed. So, if you want to be able to push to the remote repository from container shell, you have to spawn an instance of ssh-agent and add your relevant ssh private keys to it.
+
+Before starting the container, run the following commands in a shell;
+
+```bash
+    eval "$(ssh-agent -s)" # Start ssh-agent, -s option prints the options used by ssh agent to the stdout, eval sets them to the current shell.
+    ssh-add ~/.ssh/id_rsa  # Add a ssh private key to the agent. The container can only use the keys added to the agent.
+```
+
+After that, you can work with `git` as if you are on your local machine. While using ssh-agent, please bear in mind that all added ssh keys can be used by remote hosts which you `ssh`'ed into. I strongly encourage you to read ssh-agent's man page before using it: <https://linux.die.net/man/1/ssh-agent>
+
+ > ![exclamation-mark] If you want to spawn ssh-agent automatically on startup, you can add these lines to your `~/.bash_profile` script:
+
+```bash
+if [ -z "$SSH_AUTH_SOCK" ]
+then
+   # Check for a currently running instance of the agent
+   RUNNING_AGENT="`ps -ax | grep 'ssh-agent -s' | grep -v grep | wc -l | tr -d '[:space:]'`"
+   if [ "$RUNNING_AGENT" = "0" ]
+   then
+        # Launch a new instance of the agent
+        ssh-agent -s &> .ssh/ssh-agent
+   fi
+   eval `cat .ssh/ssh-agent`
+   # You might add your ssh keys automatically here, but it is not recommended
+   # for security reasons.
+fi
+```
+
 
 ### Tool integration modules
 
