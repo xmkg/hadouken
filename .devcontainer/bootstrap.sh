@@ -34,7 +34,7 @@ readonly pip_args='install'
 # Packages to be installed via apt
 apt_package_list=(
     # Editors
-    nano vi vim
+    nano vim
     # Verify git, process tools, lsb-release (useful for CLI installs) installed
     git git-flow iproute2 procps lsb-release
     # Install GNU GCC Toolchain, version 10
