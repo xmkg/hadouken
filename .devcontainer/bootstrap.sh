@@ -39,8 +39,8 @@ apt_package_list=(
     apt-utils dialog
     # Editors
     nano vim
-    # Verify git, process tools, lsb-release (useful for CLI installs) installed
-    git git-flow iproute2 procps lsb-release
+    # Verify ssh, git, process tools, lsb-release (useful for CLI installs) installed
+    ssh git git-flow iproute2 procps lsb-release
     # Install GNU GCC Toolchain, version 10
     gcc-10 g++-10 gdb libstdc++-10-dev libc6-dev
     # Install LLVM Toolchain, version 10
