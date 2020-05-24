@@ -34,11 +34,11 @@ function(add_project_include_directory)
     cmake_parse_arguments(ARGS,  "" "TARGET_NAME;TYPE;" "" ${ARGN})
 
     if(NOT DEFINED TARGET_NAME)
-        message(FATAL_ERROR "add_target_options() requires TARGET_NAME parameter.")
+        message(FATAL_ERROR "add_project_include_directory() requires TARGET_NAME parameter.")
     endif()
 
     if(NOT DEFINED ARGS_TYPE)
-        message(FATAL_ERROR "add_target_options() requires TYPE parameter.")
+        message(FATAL_ERROR "add_project_include_directory() requires TYPE parameter.")
     endif()
 
     if(${ARGS_TYPE} STREQUAL "INTERFACE")
@@ -64,6 +64,17 @@ function(add_target_options)
         if(DEFINED ARGS_INCLUDES)
             target_include_directories(${TARGET_NAME} INTERFACE ${ARGS_INCLUDES})
         endif()
+        if(DEFINED ARGS_LINK)
+            target_link_libraries(${TARGET_NAME} INTERFACE ${ARGS_LINK})
+        endif()
+
+        if(DEFINED ARGS_COMPILE_OPTIONS)
+            target_compile_options(${TARGET_NAME} INTERFACE ${ARGS_COMPILE_OPTIONS})
+        endif()
+
+        if(DEFINED ARGS_SYMBOL_VISIBILITY)
+            target_compile_options(${TARGET_NAME} INTERFACE -fvisibility=${ARGS_SYMBOL_VISIBILITY})
+        endif()
     else()
 
         if(ARGS_INCLUDES)
@@ -75,16 +86,16 @@ function(add_target_options)
         endif()
 
         if(ARGS_COMPILE_OPTIONS)
-            target_compile_options(${TARGET_NAME} PUBLIC ${ARGS_COMPILE_OPTIONS})
+            target_compile_options(${TARGET_NAME} PRIVATE ${ARGS_COMPILE_OPTIONS})
         endif()
         
         if(ARGS_SYMBOL_VISIBILITY)
-            target_compile_options(${TARGET_NAME} PUBLIC -fvisibility=${ARGS_SYMBOL_VISIBILITY})
+            target_compile_options(${TARGET_NAME} PRIVATE -fvisibility=${ARGS_SYMBOL_VISIBILITY})
         endif()
     endif()
 
     if(ARGS_COMPILE_DEFINITIONS)
-        target_compile_definitions(${TARGET_NAME} PUBLIC ${ARGS_COMPILE_DEFINITIONS})
+        target_compile_definitions(${TARGET_NAME} PRIVATE ${ARGS_COMPILE_DEFINITIONS})
     endif()
 
     if(ARGS_DEPENDS)
