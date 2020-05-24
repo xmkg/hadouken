@@ -61,3 +61,22 @@ message(STATUS "\t\t\t(debug):   ${CMAKE_CXX_FLAGS_DEBUG}")
 message(STATUS "\t\t\t(release): ${CMAKE_CXX_FLAGS_RELEASE}")
 
 message(STATUS "\t[✔] Build details are set.")
+
+
+function (build_variant_export_to_macro)
+    cmake_parse_arguments(ARGS "" "PREFIX;" "" ${ARGN})
+
+    if(ARGS_PREFIX)
+        string(TOUPPER ${ARGS_PREFIX} ARGS_PREFIX)
+
+        # Maket it C preprocessor macro friently
+        string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_PREFIX ${ARGS_PREFIX})
+    endif()
+
+    if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+      add_compile_definitions(${ARGS_PREFIX}DEBUG=1)
+    else()
+      # Other build types are considered non-debug
+      add_compile_definitions(${ARGS_PREFIX}NDEBUG=1)
+    endif()
+endfunction()
