@@ -73,7 +73,7 @@ function (build_variant_export_to_macro)
         string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_PREFIX ${ARGS_PREFIX})
     endif()
 
-    if(CMAKE_BUILD_TYPE MATCHES DEBUG)
+    if(CMAKE_BUILD_TYPE MATCHES Debug)
       add_compile_definitions(${ARGS_PREFIX}DEBUG=1)
     else()
       # Other build types are considered non-debug
