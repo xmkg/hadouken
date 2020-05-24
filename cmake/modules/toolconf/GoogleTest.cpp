@@ -3,14 +3,15 @@
  * Dummy source file in order to be able to create a static library 
  * target for the unit test resources.
  * 
- * @file 		GoogleTest.cpp
- * @author 		Mustafa Kemal GILOR <mgilor@nettsi.com>
- * @date 		28.02.2020
+ * @file 	GoogleTest.cpp
+ * @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
+ * @date 	28.02.2020
  * 
- * @copyright   2020 NETTSI Informatics Technology Inc.
+ * Copyright (c) Nettsi Informatics Technology Inc. 
+ * All rights reserved. Licensed under the Apache 2.0 License. 
+ * See LICENSE in the project root for license information.
  * 
- * Unauthorized copying of this file, via any medium is strictly prohibited
- * Proprietary and confidential
+ * SPDX-License-Identifier:	Apache 2.0
  * ______________________________________________________
  */
 

@@ -14,9 +14,6 @@
   - [Table of contents](#table-of-contents)
   - [Preface](#preface)
   - [Author](#author)
-  - [Document Version](#document-version)
-  - [Change history](#change-history)
-    - [Version 0.1.0 (22/03/2020)](#version-010-22032020)
   - [Getting started](#getting-started)
     - [Installing `hadouken` to a project](#installing-hadouken-to-a-project)
   - [Updating the boilerplate](#updating-the-boilerplate)
@@ -74,7 +71,7 @@
   - [Closing words](#closing-words)
   - [References](#references)
   - [Acknowledgements](#acknowledgements)
-  - [Licenses](#licenses)
+  - [License](#license)
 
 ## Preface
 
@@ -87,20 +84,6 @@ This guide will navigate you through the boilerplate's all features and how to u
 ## Author
 
 Mustafa Kemal GILOR, Chief Software Architect (<mgilor@nettsi.com>)
-
-****
-
-## Document Version
-
-Most recent version of the document is `0.1.0`
-
-****
-
-## Change history
-
-### Version 0.1.0 (22/03/2020)
-
-- Initial release of the document
 
 ****
 
@@ -845,6 +828,6 @@ VSCode Remote Containers Documentation: <https://code.visualstudio.com/docs/remo
 * vscode developers: for creating such a flexible, versatile code editor and a huge ecosystem. <https://github.com/microsoft/vscode>
 * vscode-remote-containers team: <https://github.com/microsoft/vscode-dev-containers>
 
-## Licenses
+## License
 
-See LICENSE file for project license
+This project is licensed under Apache 2.0 license. See LICENSE file for license information.

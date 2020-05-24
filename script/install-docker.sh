@@ -1,7 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
+# ______________________________________________________
 # Bash script to install docker on target system
-# Author: Mustafa Kemal GILOR <mgilor@nettsi.com>
+#
+# @file 	install-docker.sh
+# @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date 	14.02.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+#
+# Notes:
+# Currently only Debian, Ubuntu, CentOS and Fedora supported. (centos and fedora not tested)
+# ______________________________________________________
 
 
 if [[ $(which docker) && $(docker --version) ]]; then

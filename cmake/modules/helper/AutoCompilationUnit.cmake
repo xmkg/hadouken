@@ -1,15 +1,18 @@
+#!/usr/bin/env cmake
+
 # ______________________________________________________
 # Contains helper functions to gather header and source files from projects
 # containing source files in `include/src` format.
 # 
-# @file 		AutoCompilationUnit.cmake
-# @author 		Mustafa Kemal GILOR <mgilor@nettsi.com>
-# @date 		14.02.2020
+# @file 	AutoCompilationUnit.cmake
+# @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date 	14.02.2020
 # 
-# @copyright   2020 NETTSI Informatics Technology Inc.
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
 # 
-# Unauthorized copying of this file, via any medium is strictly prohibited
-# Proprietary and confidential
+# SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
 # Gather all files under `include` and `src` folders at current directory level 

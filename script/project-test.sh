@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ______________________________________________________
-# Hadouken project package script.
+# Hadouken project test script.
 #
-# @file 	project-pack.sh
+# @file 	project-test.sh
 # @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
-# @date 	14.02.2020
+# @date 	10.05.2020
 # 
 # Copyright (c) Nettsi Informatics Technology Inc. 
 # All rights reserved. Licensed under the Apache 2.0 License. 
@@ -27,7 +27,5 @@ SCRIPT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
 declare -A RP
 # Common headers
 source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
-
-echo "Not implemented (yet) ¯\_(ツ)_/¯"
-
-# TODO(mgilor): invoke cpack here
+# Run unit tests
+(cd ${RP["BUILD"]} && ctest ${@:1})

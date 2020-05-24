@@ -1,7 +1,16 @@
-#-------------------------------------------------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation. All rights reserved.
-# Licensed under the MIT License. See https://go.microsoft.com/fwlink/?linkid=2090316 for license information.
-#-------------------------------------------------------------------------------------------------------------
+# ______________________________________________________
+# Development environment container docker file.
+#
+# @file     Dockerfile
+# @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date     09.05.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
 
 FROM debian:sid
 

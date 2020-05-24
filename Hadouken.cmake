@@ -1,15 +1,18 @@
+#!/usr/bin/env cmake
+
 # ______________________________________________________
 # Contains the list of required includes for the project boilerplate.
 #
-# @file 		Hadouken.cmake
-# @author 		Mustafa Kemal GILOR <mgilor@nettsi.com>
-# @date 		14.02.2020
-#
-# @copyright   2020 NETTSI Informatics Technology Inc.
-#
-# Unauthorized copying of this file, via any medium is strictly prohibited
-# Proprietary and confidential
+# @file     Hadouken.cmake
+# @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date     14.02.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. All rights reserved.
+# Licensed under the Apache 2.0 License. See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier: Apache 2.0
 # ______________________________________________________
+
 
 set(PB_PARENT_PROJECT_NAME ${PROJECT_NAME})
 string(TOUPPER ${PB_PARENT_PROJECT_NAME} PB_PARENT_PROJECT_NAME_UPPER)

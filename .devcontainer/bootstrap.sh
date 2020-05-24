@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
-# container bootstrap script
-# author: Mustafa Kemal GILOR <mgilor@nettsi.com>
+# ______________________________________________________
+# Container bootstrap script.
+#
+# @file     bootstrap.sh
+# @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date     09.05.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
 
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do

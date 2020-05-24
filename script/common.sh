@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
 
-# hadouken common functions
-# author: Mustafa Kemal GILOR <mgilor@nettsi.com>
+# ______________________________________________________
+# Hadouken common functions
+#
+# @file 	common.sh
+# @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date 	14.02.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
 
 
 # Declare an associative array which contains some common paths

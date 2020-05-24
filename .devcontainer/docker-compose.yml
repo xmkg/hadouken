@@ -1,3 +1,17 @@
+# ______________________________________________________
+# Development environment docker-compose file.
+#
+# @file     docker-compose.yml
+# @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date     09.05.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
+
 version: '3'
 services:
     devenv:
