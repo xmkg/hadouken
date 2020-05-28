@@ -24,11 +24,12 @@ string(REGEX REPLACE "[^a-zA-Z0-9]" "_" PB_PARENT_PROJECT_NAME_UPPER ${PB_PARENT
 # Enable testing for the project
 enable_testing()
 # Project-wide C++ standard declaration
-set(CMAKE_CXX_STANDARD 17)
+# (mgilor): It is a bit restrictive, removed for now.
+# set(CMAKE_CXX_STANDARD 17)
 #add_compile_options(-std=c++2a)
 #add_compile_options(-fconcepts)
 # Make C++ standard required.
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Export compile commands for other tool usage
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Hide all symbols on all projects by default
