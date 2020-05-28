@@ -16,6 +16,7 @@
   - [Author](#author)
   - [Getting started](#getting-started)
     - [Installing `hadouken` to a project](#installing-hadouken-to-a-project)
+  - [Hadouken script commands](#hadouken-script-commands)
   - [Updating the boilerplate](#updating-the-boilerplate)
   - [Boilerplate manual](#boilerplate-manual)
     - [Development environment container](#development-environment-container)
@@ -127,6 +128,22 @@ This will add boilerplate project to your project, to boilerplate folder. `maste
     bash boilerplate/script/setup.sh
 ```
 
+If your project root does not contain any CMake projects, `Hadouken` will offer you to quick-start a new `CMake` project. If you choose 'yes', Hadouken will ask you for a project name and automatically generate CMake files and an example C++ application.
+
+```bash
+Boilerplate parent directory does not contain a CMakeLists.txt
+Do you want to quick-start a new cmake project to parent folder [Yy/Nn]? y
+Project name:
+```
+
+The script will offer you to install tools required and recommended by Hadouken. These tools are:
+
+- Docker
+- Visual Studio Code
+- Visual Studio Code Extensions
+
+Automatic installation of these tools are tested in Debian 10 and Ubuntu 18.10. Fedora and CentOS are also supported, but not tested (yet). You can always install these tools manually if you choose to do so.
+
 After running the script, your project root should have the following symbolic links, mapped to the boilerplate content:
 
 ```none
@@ -150,6 +167,39 @@ The following hidden file(s) will be added to your project root:
 If any of the file(s) specified above already exist on project root, they will not be overridden.
 
 ****
+
+## Hadouken script commands
+
+There are some commands defined to configure and build the project on command line. Note that these commands currently not being run in development environment container. This functionality will be implemented soon.
+
+```bash
+-b|--build      build project
+        | build previously configured project. Any extra arguments will be forwarded to CMake.
+        | example: `hadouken --build`           # build via CMake.
+-x|--clean      clean project
+        | remove PROJECT_ROOT/build directory.
+        | example: `hadouken --clean`           # removes PROJECT_ROOT/build directory.
+        | example: `hadouken --clean --deep`    # runs git clean -fxd on project root.
+-c|--configure
+        | configure project located in PROJECT_ROOT to PROJECT_ROOT/build directory with cmake
+        | any following arguments will be forwarded to CMake.
+        | example: `hadouken --configure --target=Debug`
+-i|--install    install project
+        | install previosuly built project. Any extra arguments will be forwarded to CMake.
+        | example: `hadouken --install`         # install via CMake.
+-p|--pack       pack project (using cpack)
+        | package previously build project. Any extra arguments will be forwarded to CMake.
+        | example: `hadouken --pack`            # pack via CMake.
+-t|--test       run unit tests for project (using ctest)
+        | run unit tests of previously build project. Any extra arguments will be forwarded to CTest.
+        | example: `hadouken --test`            # pack via CMake.
+-a|--all        clean->configure->build->pack project
+-u|--upgrade    upgrade project boilerplate to latest release
+        | this basically runs submodule update, reduced to a command for ease of use.
+        | example: `hadouken --upgrade`         # upgrade boilerplate submodule to latest master release.
+```
+
+You can print this information any time by invoking `./hadouken --help` command.
 
 ## Updating the boilerplate
 
