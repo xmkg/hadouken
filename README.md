@@ -103,6 +103,20 @@ You're lucky, I've prepared a video guide illustrating this. Check out [Video tu
 
 Hadouken is designed as to be a git submodule. First, you need to add it as a submodule to your existing git project. In order to do that, issue following command at your git project root:
 
+Add submodule (via SSH)
+
+```bash
+    git submodule add -b master git@github.com:nettsi/hadouken.git boilerplate
+```
+
+Add submodule (via HTTP)
+
+```bash
+    git submodule add -b master https://github.com/nettsi/hadouken.git boilerplate
+```
+
+Add submodule (nettsi employees)
+
 ```bash
     git submodule add -b master git@gitlab.nettsi.com:internal-projects/cpp-project-boilerplate.git boilerplate
 ```

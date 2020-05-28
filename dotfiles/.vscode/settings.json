@@ -29,10 +29,11 @@
     "doxdocgen.file.fileTemplate": "@file         {name}",
     "doxdocgen.file.copyrightTag":
     [
-        "@copyright   2020 NETTSI Informatics Technology Inc.",
-        "",
-        "Unauthorized copying of this file, via any medium is strictly prohibited",
-        "Proprietary and confidential"
+        // FIXME(mgilor): Disabled temporarily
+        // "@copyright   2020 NETTSI Informatics Technology Inc.",
+        // "",
+        // "Unauthorized copying of this file, via any medium is strictly prohibited",
+        // "Proprietary and confidential"
     ],
     "doxdocgen.generic.authorTag": "@author       {author} <{email}>",
     "doxdocgen.file.fileOrder": [
