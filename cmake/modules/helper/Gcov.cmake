@@ -244,7 +244,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         COMMAND ${GCOVR_PATH} --xml
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
-            -f ${GCOVR_FILTER_PATTERN}
+            --filter ${Coverage_FILTER_PATTERN}
             -o ${Coverage_NAME}.xml
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
@@ -303,7 +303,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
-            # -f ${GCOVR_FILTER_PATTERN}
+            --filter ${Coverage_FILTER_PATTERN}
             -o ${Coverage_NAME}/index.html
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
