@@ -66,6 +66,7 @@ declare -A symlinks=(
     ["boilerplate/dotfiles/.gitignore"]="${RP["PROJECT"]}/.gitignore" 
     ["boilerplate/dotfiles/.clang-format"]="${RP["PROJECT"]}/.clang-format" 
     ["boilerplate/dotfiles/.clang-tidy"]="${RP["PROJECT"]}/.clang-tidy" 
+    ["boilerplate/dotfiles/.lcovrc"]="${RP["PROJECT"]}/.lcovrc" 
     ["boilerplate/dotfiles/.cppcheck-suppress"]="${RP["PROJECT"]}/.cppcheck-suppress" 
     ["boilerplate/dotfiles/.vscode/settings.json"]="${RP["PROJECT"]}/.vscode/settings.json" 
     ["boilerplate/.devcontainer"]="${RP["PROJECT"]}/.devcontainer" 
