@@ -29,6 +29,7 @@
       - [ClangTidy](#clangtidy)
       - [CppCheck](#cppcheck)
       - [GCov/LCov](#gcovlcov)
+        - [An example `lcov` unit test coverage scenario:](#an-example-lcov-unit-test-coverage-scenario)
       - [GoogleTest/GoogleMock](#googletestgooglemock)
       - [IncludeWhatYouUse (IWYU)](#includewhatyouuse-iwyu)
       - [LinkWhatYouUse (LWYU)](#linkwhatyouuse-lwyu)
@@ -55,6 +56,7 @@
         - [SOURCES (optional)](#sources-optional)
         - [HEADERS (optional)](#headers-optional)
         - [WITH_COVERAGE (optional)](#with_coverage-optional)
+        - [COVERAGE_TARGETS (optional)](#coverage_targets-optional)
         - [EXPOSE_PROJECT_METADATA (optional)](#expose_project_metadata-optional)
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
@@ -414,6 +416,146 @@ make_target(TYPE UNIT_TEST WITH_COVERAGE)
 # Creates an unit test named my-awesome-project and my-awesome-project.cov coverage target.
 ```
 
+##### An example `lcov` unit test coverage scenario:
+
+In this scenario, we have the following library and the corresponding unit test code:
+
+lib.hpp
+
+```cpp
+namespace hdktest{
+    namespace lib{
+        class library{
+        public:
+            library();
+            ~library();
+
+            bool should_return_true(int val);
+        };
+    }
+}
+```
+
+lib.cpp
+
+```cpp
+namespace hdktest::lib{
+
+    library::library(){
+        std::cout << "construct" << std::endl;
+    }
+
+    library::~library(){
+        std::cout << "destruct" << std::endl;
+    }
+
+    bool library::should_return_true(int val){
+        switch(val){
+            case 1:
+                return false;
+            case 2:
+                return true;
+            case 3:
+                return false;
+        }
+        return true;
+    }
+}
+```
+
+Library's CMakeLists.txt:
+
+```cmake
+    project(hdktest.lib)
+
+    make_target(TYPE STATIC)
+
+    add_subdirectory(test)
+```
+
+ut_lib.cpp
+
+```cpp
+TEST(test,test){
+    hdktest::lib::library library;
+    EXPECT_TRUE(true);
+}
+
+TEST(test, param1){
+    hdktest::lib::library library;
+    EXPECT_FALSE(library.should_return_true(1));
+}
+
+TEST(test, param2){
+    hdktest::lib::library library;
+    EXPECT_TRUE(library.should_return_true(2));
+}
+
+TEST(test, test_param3_Test){
+    hdktest::lib::library library;
+    EXPECT_FALSE(library.should_return_true(3));
+}
+
+```
+
+Unit test's CMakeLists.txt:
+
+```cmake
+    project(hdktest.lib.test)
+
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ut_lib.cpp
+        LINK hdktest.lib
+        WITH_COVERAGE
+        COVERAGE_TARGETS hdktest.lib
+        NO_AUTO_COMPILATION_UNIT
+    )
+```
+
+`gcov`, `lcov` and `gcovr` integrations are also enabled by specifying following options:
+
+```cmake
+    SET(HDKTEST_TOOLCONF_USE_GCOV TRUE CACHE BOOL "Enable/disable gcov integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_LCOV TRUE CACHE BOOL "Enable/disable lcov integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_GCOVR TRUE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+```
+
+As we specified `WITH_COVERAGE` option and enabling coverage tools, following additional targets will be available for build (which will trigger code coverage report generation):
+
+- hdktest.lib.test.gcovr.html
+- hdktest.lib.test.gcovr.xml
+- hdktest.lib.test.lcov
+
+By building `hdktest.lib.test.lcov` target, a line coverage report will be generated in build folder.
+
+![lcov report index][lcov-1]
+
+Directories shown in the report are `src` (source code of unit under test) and `test` (the unit test code). In the report, we can see the unit test is covered %93.3 of the unit under test. Let's dive into `src` to investigate situation more detailed.
+
+![lcov report index][lcov-2]
+
+Here we can see unit under test consists of only `lib.cpp` file. By clicking `lib.cpp` we can check which lines of `lib.cpp` is not covered by the unit test.
+
+![lcov report index][lcov-3]
+
+The blue lines are the lines which are executed by the unit test. The Line data column shows how many times the corresponding line is executed. The red lines are the lines which have not been executed by the unit test. By looking this line coverage result, we can clearly see that the unit test constructed & destructed an instance of library object 8 times, and `should_return_true` function has been called 6 times. In these calls, case 1 is taken 2 times, case 2 is taken 2 times and case 3 is taken 2 times respectively. We can conclude that our unit test did not supply an argument which is not handled by the switch case. To confirm that, let's take a look to the unit test code.
+
+![lcov report index][lcov-4]
+
+Our unit test has 4 cases, but none of them calls `should_return_true` with a value which is outside of switch case's defined range of values. Let's fix that by adding a new unit test case, and check coverage report again.
+
+```cpp
+    TEST(test, test_param4_Test){
+        hdktest::lib::library library;
+        EXPECT_TRUE(library.should_return_true(4));
+    }
+```
+
+![lcov report index][lcov-5]
+
+As you can see above, adding the missing case indeed fixed our coverage rate.
+
 You can install `gcov, lcov, gcovr` either by downloading it from their respective official sites <http://cppcheck.sourceforge.net/#download> or you can get from you package manager.
 
 Ubuntu/Debian
@@ -565,6 +707,8 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [SOURCES [<source_path> ...]]
                 [HEADERS [<header_path> ...]]
                 [WITH_COVERAGE]
+                [COVERAGE_TARGETS [<target_name> ...]]
+                [EXPOSE_PROJECT_METADATA]
     )
 ```
 
@@ -576,17 +720,98 @@ Type of the target to be created. Possible values are;
 
 Executable target (add_executable)
 
+Example:
+
+```cmake
+    project(proj.executable VERSION 0.1.0)
+
+    make_target(
+        # Specify type as EXECUTABLE file
+        TYPE EXECUTABLE
+        # Link `proj.component-q.static` target to the executable
+        LINK proj.component-q.static
+    )
+```
+
 ###### STATIC
 
 Static library target (add_library(STATIC))
+
+Example:
+
+```cmake
+    project(proj.component-q VERSION 0.1.0.0 LANGUAGES CXX)
+
+    make_target(
+        # Specify type as STATIC library
+        TYPE STATIC
+        # Append .static suffix to the target name
+        SUFFIX .static
+        # Link `proj.component-x` and `proj-component-y` to target
+        # as PUBLIC (propogates to other targets using this target)
+        LINK PUBLIC proj.component-x proj.component-y
+    )
+```
 
 ###### SHARED
 
 Shared library target (add_library(SHARED))
 
+Example:
+
+```cmake
+    project(proj.component-q VERSION 0.1.0.0 LANGUAGES CXX)
+
+    make_target(
+        # Specify type as SHARED library
+        TYPE SHARED
+        # Append .shared suffix to the target name
+        SUFFIX .shared
+        # Link `proj.component-x` and `proj-component-y` to target
+        # as PUBLIC (propogates to other targets using this target)
+        LINK PUBLIC proj.component-x proj.component-y
+    )
+```
+
 ###### UNIT_TEST
 
 Unit test target. Performs additional steps to make unit test discoverable by CTest. Also, target is automagically linked to `google test` and `google mock` libraries for convenience.
+
+Example:
+
+```cmake
+    project(proj.component-x.test VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create an unit test target with the name of
+    # `project.component-x.test.feature-1`
+    make_target(
+        # Create an unit test target
+        TYPE UNIT_TEST
+        # Specify the source file(s) of the target
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ut_feature_1.cpp
+        # Link the subject which will be tested
+        LINK proj.component-x
+        # Append `.feature-1` suffix to the created target
+        SUFFIX .feature-1
+        # Disable auto source/header file gathering for this target
+        NO_AUTO_COMPILATION_UNIT
+    )
+
+    # Create an unit test target with the name of
+    # `project.component-x.test.feature-2`
+    make_target(
+        # Create an unit test target
+        TYPE UNIT_TEST
+        # Specify the source file(s) of the target
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ut_feature_2.cpp
+        # Link the subject which will be tested
+        LINK proj.component-x
+        # Append `.feature-2` suffix to the created target
+        SUFFIX .feature-2
+        # Disable auto source/header file gathering for this target
+        NO_AUTO_COMPILATION_UNIT
+    )
+```
 
 ###### INTERFACE
 
@@ -595,6 +820,25 @@ Header-only library target (add_library(INTERFACE))
 ###### BENCHMARK
 
 Benchmark target. Similar to UNIT_TEST target, target is automagically linked to `google benchmark` library for convenience.
+
+Example:
+
+```cmake
+    project(proj.component-x.bench VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create an unit test target with the name of
+    # `project.component-x.bench`
+    make_target(
+        # Create a benchmark target
+        TYPE BENCHMARK
+        # Specify the source file(s) of the target
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/bm_component_x.cpp
+        # Link the subject which will be tested
+        LINK proj.component-x
+        # Disable auto source/header file gathering for this target
+        NO_AUTO_COMPILATION_UNIT
+    )
+```
 
 ##### LINK (optional)
 
@@ -630,9 +874,75 @@ Example:
 
 The list of dependencies of created target. In order to satisfy dependency, the specified targets will be processed before the created target is processed.
 
+Example:
+
+```cmake
+
+    project(proj.application VERSION 0.1.0 LANGUAGES CXX)
+
+    # This command would create an executable target with the name of
+    # `proj.application` without the explicit name specification.
+    # When `NAME` paramater is available, the value of `NAME` parameter
+    # will be used as target name instead.
+    make_target(
+        # Create a shared library target
+        TYPE EXECUTABLE
+        # This will ensure `proj.deps.boost` target is configured
+        # before configuring the `proj.application` target.
+
+        # This is useful for externally configured projects, which are
+        # declared as custom targets via `add_custom_target`(*). Since custom
+        # targets cannot be linked to a target, we somehow need to indicate
+        # that `proj.deps.boost` should be configured before the target.
+        # Because, in order to be able to link libboost_system.a and libboost_thread.a
+        # libraries, they must have been already compiled before the compilation of proj.application begins.
+
+        # Keep in mind that a `LINK` ed CMake target are also implicitly
+        # dependency of the target, so there is no need to specify that
+        # target in DEPENDS section again.
+        DEPENDS proj.deps.boost proj.deps.spdlog
+        # Explicitly specify the name
+        NAME my_awesome_application
+        # Specify include paths of linked libraries
+        INCLUDES /usr/lib/boost/include /usr/lib/spdlog/include
+        # Link libraries
+        LINK libboost_system.a libboost_thread.a libspdlog.a
+    )
+
+    # The target will be named as `my_awesome_application`.
+    # (*) Proper way of declaring an external library as a CMake target is,
+    # to use IMPORTED targets. See:
+    # <https://cmake.org/cmake/help/latest/command/add_library.html#imported-libraries> 
+    # for details
+```
+
 ##### NAME (optional)
 
 The user-defined name for the created target. By default, name will be automatically determined from previous project call. If you want to give a different name, you can give by specifying this argument.
+
+Example:
+
+```cmake
+
+    project(proj.application VERSION 0.1.0 LANGUAGES CXX)
+
+    # This command would create an executable target with the name of
+    # `proj.application` without the explicit name specification.
+    # When `NAME` paramater is available, the value of `NAME` parameter
+    # will be used as target name instead.
+    make_target(
+        # Create a shared library target
+        TYPE EXECUTABLE
+        # Explicitly specify the name
+        NAME my_awesome_application
+        # Specify include paths of linked libraries
+        INCLUDES /usr/lib/boost/include /usr/lib/spdlog/include
+        # Link libraries
+        LINK libboost_system.a libboost_thread.a libspdlog.a
+    )
+
+    # The target will be named as `my_awesome_application`.
+```
 
 ##### PREFIX (optional)
 
@@ -662,7 +972,24 @@ The suffix to be appended to the created target name. Usually used to distinguis
 
 ##### INCLUDES (optional)
 
-List of include paths to be added to the include directory of the created target.
+List of include paths to be added to the include directory of the created target. Useful when `LINK` ed library is not a CMake target.
+
+Example:
+
+```cmake
+    project(proj.component-z VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create a shared library target with name of
+    # `proj.component-z`
+    make_target(
+        # Create a shared library target
+        TYPE SHARED
+        # Specify include paths of linked libraries
+        INCLUDES /usr/lib/boost/include /usr/lib/spdlog/include
+        # Link libraries
+        LINK libboost_system.a libboost_thread.a libspdlog.a
+    )
+```
 
 ##### PARTOF (optional)
 
@@ -683,13 +1010,98 @@ Example:
 
 Extra source files to be appended to created target's sources.
 
+Example:
+
+```cmake
+    project(proj.component-y VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create a static library target with name of
+    # `proj.component-y`
+    make_target(
+        # Create a static library target
+        TYPE STATIC
+        # Specify additional source code files for the target
+        SOURCES /home/extra/extra_file_1.cpp /home/extra/extra_file_2.cpp
+        # Link dependencies
+        LINK proj.component-x
+    )
+    # Without `NO_AUTO_COMPILATION_UNIT` parameter is specified,
+    # auto source gathering will still take place. Specified `SOURCES`
+    # will be appended to auto-gathered source file list.
+```
+
 ##### HEADERS (optional)
 
 Extra header files to be appended to created target's headers.
 
+Example:
+
+```cmake
+    project(proj.component-y VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create a static library target with name of
+    # `proj.component-y`
+    make_target(
+        # Create a static library target
+        TYPE STATIC
+        # Specify additional source code files for the target
+        HEADERS /home/extra/include/extras/extra_1.hpp /home/extra/include/extras/extra_2.hpp
+        # Link dependencies
+        LINK proj.component-x
+    )
+    # Without `NO_AUTO_COMPILATION_UNIT` parameter is specified,
+    # auto header gathering will still take place. Specified `HEADERS`
+    # will be appended to auto-gathered header file list.
+```
+
 ##### WITH_COVERAGE (optional)
 
 Generate code coverage report for the project (useful for unit test targets)
+
+Example:
+
+```cmake
+    project(proj.component-x.test VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create an unit test target with the name of
+    # `project.component-x.test.component.x`
+    make_target(
+        # Create an unit test target
+        TYPE UNIT_TEST
+        # Specify the source file(s) of the target
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ut_component_x.cpp
+        # Link the subject which will be tested
+        LINK proj.component-x
+        # Append `.component-x` suffix to the created target
+        SUFFIX .component-x
+        # Enable code coverage instrumentation
+        WITH_COVERAGE
+        # Disable auto source/header file gathering for this target
+        NO_AUTO_COMPILATION_UNIT
+    )
+```
+
+##### COVERAGE_TARGETS (optional)
+
+Requires `WITH_COVERAGE` to be set first. Injects required instrumentation parameters (-fprofile-arcs -ftest-coverage) and link libraries (-lgcov) to the specified targets. Without this, coverage reports may or may not include the desired target's coverage rate.
+
+```cmake
+    project(proj.component-y.test VERSION 0.1.0 LANGUAGES CXX)
+
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ut_component_y.cpp
+        LINK proj.component-y
+        SUFFIX .component-y
+        WITH_COVERAGE
+        COVERAGE_TARGETS proj.component-y
+        NO_AUTO_COMPILATION_UNIT
+    )
+     # -fprofile-arcs and -ftest-coverage will be injected to
+     # proj.component-y's compilation flags via
+     # target_compile options and also -lgcov will be added to
+     # target's link libraries via target_link_libraries.
+```
 
 ##### EXPOSE_PROJECT_METADATA (optional)
 
@@ -714,8 +1126,6 @@ Prefix to prepend created project metadata macros.
 ##### NO_AUTO_COMPILATION_UNIT (optional)
 
 Disable automatic compilation unit gathering from include/ and src/ directories.
-
-Prefix to prepend created project metadata macros.
 
 #### Git
 
@@ -909,6 +1319,11 @@ Hadouken will continue to evolve, and you may contribute to it. Don't hesitate t
 [vscode-docker-1]: res/img/vscode-remote-docker-1.png
 [vscode-docker-2]: res/img/vscode-remote-docker-2.png
 [gcovr-report]: res/img/code-coverage-report-gcovr.png
+[lcov-1]: res/img/code-coverage-report-lcov-1.png
+[lcov-2]: res/img/code-coverage-report-lcov-2.png
+[lcov-3]: res/img/code-coverage-report-lcov-3.png
+[lcov-4]: res/img/code-coverage-report-lcov-4.png
+[lcov-5]: res/img/code-coverage-report-lcov-5.png
 [exclamation-mark]: res/img/symbols/info-16.png
 
 ## References
