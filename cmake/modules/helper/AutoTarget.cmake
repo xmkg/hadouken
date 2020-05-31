@@ -110,13 +110,23 @@ function(add_target_options)
 endfunction()
 
 function(setup_coverage_targets)
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;COVERAGE_TARGETS;" ${ARGN})
+    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;" ${ARGN})
     if(NOT DEFINED ARGS_TARGET_NAME)
         message(FATAL_ERROR "setup_coverage_targets() requires TARGET_NAME parameter.")
     endif()
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "setup_coverage_targets() requires TYPE parameter.")
+    endif()
+
+    if(NOT DEFINED ARGS_COVERAGE_LCOV_FILTER_PATTERN)
+        # Default filter pattern
+        set(ARGS_COVERAGE_LCOV_FILTER_PATTERN "*")
+    endif()
+
+    if(NOT DEFINED ARGS_COVERAGE_GCOVR_FILTER_PATTERN)
+        # Default filter pattern
+        set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${CMAKE_SOURCE_DIR}")
     endif()
 
     if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
@@ -127,26 +137,22 @@ function(setup_coverage_targets)
             if(ARGS_COVERAGE_TARGETS)
                 foreach(CT IN LISTS ARGS_COVERAGE_TARGETS)
                     if(TARGET ${CT})
-                        # Get public and interface include directories of the target
-                        target_compile_options(${CT} PUBLIC -fprofile-arcs -ftest-coverage)
+                        target_compile_options(${CT} PRIVATE -fprofile-arcs -ftest-coverage)
                         target_link_libraries(${CT} PRIVATE gcov)
                     else()
                         message(WARNING "${CT} is not a valid CMake target, skipping.")
                     endif()
                 endforeach()
             endif()
-
-            # (mgilor): We should inject --coverage compile option to unit test's link targets. 
-            # COVERAGE_TARGETS
             
             if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND GCOVR)
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(NAME ${TARGET_NAME}.gcovr.xml EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../)
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(NAME ${TARGET_NAME}.gcovr.html EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../)
+                SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(NAME ${TARGET_NAME}.gcovr.xml EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN})
+                SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(NAME ${TARGET_NAME}.gcovr.html EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN})
             endif()
 
             if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND LCOV)
                 # dummy.component-x
-                SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${TARGET_NAME}.lcov EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external)
+                SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${TARGET_NAME}.lcov EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external)
             endif()
 
         endif() 
@@ -159,7 +165,7 @@ endfunction()
 # removing code repetition in cmake files.
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;" ${ARGN})
+    cmake_parse_arguments(ARGS "WITH_COVERAGE;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -211,7 +217,14 @@ function(make_target)
 
     # Add coverage option if set
     if(ARGS_WITH_COVERAGE)    
-        setup_coverage_targets(TARGET_NAME ${TARGET_NAME} TYPE ${ARGS_TYPE} LINK ${ARGS_LINK} COVERAGE_TARGETS ${ARGS_COVERAGE_TARGETS})
+        setup_coverage_targets(
+            TARGET_NAME ${TARGET_NAME} 
+            TYPE ${ARGS_TYPE} 
+            LINK ${ARGS_LINK} 
+            COVERAGE_TARGETS ${ARGS_COVERAGE_TARGETS} 
+            COVERAGE_LCOV_FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
+            COVERAGE_GCOVR_FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+        )
     endif()
 
     # Expose project metadata

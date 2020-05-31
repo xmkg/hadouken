@@ -57,6 +57,8 @@
         - [HEADERS (optional)](#headers-optional)
         - [WITH_COVERAGE (optional)](#with_coverage-optional)
         - [COVERAGE_TARGETS (optional)](#coverage_targets-optional)
+        - [COVERAGE_LCOV_FILTER_PATTERN (optional)](#coverage_lcov_filter_pattern-optional)
+        - [COVERAGE_GCOVR_FILTER_PATTERN (optional)](#coverage_gcovr_filter_pattern-optional)
         - [EXPOSE_PROJECT_METADATA (optional)](#expose_project_metadata-optional)
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
@@ -148,15 +150,25 @@ Automatic installation of these tools are tested in Debian 10 and Ubuntu 18.10. 
 
 After running the script, your project root should have the following symbolic links, mapped to the boilerplate content:
 
-```none
-    .gitignore -> boilerplate/.gitignore
-    .gitconfig -> boilerplate/.gitconfig
-    .clang-format -> boilerplate/.clang-format
-    .clang-tidy -> boilerplate/.clang-tidy
-    .cppcheck-suppress -> boilerplate/.cppcheck-suppress
-    .devcontainer -> boilerplate/.devcontainer
-    .vscode -> boilerplate/.vscode
-    hadouken -> boilerplate/script/hadouken.sh
+```bash
+    # Visual Studio Code - Remote Containers .devcontainer
+    .devcontainer -------> boilerplate/.devcontainer
+    # Visual Studio Code settings
+    .vscode -------------> boilerplate/dotfiles/.vscode
+    # Git vcs ignored settings
+    .gitignore ----------> boilerplate/dotfiles/.gitignore
+    # Git settings
+    .gitconfig ----------> boilerplate/dotfiles/.gitconfig
+    # Clang-format style file
+    .clang-format -------> boilerplate/dotfiles/.clang-format
+    # Clang-tidy style file
+    .clang-tidy ---------> boilerplate/dotfiles/.clang-tidy
+    # Lcov report generation settings file
+    .lcovrc -------------> boilerplate/dotfiles/.lcovrc
+    # Cppcheck settings
+    .cppcheck-suppress --> boilerplate/dotfiles/.cppcheck-suppress
+    # Hadouken shell script
+    hadouken ------------> boilerplate/script/hadouken.sh
 ```
 
 The following hidden file(s) will be added to your project root:
@@ -708,6 +720,8 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [HEADERS [<header_path> ...]]
                 [WITH_COVERAGE]
                 [COVERAGE_TARGETS [<target_name> ...]]
+                [COVERAGE_LCOV_FILTER_PATTERN <lcov-pattern>]
+                [COVERAGE_GCOVR_FILTER_PATTERN <gcovr-pattern>]
                 [EXPOSE_PROJECT_METADATA]
     )
 ```
@@ -1101,6 +1115,50 @@ Requires `WITH_COVERAGE` to be set first. Injects required instrumentation param
      # proj.component-y's compilation flags via
      # target_compile options and also -lgcov will be added to
      # target's link libraries via target_link_libraries.
+```
+
+##### COVERAGE_LCOV_FILTER_PATTERN (optional)
+
+Requires `WITH_COVERAGE` to be set first. The argument will be forwarded to `lcov`'s `--extract` parameter, which allows to filter out coverage results.
+
+Example:
+
+```cmake
+    project(hdktest.lib.test)
+
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ut_lib.cpp
+        LINK hdktest.lib
+        WITH_COVERAGE
+        COVERAGE_TARGETS hdktest.lib
+        COVERAGE_LCOV_FILTER_PATTERN "my_unit*.cpp"
+        NO_AUTO_COMPILATION_UNIT
+    )
+    # Only files matching the pattern will be included on lcov report
+```
+
+##### COVERAGE_GCOVR_FILTER_PATTERN (optional)
+
+Requires `WITH_COVERAGE` to be set first. The argument will be forwarded to `gcovr`'s `--f` parameter, which allows to filter out coverage results.
+
+Example:
+
+```cmake
+    project(hdktest.lib.test)
+
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ut_lib.cpp
+        LINK hdktest.lib
+        WITH_COVERAGE
+        COVERAGE_TARGETS hdktest.lib
+        COVERAGE_GCOVR_FILTER_PATTERN "${PROJECT_SOURCE_DIR}/.*cpp"
+        NO_AUTO_COMPILATION_UNIT
+    )
+    # Only files matching the pattern will be included on gcovr report
+    # Be aware that GCOVR's filter is a regex pattern. Use forward slash `/` as
+    # path separator.
 ```
 
 ##### EXPOSE_PROJECT_METADATA (optional)

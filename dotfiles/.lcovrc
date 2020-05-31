@@ -1,0 +1,21 @@
+# ______________________________________________________
+# `lcovrc` file of the boilerplate project.
+# Will be used by `lcov` report generation by default.
+# 
+# @file     .lcovrc
+# @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date     31.05.2020
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
+
+genhtml_sort = 1
+genhtml_function_coverage = 1
+genhtml_branch_coverage = 1
+
+lcov_function_coverage = 1
+lcov_branch_coverage = 1
