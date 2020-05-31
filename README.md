@@ -57,6 +57,8 @@
         - [HEADERS (optional)](#headers-optional)
         - [WITH_COVERAGE (optional)](#with_coverage-optional)
         - [COVERAGE_TARGETS (optional)](#coverage_targets-optional)
+        - [COVERAGE_LCOV_FILTER_PATTERN (optional)](#coverage_lcov_filter_pattern-optional)
+        - [COVERAGE_GCOVR_FILTER_PATTERN (optional)](#coverage_gcovr_filter_pattern-optional)
         - [EXPOSE_PROJECT_METADATA (optional)](#expose_project_metadata-optional)
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
@@ -718,6 +720,8 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [HEADERS [<header_path> ...]]
                 [WITH_COVERAGE]
                 [COVERAGE_TARGETS [<target_name> ...]]
+                [COVERAGE_LCOV_FILTER_PATTERN <lcov-pattern>]
+                [COVERAGE_GCOVR_FILTER_PATTERN <gcovr-pattern>]
                 [EXPOSE_PROJECT_METADATA]
     )
 ```
@@ -1112,6 +1116,14 @@ Requires `WITH_COVERAGE` to be set first. Injects required instrumentation param
      # target_compile options and also -lgcov will be added to
      # target's link libraries via target_link_libraries.
 ```
+
+##### COVERAGE_LCOV_FILTER_PATTERN (optional)
+
+Requires `WITH_COVERAGE` to be set first. The argument will be forwarded to `lcov`'s `--extract` parameter, which allows to filter out coverage results.
+
+##### COVERAGE_GCOVR_FILTER_PATTERN (optional)
+
+Requires `WITH_COVERAGE` to be set first. The argument will be forwarded to `gcovr`'s `--f` parameter, which allows to filter out coverage results.
 
 ##### EXPOSE_PROJECT_METADATA (optional)
 

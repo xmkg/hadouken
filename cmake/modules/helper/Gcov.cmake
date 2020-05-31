@@ -178,7 +178,7 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
         COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
         # Apply specified filter pattern to the final result
-        COMMAND ${LCOV_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -e ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned "${Coverage_FILTER_PATTERN}" --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        COMMAND ${LCOV_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -e ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned '${Coverage_FILTER_PATTERN}' --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
         # Generating HTML 
         COMMAND ${GENHTML_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc ${Coverage_GENHTML_ARGS} -o ${Coverage_NAME} ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
         # Erase intermediate artifacts
@@ -244,7 +244,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         COMMAND ${GCOVR_PATH} --xml
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
-            # -f ${GCOVR_FILTER_PATTERN}
+            -f ${GCOVR_FILTER_PATTERN}
             -o ${Coverage_NAME}.xml
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
