@@ -144,7 +144,7 @@ endif()
 function(SETUP_TARGET_FOR_COVERAGE_LCOV)
 
     set(options NONE)
-    set(oneValueArgs NAME DIRECTORY)
+    set(oneValueArgs NAME DIRECTORY FILTER_PATTERN)
     set(multiValueArgs EXECUTABLE EXECUTABLE_ARGS DEPENDENCIES LCOV_ARGS GENHTML_ARGS)
     cmake_parse_arguments(Coverage "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -158,30 +158,30 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
 
     # Setup target
     add_custom_target(${Coverage_NAME}
-
         # Cleanup lcov
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -directory ${Coverage_DIRECTORY} --zerocounters
+        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -directory ${Coverage_DIRECTORY} --zerocounters
         # Create baseline to make sure untouched files show up in the report
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -c -i -d ${Coverage_DIRECTORY} -o ${Coverage_NAME}.base
+        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -c -i -d ${Coverage_DIRECTORY} -o ${Coverage_NAME}.base
 
-
-        # If unit test;
+        # If unit test; 
         #   Gather link targets
         #   Exclude .test target
         #   Determine base path of link targets
         #   Filter by base path
 
-
-
         # Run tests
         COMMAND ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
 
         # Capturing lcov counters and generating report
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --directory ${Coverage_DIRECTORY} --capture --output-file ${Coverage_NAME}.info
+        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} --directory ${Coverage_DIRECTORY} --capture --output-file ${Coverage_NAME}.info
         # add baseline counters
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
-        COMMAND ${GENHTML_PATH} ${Coverage_GENHTML_ARGS} -o ${Coverage_NAME} ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
+        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        # Apply specified filter pattern to the final result
+        COMMAND ${LCOV_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -e ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned "${Coverage_FILTER_PATTERN}" --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        # Generating HTML 
+        COMMAND ${GENHTML_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc ${Coverage_GENHTML_ARGS} -o ${Coverage_NAME} ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        # Erase intermediate artifacts
         COMMAND ${CMAKE_COMMAND} -E remove ${Coverage_NAME}.base ${Coverage_NAME}.total ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
 
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
@@ -216,7 +216,7 @@ endfunction() # SETUP_TARGET_FOR_COVERAGE_LCOV
 function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
 
     set(options NONE)
-    set(oneValueArgs NAME)
+    set(oneValueArgs NAME FILTER_PATTERN)
     set(multiValueArgs EXECUTABLE EXECUTABLE_ARGS DEPENDENCIES)
     cmake_parse_arguments(Coverage "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -244,6 +244,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         COMMAND ${GCOVR_PATH} --xml
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
+            # -f ${GCOVR_FILTER_PATTERN}
             -o ${Coverage_NAME}.xml
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
@@ -271,7 +272,7 @@ endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_XML
 function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
 
     set(options NONE)
-    set(oneValueArgs NAME)
+    set(oneValueArgs NAME FILTER_PATTERN)
     set(multiValueArgs EXECUTABLE EXECUTABLE_ARGS DEPENDENCIES)
     cmake_parse_arguments(Coverage "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -302,6 +303,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
+            # -f ${GCOVR_FILTER_PATTERN}
             -o ${Coverage_NAME}/index.html
         WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
         DEPENDS ${Coverage_DEPENDENCIES}
@@ -316,9 +318,4 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML
 
-function(APPEND_COVERAGE_COMPILER_FLAGS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${COVERAGE_COMPILER_FLAGS}" PARENT_SCOPE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${COVERAGE_COMPILER_FLAGS}" PARENT_SCOPE)
-    message(STATUS "Appending code coverage compiler flags: ${COVERAGE_COMPILER_FLAGS}")
-endfunction() # APPEND_COVERAGE_COMPILER_FLAGS
 

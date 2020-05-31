@@ -148,15 +148,25 @@ Automatic installation of these tools are tested in Debian 10 and Ubuntu 18.10. 
 
 After running the script, your project root should have the following symbolic links, mapped to the boilerplate content:
 
-```none
-    .gitignore -> boilerplate/.gitignore
-    .gitconfig -> boilerplate/.gitconfig
-    .clang-format -> boilerplate/.clang-format
-    .clang-tidy -> boilerplate/.clang-tidy
-    .cppcheck-suppress -> boilerplate/.cppcheck-suppress
-    .devcontainer -> boilerplate/.devcontainer
-    .vscode -> boilerplate/.vscode
-    hadouken -> boilerplate/script/hadouken.sh
+```bash
+    # Visual Studio Code - Remote Containers .devcontainer
+    .devcontainer -------> boilerplate/.devcontainer
+    # Visual Studio Code settings
+    .vscode -------------> boilerplate/dotfiles/.vscode
+    # Git vcs ignored settings
+    .gitignore ----------> boilerplate/dotfiles/.gitignore
+    # Git settings
+    .gitconfig ----------> boilerplate/dotfiles/.gitconfig
+    # Clang-format style file
+    .clang-format -------> boilerplate/dotfiles/.clang-format
+    # Clang-tidy style file
+    .clang-tidy ---------> boilerplate/dotfiles/.clang-tidy
+    # Lcov report generation settings file
+    .lcovrc -------------> boilerplate/dotfiles/.lcovrc
+    # Cppcheck settings
+    .cppcheck-suppress --> boilerplate/dotfiles/.cppcheck-suppress
+    # Hadouken shell script
+    hadouken ------------> boilerplate/script/hadouken.sh
 ```
 
 The following hidden file(s) will be added to your project root:
