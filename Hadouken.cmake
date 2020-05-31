@@ -38,6 +38,9 @@ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN TRUE)
 # Visibility policy
 cmake_policy(SET CMP0063 NEW)
+# `Adding link libraries to target which is not built in current directory` policy
+# (Required for coverage link library injection)
+cmake_policy(SET CMP0079 NEW)
 # This somehow tends to be unset, and causes third party library headers to generate warnings
 # which results in build failure.
 SET(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")

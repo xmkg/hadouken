@@ -110,7 +110,7 @@ function(add_target_options)
 endfunction()
 
 function(setup_coverage_targets)
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;" ${ARGN})
+    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;COVERAGE_TARGETS;" ${ARGN})
     if(NOT DEFINED ARGS_TARGET_NAME)
         message(FATAL_ERROR "setup_coverage_targets() requires TARGET_NAME parameter.")
     endif()
@@ -121,8 +121,23 @@ function(setup_coverage_targets)
 
     if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
         if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND GCOV)
-            target_compile_options(${TARGET_NAME} PUBLIC -fprofile-arcs -ftest-coverage)
+            target_compile_options(${TARGET_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
             target_link_libraries(${TARGET_NAME} PRIVATE gcov)
+
+            if(ARGS_COVERAGE_TARGETS)
+                foreach(CT IN LISTS ARGS_COVERAGE_TARGETS)
+                    if(TARGET ${CT})
+                        # Get public and interface include directories of the target
+                        target_compile_options(${CT} PUBLIC -fprofile-arcs -ftest-coverage)
+                        target_link_libraries(${CT} PRIVATE gcov)
+                    else()
+                        message(WARNING "${CT} is not a valid CMake target, skipping.")
+                    endif()
+                endforeach()
+            endif()
+
+            # (mgilor): We should inject --coverage compile option to unit test's link targets. 
+            # COVERAGE_TARGETS
             
             if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND GCOVR)
                 SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(NAME ${TARGET_NAME}.gcovr.xml EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../)
@@ -144,7 +159,7 @@ endfunction()
 # removing code repetition in cmake files.
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;" ${ARGN})
+    cmake_parse_arguments(ARGS "WITH_COVERAGE;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -196,7 +211,7 @@ function(make_target)
 
     # Add coverage option if set
     if(ARGS_WITH_COVERAGE)    
-        setup_coverage_targets(TARGET_NAME ${TARGET_NAME} TYPE ${ARGS_TYPE} LINK ${ARGS_LINK})
+        setup_coverage_targets(TARGET_NAME ${TARGET_NAME} TYPE ${ARGS_TYPE} LINK ${ARGS_LINK} COVERAGE_TARGETS ${ARGS_COVERAGE_TARGETS})
     endif()
 
     # Expose project metadata
