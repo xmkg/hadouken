@@ -1121,9 +1121,45 @@ Requires `WITH_COVERAGE` to be set first. Injects required instrumentation param
 
 Requires `WITH_COVERAGE` to be set first. The argument will be forwarded to `lcov`'s `--extract` parameter, which allows to filter out coverage results.
 
+Example:
+
+```cmake
+    project(hdktest.lib.test)
+
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ut_lib.cpp
+        LINK hdktest.lib
+        WITH_COVERAGE
+        COVERAGE_TARGETS hdktest.lib
+        COVERAGE_LCOV_FILTER_PATTERN "my_unit*.cpp"
+        NO_AUTO_COMPILATION_UNIT
+    )
+    # Only files matching the pattern will be included on lcov report
+```
+
 ##### COVERAGE_GCOVR_FILTER_PATTERN (optional)
 
 Requires `WITH_COVERAGE` to be set first. The argument will be forwarded to `gcovr`'s `--f` parameter, which allows to filter out coverage results.
+
+Example:
+
+```cmake
+    project(hdktest.lib.test)
+
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ut_lib.cpp
+        LINK hdktest.lib
+        WITH_COVERAGE
+        COVERAGE_TARGETS hdktest.lib
+        COVERAGE_GCOVR_FILTER_PATTERN "${PROJECT_SOURCE_DIR}/.*cpp"
+        NO_AUTO_COMPILATION_UNIT
+    )
+    # Only files matching the pattern will be included on gcovr report
+    # Be aware that GCOVR's filter is a regex pattern. Use forward slash `/` as
+    # path separator.
+```
 
 ##### EXPOSE_PROJECT_METADATA (optional)
 
