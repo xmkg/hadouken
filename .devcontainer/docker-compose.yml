@@ -15,7 +15,7 @@
 version: '3'
 services:
     devenv:
-      image: nettsi/hadouken:1.0
+      image: nettsi/hadouken:1
       # (mgilor): Switched to pre-built image instead.
       #build: 
           #context: .
