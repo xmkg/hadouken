@@ -1,9 +1,9 @@
 #!/usr/bin/env cmake
 
 # ______________________________________________________
-# Contains the list of required includes for the project boilerplate.
+# Contains the list of required includes for Hadouken.
 #
-# @file     Hadouken.cmake
+# @file     hadouken.cmake
 # @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
 # @date     14.02.2020
 # 
@@ -19,7 +19,6 @@ string(TOUPPER ${PB_PARENT_PROJECT_NAME} PB_PARENT_PROJECT_NAME_UPPER)
 
 # Maket it C preprocessor macro friently
 string(REGEX REPLACE "[^a-zA-Z0-9]" "_" PB_PARENT_PROJECT_NAME_UPPER ${PB_PARENT_PROJECT_NAME_UPPER})
-
 
 # Enable testing for the project
 enable_testing()
@@ -44,10 +43,10 @@ cmake_policy(SET CMP0079 NEW)
 # This somehow tends to be unset, and causes third party library headers to generate warnings
 # which results in build failure.
 SET(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
-# Add project boilerplate modules as cmake modules to parent project
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/boilerplate/cmake/modules/)
+# Add hadouken cmake modules as cmake modules to parent project
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/)
 # Add custom find module path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/boilerplate/cmake/modules/find)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/find)
 
 # Banner module
 include(misc/Banner)
@@ -55,9 +54,9 @@ include(misc/Banner)
 message(STATUS "[*] Configuring project: ${PB_PARENT_PROJECT_NAME} with CMake ${CMAKE_VERSION}")
 
 # Discover all helper modules
-file(GLOB HELPER_MODULES "${PROJECT_SOURCE_DIR}/boilerplate/cmake/modules/helper/*.cmake")
+file(GLOB HELPER_MODULES "${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/helper/*.cmake")
 # Discover all toolconf modules
-file(GLOB TOOLCONF_MODULES "${PROJECT_SOURCE_DIR}/boilerplate/cmake/modules/toolconf/*.cmake")
+file(GLOB TOOLCONF_MODULES "${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/*.cmake")
 
 # Include all found modules
 foreach(MODULE_FN IN LISTS HELPER_MODULES TOOLCONF_MODULES)

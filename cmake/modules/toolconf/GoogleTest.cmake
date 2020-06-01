@@ -22,5 +22,5 @@ if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
     find_package(GTest QUIET REQUIRED)
     find_package(GMock QUIET REQUIRED)
 
-    make_target(TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/boilerplate/cmake/modules/toolconf/GoogleTest.cpp LINK PUBLIC GTest::GTest GTest::Main GMock::GMock GMock::Main)
+    make_target(TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp LINK PUBLIC GTest::GTest GTest::Main GMock::GMock GMock::Main)
 endif()

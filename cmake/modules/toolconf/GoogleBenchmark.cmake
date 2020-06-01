@@ -21,5 +21,5 @@ if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
 
     find_package(benchmark QUIET REQUIRED)
 
-    make_target(TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/boilerplate/cmake/modules/toolconf/GoogleBenchmark.cpp LINK PUBLIC benchmark::benchmark benchmark::benchmark_main)
+    make_target(TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp LINK PUBLIC benchmark::benchmark benchmark::benchmark_main)
 endif()

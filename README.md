@@ -4,21 +4,23 @@
 
 ****
 
-# NETTSI C++ Project Boilerplate
+# NETTSI C++ Project Development Environment
 
 > `(codename: HADOUKEN)`
 
 ## Table of contents
 
-- [NETTSI C++ Project Boilerplate](#nettsi-c-project-boilerplate)
+- [NETTSI C++ Project Development Environment](#nettsi-c-project-development-environment)
   - [Table of contents](#table-of-contents)
   - [Preface](#preface)
   - [Author](#author)
   - [Getting started](#getting-started)
     - [Installing `hadouken` to a project](#installing-hadouken-to-a-project)
+      - [Public domain](#public-domain)
+      - [Nettsi employees](#nettsi-employees)
   - [Hadouken script commands](#hadouken-script-commands)
-  - [Updating the boilerplate](#updating-the-boilerplate)
-  - [Boilerplate manual](#boilerplate-manual)
+  - [Updating hadouken](#updating-hadouken)
+  - [Hadouken user's manual](#hadouken-users-manual)
     - [Development environment container](#development-environment-container)
       - [Installing project-specific tools to development environment container](#installing-project-specific-tools-to-development-environment-container)
         - [Method 1: Using .hadouken.bootstrap.sh](#method-1-using-hadoukenbootstrapsh)
@@ -82,7 +84,7 @@
 
 `Hadouken` contains common boilerplate code between all C++ projects being developed/will be developed in NETTSI.
 
-This guide will navigate you through the boilerplate's all features and how to use it.
+This guide will navigate you through the `hadouken`'s all features and how to use it.
 
 ****
 
@@ -108,34 +110,44 @@ You're lucky, I've prepared a video guide illustrating this. Check out [Video tu
 
 Hadouken is designed as to be a git submodule. First, you need to add it as a submodule to your existing git project. In order to do that, issue following command at your git project root:
 
+#### Public domain
+
 Add submodule (via SSH)
 
 ```bash
-    git submodule add -b master git@github.com:nettsi/hadouken.git boilerplate
+    git submodule add -b master git@github.com:nettsi/hadouken.git .hadouken
 ```
 
 Add submodule (via HTTP)
 
 ```bash
-    git submodule add -b master https://github.com/nettsi/hadouken.git boilerplate
+    git submodule add -b master https://github.com/nettsi/hadouken.git .hadouken
 ```
 
-Add submodule (nettsi employees)
+#### Nettsi employees
+
+Add submodule (via SSH)
 
 ```bash
-    git submodule add -b master git@gitlab.nettsi.com:internal-projects/cpp-project-boilerplate.git boilerplate
+    git submodule add -b master git@gitlab.nettsi.com:foss-projects/hadouken.git .hadouken
 ```
 
-This will add boilerplate project to your project, to boilerplate folder. `master` branch will be tracked by default. After this, run following command from terminal in your project root. The name for the submodule has to be `boilerplate`. After adding the submodule, invoke the following command at project root to setup boilerplate to your project:
+Add submodule (via HTTP)
 
 ```bash
-    bash boilerplate/script/setup.sh
+    git submodule add -b master https://gitlab.nettsi.com/foss-projects/hadouken.git .hadouken
+```
+
+This will add `hadouken` project to your project, to `.hadouken` folder. `master` branch will be tracked by default. After this, run following command from terminal in your project root. The name for the submodule has to be `.hadouken`. After adding the submodule, invoke the following command at project root to setup `hadouken` to your project:
+
+```bash
+    bash .hadouken/script/setup.sh
 ```
 
 If your project root does not contain any CMake projects, `Hadouken` will offer you to quick-start a new `CMake` project. If you choose 'yes', Hadouken will ask you for a project name and automatically generate CMake files and an example C++ application.
 
 ```bash
-Boilerplate parent directory does not contain a CMakeLists.txt
+Hadouken parent directory does not contain a CMakeLists.txt
 Do you want to quick-start a new cmake project to parent folder [Yy/Nn]? y
 Project name:
 ```
@@ -152,23 +164,23 @@ After running the script, your project root should have the following symbolic l
 
 ```bash
     # Visual Studio Code - Remote Containers .devcontainer
-    .devcontainer -------> boilerplate/.devcontainer
+    .devcontainer -------> .hadouken/.devcontainer
     # Visual Studio Code settings
-    .vscode -------------> boilerplate/dotfiles/.vscode
+    .vscode -------------> .hadouken/dotfiles/.vscode
     # Git vcs ignored settings
-    .gitignore ----------> boilerplate/dotfiles/.gitignore
+    .gitignore ----------> .hadouken/dotfiles/.gitignore
     # Git settings
-    .gitconfig ----------> boilerplate/dotfiles/.gitconfig
+    .gitconfig ----------> .hadouken/dotfiles/.gitconfig
     # Clang-format style file
-    .clang-format -------> boilerplate/dotfiles/.clang-format
+    .clang-format -------> .hadouken/dotfiles/.clang-format
     # Clang-tidy style file
-    .clang-tidy ---------> boilerplate/dotfiles/.clang-tidy
+    .clang-tidy ---------> .hadouken/dotfiles/.clang-tidy
     # Lcov report generation settings file
-    .lcovrc -------------> boilerplate/dotfiles/.lcovrc
+    .lcovrc -------------> .hadouken/dotfiles/.lcovrc
     # Cppcheck settings
-    .cppcheck-suppress --> boilerplate/dotfiles/.cppcheck-suppress
+    .cppcheck-suppress --> .hadouken/dotfiles/.cppcheck-suppress
     # Hadouken shell script
-    hadouken ------------> boilerplate/script/hadouken.sh
+    hadouken ------------> .hadouken/script/hadouken.sh
 ```
 
 The following hidden file(s) will be added to your project root:
@@ -208,14 +220,14 @@ There are some commands defined to configure and build the project on command li
         | run unit tests of previously build project. Any extra arguments will be forwarded to CTest.
         | example: `hadouken --test`            # pack via CMake.
 -a|--all        clean->configure->build->pack project
--u|--upgrade    upgrade project boilerplate to latest release
+-u|--upgrade    upgrade hadouken to latest release
         | this basically runs submodule update, reduced to a command for ease of use.
-        | example: `hadouken --upgrade`         # upgrade boilerplate submodule to latest master release.
+        | example: `hadouken --upgrade`         # upgrade hadouken to latest master release.
 ```
 
 You can print this information any time by invoking `./hadouken --help` command.
 
-## Updating the boilerplate
+## Updating hadouken
 
 Hadouken project will be separately maintained, and there will be updates. In order to update the hadouken to latest stable release, issue the following command from your project's root directory:
 
@@ -229,7 +241,7 @@ This will upgrade the hadouken submodule from remote `master` branch. If you hav
     ./hadouken --upgrade --force
 ```
 
-## Boilerplate manual
+## Hadouken user's manual
 
 In this section we will cover what hadouken offers and how to use them.
 
@@ -315,7 +327,7 @@ fi
 
 ### Tool integration modules
 
-Boilerplate provides several modules to help with external tool integration and ease of use. All tools are included in `devenv` container, so skip any installation related stuff if you are using the `devenv` container.
+Hadouken provides several modules to help with external tool integration and ease of use. All tools are included in `devenv` container, so skip any installation related stuff if you are using the `devenv` container.
 
 `<project_name>` is capitalized and non-alphanumeric characters replaced (with an underscore) version of top level project name. The term `top level` here refers to the cmake project declaration prior to hadouken module inclusion.
 
@@ -330,7 +342,7 @@ This feature requires at least clang-format version 10 to be present in environm
 ```cmake
 project(my-awesome-project)                             # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_CLANG_FORMAT TRUE)  # Locate clang-format and use it if available.
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)        # Use hadouken
 # ClangFormat module will try to locate the clang-format executable.
 # If clang-format executable is found, each target created via `make_target` function call will have an additional
 # target suffixed with `.format`, which will format the target's source code when invoked.
@@ -359,7 +371,7 @@ This feature requires at least clang-format version 10 to be present in environm
 ```cmake
 project(my-awesome-project)                             # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_CLANG_TIDY TRUE)    # Locate clang-format and use it if available.
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)        # Use hadouken
 # ClangTidy module will try to locate the clang-format executable.
 # If clang-tidy executable is found, each target created via `make_target` function call will have an additional
 # target suffixed with `.tidy`, which will tidy/lint the target's source code when invoked.
@@ -396,7 +408,7 @@ As CMake officially supports cppcheck, 'CMAKE_CXX_CPPCHECK' variable will be set
 ```cmake
 project(my-awesome-project)                             # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_CPPCHECK TRUE)      # Locate cppcheck and use it if available.
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)        # Use hadouken
 # No further action is required.
 ```
 
@@ -422,7 +434,7 @@ project(my-awesome-project)                              # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_GCOV TRUE)           # Locate gcov and use it if available.
 set(my-awesome-project_TOOLCONF_USE_LCOV TRUE)           # Locate lcov and use it if available.
 set(my-awesome-project_TOOLCONF_USE_GCOVR TRUE)          # Locate gcovr and use it if available.
-include(boilerplate/Hadouken.cmake)                      # Use hadouken
+include(.hadouken/hadouken.cmake)                        # Use hadouken
 
 make_target(TYPE UNIT_TEST WITH_COVERAGE)
 # Creates an unit test named my-awesome-project and my-awesome-project.cov coverage target.
@@ -593,7 +605,7 @@ If you are using `make_target`, the created target will be automatically linked 
 ```cmake
 project(my-awesome-project)
 set(my-awesome-project_TOOLCONF_USE_GOOGLE_TEST TRUE)
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)        # Use hadouken
 # A target named `my-awesome-project.test` will be created if google test & google mock
 # are found in environment. Failure to do so results in CMake configure step failure.
 ```
@@ -618,7 +630,7 @@ As CMake officially supports `iwyu`, `CMAKE_CXX_INCLUDE_WHAT_YOU_USE` variable w
 ```cmake
 project(my-awesome-project)                             # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_IWYU TRUE)          # Locate iwyu and use it if available.
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)                       # Use hadouken
 # No further action is required.
 ```
 
@@ -652,7 +664,7 @@ As CMake officially supports `lwyu`, `CMAKE_LINK_WHAT_YOU_USE` variable will be 
 ```cmake
 project(my-awesome-project)                             # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_LWYU TRUE)          # Locate iwyu and use it if available.
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)                       # Use hadouken
 # No further action is required.
 ```
 
@@ -669,7 +681,7 @@ CCache speeds up compilation times by caching the compilation artifacts, and reu
 ```cmake
 project(my-awesome-project)                             # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_CCACHE TRUE)        # Locate ccache and use it if available.
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)                       # Use hadouken
 # No further action is required.
 ```
 
@@ -1269,7 +1281,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(dummy)
 
-include(boilerplate/Hadouken.cmake)
+include(.hadouken/hadouken.cmake)
 
 # Fetch boost 1.70.0 from conan repositories.
 # Build any dependencies which are missing on repository as pre-built
@@ -1358,7 +1370,7 @@ Example:
 
 ```cmake
 project(my-awesome-project)                             # Declare a new project
-include(boilerplate/Hadouken.cmake)        # Use hadouken
+include(.hadouken/hadouken.cmake)                       # Use hadouken
 # Check if pthreads is available on compilation environment.
 # CMake configuration will result in failure if code in feature check macro fails to compile.
 feature_check_assert(Pthreads)

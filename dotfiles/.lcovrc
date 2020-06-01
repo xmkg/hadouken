@@ -1,5 +1,5 @@
 # ______________________________________________________
-# `lcovrc` file of the boilerplate project.
+# `lcovrc` file of the hadouken.
 # Will be used by `lcov` report generation by default.
 # 
 # @file     .lcovrc
