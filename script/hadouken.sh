@@ -14,6 +14,20 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+
+SCRIPT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
+
+# Relative paths
+declare -A RP
+source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
+
+readonly CURRENT_HADOUKEN_VERSION=$(git -C ${RP["BOILERPLATE"]} tag --points-at)
 
 case $1 in
     -nb|--no-banner)
@@ -45,23 +59,11 @@ case $1 in
       echo -e "   \  |                  (______)                            "
       echo -e "    \\\)                                                     "
       echo -e "################################################################################"
-      echo -e "༼つಠ益ಠ༽つ ─=≡ΣO)) hadouken - c++ build environment boilerplate        version 1"  
+      echo -e "# hadouken - c++ project development environment            version ${CURRENT_HADOUKEN_VERSION} "  
       echo -e ""
     ;;
 esac
 
-SOURCE="${BASH_SOURCE[0]}"
-while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
-  DIR="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-  SOURCE="$(readlink "$SOURCE")"
-  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
-done
-
-SCRIPT_ROOT="$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )"
-
-# Relative paths
-declare -A RP
-source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
 
 # Bash completion function for hadouken
 __hadouken_bash_completions()
@@ -107,7 +109,7 @@ case $1 in
       ${RP["SCRIPT"]}/project-test.sh ${@:2}
     ;;
     -u|--upgrade)
-      ${RP["SCRIPT"]}/update-boilerplate.sh ${@:2}
+      ${RP["SCRIPT"]}/update-hadouken.sh ${@:2}
     ;;
     -a|--all)
       ${RP["SCRIPT"]}/project-clean.sh 
@@ -141,10 +143,10 @@ case $1 in
       echo -e "\t\t| run unit tests of previously build project. Any extra arguments will be forwarded to CTest."
       echo -e "\t\t| example: \`hadouken --test\`\t\t# pack via CMake."
       echo -e "\t-a|--all\tclean->configure->build->pack project"
-      echo -e "Boilerplate:"
-      echo -e "\t-u|--upgrade\tupgrade project boilerplate to latest release"
+      echo -e "Hadouken:"
+      echo -e "\t-u|--upgrade\tupgrade hadouken to latest release"
       echo -e "\t\t| this basically runs submodule update, reduced to a command for ease of use."
-      echo -e "\t\t| example: \`hadouken --upgrade\`\t\t# upgrade boilerplate submodule to latest master release."
+      echo -e "\t\t| example: \`hadouken --upgrade\`\t\t# upgrade hadouken to latest master release."
       exit 1
     ;;
 esac

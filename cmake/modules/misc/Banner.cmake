@@ -16,7 +16,8 @@
 option(${PB_PARENT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER "Enable/disable banner" OFF)
 
 if(NOT ${PB_PARENT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER)
-
+# FIXME(mgilor): Retrieve version number from tags (somehow?)
+# git tag --points-at HEAD 
 message(STATUS [=[
 ################################################################################
                      _===__                                      
@@ -43,7 +44,7 @@ message(STATUS [=[
    \  |                  (______)                            
     \\\)                                                     
 ################################################################################
-༼つಠ益ಠ༽つ ─=≡ΣO)) hadouken - c++ build environment boilerplate        version 1
+# hadouken - c++ project development environment                 version 0.9.8 #
 ]=])
   
 endif()

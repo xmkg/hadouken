@@ -125,7 +125,7 @@ hadouken.bootstrap_cmake_project(){
     # Project top level CMakeLists.txt
     cat > $TARGET_FOLDER/CMakeLists.txt << EOF
 # ______________________________________________________
-# $PROJECT_NAME project top level CMakeFile
+# $PROJECT_NAME project top level CMakeLists.txt file
 #
 # @file        CMakeLists.txt
 # @author      $GIT_CFG_USER_NAME <$GIT_CFG_USER_EMAIL>
@@ -142,19 +142,19 @@ cmake_minimum_required(VERSION 3.00)
 project($PROJECT_NAME)
 
 # Turn on any desired tool/feature below.
-SET(${PROJECT_NAME_SANITIZED}_MISC_NO_HADOUKEN_BANNER FALSE CACHE BOOL "Enable/disable hadouken banner printing" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_IWYU FALSE CACHE BOOL "Enable/disable include what you use integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GOOGLE_TEST FALSE CACHE BOOL "Enable/disable gtest/gmock integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_MISC_NO_HADOUKEN_BANNER   FALSE CACHE BOOL "Enable/disable hadouken banner printing" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_IWYU         FALSE CACHE BOOL "Enable/disable include what you use integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GOOGLE_TEST  FALSE CACHE BOOL "Enable/disable gtest/gmock integration" FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_FORMAT FALSE CACHE BOOL "Enable/disable clang-format integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_TIDY FALSE CACHE BOOL "Enable/disable clang-tidy integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CPPCHECK FALSE CACHE BOOL "Enable/disable cppcheck integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CCACHE FALSE CACHE BOOL "Enable/disable ccache integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOV FALSE CACHE BOOL "Enable/disable gcov integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LCOV FALSE CACHE BOOL "Enable/disable lcov integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOVR FALSE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_TIDY   FALSE CACHE BOOL "Enable/disable clang-tidy integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CPPCHECK     FALSE CACHE BOOL "Enable/disable cppcheck integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CCACHE       FALSE CACHE BOOL "Enable/disable ccache integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOV         FALSE CACHE BOOL "Enable/disable gcov integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LCOV         FALSE CACHE BOOL "Enable/disable lcov integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOVR        FALSE CACHE BOOL "Enable/disable gcovr integration" FORCE)
 
-# Include boilerplate
-include(boilerplate/Hadouken.cmake)
+# Include hadouken
+include(.hadouken/hadouken.cmake)
 
 # Print VCS status to stdout
 git_print_status()

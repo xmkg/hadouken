@@ -1,7 +1,7 @@
 #!/usr/bin/env cmake
 
 # ______________________________________________________
-# Contains the list of required includes for the project boilerplate.
+# A CMake module to retrieve logical processor count.
 # 
 # @file 	HardwareConcurrency.cmake
 # @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>

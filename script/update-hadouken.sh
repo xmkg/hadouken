@@ -3,7 +3,7 @@
 # ______________________________________________________
 # Hadouken project update code
 #
-# @file     update-boilerplate.sh
+# @file     update-hadouken.sh
 # @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
 # @date     14.02.2020
 # 
@@ -28,6 +28,8 @@ declare -A RP
 # Common headers
 source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
 
+readonly CURRENT_HADOUKEN_VERSION=$(git -C ${RP["BOILERPLATE"]} tag --points-at)
+
 case $1 in
     -f|--force)
       git -C ${RP["BOILERPLATE"]} reset --hard origin/master
@@ -37,5 +39,15 @@ case $1 in
     ;;
 esac
 
-git -C ${RP["PROJECT"]} submodule update --init --recursive --remote boilerplate/
+if git -C ${RP["PROJECT"]} submodule update --init --recursive --remote .hadouken/ ; then
+  
+  readonly NEW_HADOUKEN_VERSION=$(git -C ${RP["BOILERPLATE"]} tag --points-at)
+  
+  if [ $CURRENT_HADOUKEN_VERSION == $NEW_HADOUKEN_VERSION ]; then
+    echo "Hadouken upgraded from version $CURRENT_HADOUKEN_VERSION to $NEW_HADOUKEN_VERSION"
+  else
+    echo "Hadouken is already up-to-date."
+  fi
 
+  # Execute post-upgrade fix-ups here
+fi
