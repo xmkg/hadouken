@@ -5,20 +5,20 @@
     "cmakeExplorer.buildDir": "build",
     "breadcrumbs.enabled": true,
     "files.exclude": {
-	"**/boilerplate": true,
-        "**/.vscode": true,
-        "**/*.licenseheader": true,
-        "**/*.sln": true,
-        "**/*.vcxproj*": true,
-        "**/build": true,
-        "**/CMakeLists.txt.user*": true,
-        "**/.classpath": true,
-        "**/.project": true,
-        "**/.settings": true,
-        "**/.factorypath": true,
-        "**/.gitignore": true,
-        "**/.gitmodules": true,
-        "**/.gitconfig": true
+	    ".hadouken": true,
+	    ".devcontainer": true,
+        ".vscode": true,
+        "build": true,
+        ".gitignore": true,
+        ".gitmodules": true,
+        ".gitconfig": true,
+        ".clang-format": true,
+        ".clang-tidy": true,
+        ".cppcheck-suppress": true,
+        ".lcovrc": true,
+        ".hadouken.bootstrap.sh": true,
+        ".hadouken.docker-compose.extend.yml": true,
+        "hadouken": true,
     },
     "cmake.configureArgs": ["-Wno-dev"],
     "cmake.configureOnOpen": true,
@@ -29,11 +29,11 @@
     "doxdocgen.file.fileTemplate": "@file         {name}",
     "doxdocgen.file.copyrightTag":
     [
-        // FIXME(mgilor): Disabled temporarily
-        // "@copyright   2020 NETTSI Informatics Technology Inc.",
-        // "",
-        // "Unauthorized copying of this file, via any medium is strictly prohibited",
-        // "Proprietary and confidential"
+        // (mgilor): Re-enabled until fixed properly
+        "@copyright   2020 NETTSI Informatics Technology Inc.",
+        "",
+        "Unauthorized copying of this file, via any medium is strictly prohibited",
+        "Proprietary and confidential"
     ],
     "doxdocgen.generic.authorTag": "@author       {author} <{email}>",
     "doxdocgen.file.fileOrder": [
