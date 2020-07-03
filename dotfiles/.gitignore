@@ -550,3 +550,5 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/c,git,c++,gcov,cmake,ninja,valgrind,qtcreator,sonarqube,visualstudio,visualstudiocode
+
+.clangd/
