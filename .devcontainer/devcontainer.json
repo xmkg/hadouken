@@ -87,6 +87,8 @@
         // vscode-clangd
         "llvm-vs-code-extensions.vscode-clangd",
         // Resource monitor
-        "mutantdino.resourcemonitor"
+        "mutantdino.resourcemonitor",
+        // CMake Test Adapter for Test Explorer Sidebar
+        "fredericbonnet.cmake-test-adapter"
     ]
 }
