@@ -44,10 +44,10 @@ if git -C ${RP["PROJECT"]} submodule update --init --recursive --remote .hadouke
   readonly NEW_HADOUKEN_VERSION=$(git -C ${RP["BOILERPLATE"]} tag --points-at)
   
   if [ $CURRENT_HADOUKEN_VERSION == $NEW_HADOUKEN_VERSION ]; then
-    echo "Hadouken upgraded from version $CURRENT_HADOUKEN_VERSION to $NEW_HADOUKEN_VERSION"
+    echo "Hadouken is already up-to-date ($CURRENT_HADOUKEN_VERSION)"
   else
-    echo "Hadouken is already up-to-date."
+    echo "Hadouken upgraded from version $CURRENT_HADOUKEN_VERSION to $NEW_HADOUKEN_VERSION"
+    # TODO(mgilor): It might be a good idea to show changelog diff here
   fi
-
   # Execute post-upgrade fix-ups here
 fi
