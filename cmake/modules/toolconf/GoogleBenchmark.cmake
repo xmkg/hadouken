@@ -16,10 +16,15 @@
 
 if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
     message(STATUS "[*] Configuring `googlebench`")
-
-    project(${PB_PARENT_PROJECT_NAME}.benchmark VERSION 1.0.0 LANGUAGES CXX)
+    
+    # (mgilor): Removed this, it interferes with `last user declared project`.
+    #project(${PB_PARENT_PROJECT_NAME}.benchmark VERSION 1.0.0 LANGUAGES CXX)
 
     find_package(benchmark QUIET REQUIRED)
 
-    make_target(TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp LINK PUBLIC benchmark::benchmark benchmark::benchmark_main)
+    make_target(
+        NAME ${PB_PARENT_PROJECT_NAME}.benchmark    
+        TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp 
+        LINK PUBLIC benchmark::benchmark benchmark::benchmark_main
+    )
 endif()
