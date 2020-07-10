@@ -33,6 +33,14 @@ hadouken.define_relative_paths(){
     done
 }
 
+# Returns 0 when running in docker
+hadouken.is_running_in_docker(){
+    if grep docker /proc/1/cgroup -qa; then
+        return 0
+    fi
+    return 1
+}
+
 hadouken.compare_versions(){
     if [[ $1 == $2 ]]
     then
