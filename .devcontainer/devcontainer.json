@@ -89,6 +89,8 @@
         // Resource monitor
         "mutantdino.resourcemonitor",
         // CMake Test Adapter for Test Explorer Sidebar
-        "fredericbonnet.cmake-test-adapter"
+        "fredericbonnet.cmake-test-adapter",
+        // Integrated hex editor
+        "ms-vscode.hexeditor"
     ]
 }
