@@ -17,10 +17,15 @@
 if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
     message(STATUS "[*] Configuring `googletest & googlemock`")
 
+    # (mgilor): Removed this, it interferes with `last declared project` on us
     # project(${PB_PARENT_PROJECT_NAME}.test VERSION 1.0.0 LANGUAGES CXX)
 
     find_package(GTest QUIET REQUIRED)
     find_package(GMock QUIET REQUIRED)
 
-    make_target(NAME ${PB_PARENT_PROJECT_NAME}.TEST TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp LINK PUBLIC GTest::GTest GTest::Main GMock::GMock GMock::Main)
+    make_target(
+        NAME ${PB_PARENT_PROJECT_NAME}.test 
+        TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp 
+        LINK PUBLIC GTest::GTest GTest::Main GMock::GMock GMock::Main
+    )
 endif()
