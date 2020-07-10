@@ -1191,12 +1191,14 @@ Defines the following C/C++ preprocessor macros for the target created.
 
 ```
 
+Defined macros will only be accessible (private) for the source/header files of the project.
+
 `<prefix>` can be specified by supplying `PROJECT_METADATA_PREFIX` argument.
 
 Example:
 
 ```cmake
-    project(hdktest.exe VERSION 1.0.3 DESCRIPTION "Very interesting project")
+    project(hdktest.exe VERSION 1.0.3.3 DESCRIPTION "Very interesting project")
 
     make_target(
         TYPE EXECUTABLE
@@ -1216,14 +1218,14 @@ main.cpp:
 auto main(void) -> int{
     std::printf("%s\n", HDKTEST_EXE_MODULE_NAME);
     std::printf("%s\n", HDKTEST_EXE_MODULE_DESC);
-    std::printf("%s.%s.%s\n", HDKTEST_EXE_MODULE_VERSION_MAJOR, HDKTEST_EXE_MODULE_VERSION_MINOR, HDKTEST_EXE_MODULE_VERSION_TWEAK);
+    std::printf("%s.%s.%s\n", HDKTEST_EXE_MODULE_VERSION_MAJOR, HDKTEST_EXE_MODULE_VERSION_MINOR, HDKTEST_EXE_MODULE_VERSION_PATCH, HDKTEST_EXE_MODULE_VERSION_TWEAK);
 }
 
 // Expected output of the code above:
 /*
     hdktest.exe
     Very interesting project
-    1.0.3
+    1.0.3.3
 */
 ```
 
