@@ -139,7 +139,7 @@ hadouken.bootstrap_cmake_project(){
 
 cmake_minimum_required(VERSION 3.00)
 
-project($PROJECT_NAME)
+project($PROJECT_NAME VERSION 0.0.1 LANGUAGES CXX)
 
 # Turn on any desired tool/feature below.
 SET(${PROJECT_NAME_SANITIZED}_MISC_NO_HADOUKEN_BANNER   FALSE CACHE BOOL "Enable/disable hadouken banner printing" FORCE)
