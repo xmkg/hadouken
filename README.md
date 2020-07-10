@@ -64,6 +64,7 @@
         - [EXPOSE_PROJECT_METADATA (optional)](#expose_project_metadata-optional)
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
+        - [WORKING_DIRECTORY (optional)](#working_directory-optional)
       - [Git](#git)
         - [git_get_branch_name(DIRECTORY \<dir\>)](#git_get_branch_namedirectory-dir)
         - [git_get_head_commit_hash(DIRECTORY \<dir\>)](#git_get_head_commit_hashdirectory-dir)
@@ -735,6 +736,9 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [COVERAGE_LCOV_FILTER_PATTERN <lcov-pattern>]
                 [COVERAGE_GCOVR_FILTER_PATTERN <gcovr-pattern>]
                 [EXPOSE_PROJECT_METADATA]
+                [PROJECT_METADATA_PREFIX <prefix>]
+                [NO_AUTO_COMPILATION_UNIT]
+                [WORKING_DIRECTORY <working_directory>]
     )
 ```
 
@@ -1187,15 +1191,74 @@ Defines the following C/C++ preprocessor macros for the target created.
 
 ```
 
+`<prefix>` can be specified by supplying `PROJECT_METADATA_PREFIX` argument.
+
+Example:
+
+```cmake
+    project(hdktest.exe VERSION 1.0.3 DESCRIPTION "Very interesting project")
+
+    make_target(
+        TYPE EXECUTABLE
+        SOURCES main.cpp
+        NO_AUTO_COMPILATION_UNIT
+        EXPOSE_PROJECT_METADATA
+        PROJECT_METADATA_PREFIX HDKTEST_EXE_
+    )
+```
+
+main.cpp:
+
+```cpp
+
+#include <cstdio>
+
+auto main(void) -> int{
+    std::printf("%s\n", HDKTEST_EXE_MODULE_NAME);
+    std::printf("%s\n", HDKTEST_EXE_MODULE_DESC);
+    std::printf("%s.%s.%s\n", HDKTEST_EXE_MODULE_VERSION_MAJOR, HDKTEST_EXE_MODULE_VERSION_MINOR, HDKTEST_EXE_MODULE_VERSION_TWEAK);
+}
+
+// Expected output of the code above:
+/*
+    hdktest.exe
+    Very interesting project
+    1.0.3
+*/
+```
+
 The information is gathered from the `project()` info.
 
 ##### PROJECT_METADATA_PREFIX (optional)
+
+Requires `EXPOSE_PROJECT_METADATA` to be set.
 
 Prefix to prepend created project metadata macros.
 
 ##### NO_AUTO_COMPILATION_UNIT (optional)
 
-Disable automatic compilation unit gathering from include/ and src/ directories.
+Disable automatic compilation unit gathering from `include/` and `src/` directories.
+
+##### WORKING_DIRECTORY (optional)
+
+Specify working directory for the created target. It is only valid for the following target types:
+
+- UNIT_TEST (when executed by CTest)
+
+```cmake
+    project(hdktest.lib.test)
+
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ut_lib.cpp
+        LINK hdktest.lib
+        WITH_COVERAGE
+        COVERAGE_TARGETS hdktest.lib
+        COVERAGE_GCOVR_FILTER_PATTERN "${PROJECT_SOURCE_DIR}/.*cpp"
+        NO_AUTO_COMPILATION_UNIT
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} # Set working directory to ${PROJECT_SOURCE_DIR}
+    )
+```
 
 #### Git
 
