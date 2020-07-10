@@ -53,7 +53,7 @@ if git -C ${RP["PROJECT"]} submodule update --init --recursive --remote .hadouke
     echo "!! Unable to determine new Hadouken version, probably you're following an"
     echo "!! non-official or experimental branch."
     NEW_HADOUKEN_VERSION="undefined"
-  elif [ -z "${CURRENT_HADOUKEN_VERSION}"] ; then
+  elif [ -z "${CURRENT_HADOUKEN_VERSION}" ] ; then
     echo "!! Unable to determine current Hadouken version, probably you're running on a"
     echo "!! modified, non-official or experimental version."
     CURRENT_HADOUKEN_VERSION="undefined"
