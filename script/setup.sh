@@ -71,6 +71,7 @@ declare -A symlinks=(
     ["../.hadouken/dotfiles/.vscode/settings.json"]="${RP["PROJECT"]}/.vscode/settings.json" 
     [".hadouken/.devcontainer"]="${RP["PROJECT"]}/.devcontainer" 
     [".hadouken/script/hadouken.sh"]="${RP["PROJECT"]}/hadouken"    
+    ["build/compile_commands.json"]="${RP["PROJECT"]}/compile_commands.json"    
 )
 
 # docker-compose extension file
