@@ -39,6 +39,9 @@ case $1 in
     ;;
 esac
 
+echo "--------------------------------------------------"
+echo "Phase 1: Initiating project update.."
+
 if git -C ${RP["PROJECT"]} submodule update --init --recursive --remote .hadouken/ ; then
   
   readonly NEW_HADOUKEN_VERSION=$(git -C ${RP["BOILERPLATE"]} tag --points-at)
@@ -51,3 +54,25 @@ if git -C ${RP["PROJECT"]} submodule update --init --recursive --remote .hadouke
   fi
   # Execute post-upgrade fix-ups here
 fi
+
+echo "Phase 1 completed."
+echo "--------------------------------------------------"
+
+######################################
+# Docker image update
+######################################
+
+echo "Phase 2: Initiating image update.."
+# Check whether we're in docker or not
+if hadouken.is_running_in_docker ; then
+  echo "Docker image update skipped due the fact that --upgrade command is invoked in the container."
+else
+  echo "Pulling latest development environment docker image"
+  if docker-compose -f ${RP["PROJECT"]}/.devcontainer/docker-compose.yml -f ${RP["PROJECT"]}/.hadouken.docker-compose.extend.yml pull ; then
+    echo "Docker image is up-to-date."
+  else
+    echo "Docker image pull failed!"
+  fi
+fi
+echo "Phase 2 completed."
+echo "--------------------------------------------------"
