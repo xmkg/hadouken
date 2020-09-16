@@ -275,7 +275,7 @@ function(make_target)
 
     # Set output name for the target
     if(ARGS_OUTPUT_NAME)
-        set_target_properties(${ARGS_TARGET_NAME} PROPERTIES OUTPUT_NAME ${ARGS_OUTPUT_NAME})
+        set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME ${ARGS_OUTPUT_NAME})
     endif()
 
     # Expose project metadata
