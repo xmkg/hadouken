@@ -161,11 +161,53 @@ function(setup_coverage_targets)
     endif()
 endfunction()
 
+
+function(make_install)
+    
+    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "" ${ARGN})
+
+    if(NOT DEFINED ARGS_TARGET_NAME)
+        message(FATAL_ERROR "make_install() requires TARGET_NAME parameter.")
+    endif()
+
+    if(NOT DEFINED ARGS_TYPE)
+        message(FATAL_ERROR "make_install() requires TYPE parameter.")
+    endif()
+
+    if(${ARGS_TYPE} STREQUAL "UNIT_TEST")
+        return()
+    endif()
+    if(${ARGS_TYPE} STREQUAL "BENCHMARK")
+        return()
+    endif()
+
+    install (
+        TARGETS ${ARGS_TARGET}
+        ARCHIVE 
+            DESTINATION lib
+        LIBRARY 
+            DESTINATION lib
+        RUNTIME 
+            DESTINATION bin
+        PUBLIC_HEADER
+            DESTINATION include
+        PRIVATE_HEADER
+            DESTINATION include
+    )
+
+    install (
+        DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+        DESTINATION include
+        FILES_MATCHING PATTERN "**/*.*"
+    )
+
+endfunction()
+
 # This is a function which is created with aim of
 # removing code repetition in cmake files.
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;" ${ARGN})
+    cmake_parse_arguments(ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -228,6 +270,14 @@ function(make_target)
             COVERAGE_TARGETS ${ARGS_COVERAGE_TARGETS} 
             COVERAGE_LCOV_FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
             COVERAGE_GCOVR_FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+        )
+    endif()
+
+    # Add install
+    if(ARGS_WITH_INSTALL)
+        make_install(
+            TARGET_NAME ${TARGET_NAME} 
+            TYPE ${ARGS_TYPE} 
         )
     endif()
 

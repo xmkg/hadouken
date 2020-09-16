@@ -58,6 +58,7 @@
         - [SOURCES (optional)](#sources-optional)
         - [HEADERS (optional)](#headers-optional)
         - [WITH_COVERAGE (optional)](#with_coverage-optional)
+        - [WITH_INSTALL (optional)](#with_install-optional)
         - [COVERAGE_TARGETS (optional)](#coverage_targets-optional)
         - [COVERAGE_LCOV_FILTER_PATTERN (optional)](#coverage_lcov_filter_pattern-optional)
         - [COVERAGE_GCOVR_FILTER_PATTERN (optional)](#coverage_gcovr_filter_pattern-optional)
@@ -732,6 +733,7 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [SOURCES [<source_path> ...]]
                 [HEADERS [<header_path> ...]]
                 [WITH_COVERAGE]
+                [WITH_INSTALL]
                 [COVERAGE_TARGETS [<target_name> ...]]
                 [COVERAGE_LCOV_FILTER_PATTERN <lcov-pattern>]
                 [COVERAGE_GCOVR_FILTER_PATTERN <gcovr-pattern>]
@@ -1108,6 +1110,27 @@ Example:
         WITH_COVERAGE
         # Disable auto source/header file gathering for this target
         NO_AUTO_COMPILATION_UNIT
+    )
+```
+
+##### WITH_INSTALL (optional)
+
+Automatically generate install step for the target.
+
+Example:
+
+```cmake
+    project(proj VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create a static library target with the name of
+    # `project.component-x`
+    make_target(
+        # Create an unit test target
+        TYPE STATIC
+        # Append `.component-x` suffix to the created target
+        SUFFIX .component-x
+        # Create installation step for project
+        WITH_INSTALL
     )
 ```
 
