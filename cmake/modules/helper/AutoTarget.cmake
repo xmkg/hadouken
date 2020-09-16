@@ -174,13 +174,6 @@ function(make_install)
         message(FATAL_ERROR "make_install() requires TYPE parameter.")
     endif()
 
-    if(${ARGS_TYPE} STREQUAL "UNIT_TEST")
-        return()
-    endif()
-    if(${ARGS_TYPE} STREQUAL "BENCHMARK")
-        return()
-    endif()
-
     install (
         TARGETS ${ARGS_TARGET_NAME}
         ARCHIVE 
