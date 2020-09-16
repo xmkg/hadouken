@@ -200,7 +200,7 @@ endfunction()
 # removing code repetition in cmake files.
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;" ${ARGN})
+    cmake_parse_arguments(ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;OUTPUT_NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -253,7 +253,6 @@ function(make_target)
         SYMBOL_VISIBILITY ${ARGS_SYMBOL_VISIBILITY}
     )
 
-
     # Add coverage option if set
     if(ARGS_WITH_COVERAGE)    
         setup_coverage_targets(
@@ -272,6 +271,11 @@ function(make_target)
             TARGET_NAME ${TARGET_NAME} 
             TYPE ${ARGS_TYPE} 
         )
+    endif()
+
+    # Set output name for the target
+    if(ARGS_OUTPUT_NAME)
+        set_target_properties(${ARGS_TARGET_NAME} PROPERTIES OUTPUT_NAME ${ARGS_OUTPUT_NAME})
     endif()
 
     # Expose project metadata
