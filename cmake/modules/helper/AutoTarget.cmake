@@ -182,7 +182,7 @@ function(make_install)
     endif()
 
     install (
-        TARGETS ${ARGS_TARGET}
+        TARGETS ${ARGS_TARGET_NAME}
         ARCHIVE 
             DESTINATION lib
         LIBRARY 
