@@ -51,6 +51,7 @@
         - [COMPILE_DEFINITIONS (optional)](#compile_definitions-optional)
         - [DEPENDS (optional)](#depends-optional)
         - [NAME (optional)](#name-optional)
+        - [OUTPUT_NAME (optional)](#output_name-optional)
         - [PREFIX (optional)](#prefix-optional)
         - [SUFFIX (optional)](#suffix-optional)
         - [INCLUDES (optional)](#includes-optional)
@@ -727,6 +728,7 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [DEPENDS [<target_name> ...]]
                 [SUFFIX <name_suffix>]
                 [NAME <desired_name>]
+                [OUTPUT_NAME <desired_output_name>]
                 [PREFIX <name_prefix>]
                 [INCLUDES [<include_path> ...]]
                 [PARTOF [<target_name> ...]]
@@ -974,6 +976,36 @@ Example:
     )
 
     # The target will be named as `my_awesome_application`.
+```
+
+##### OUTPUT_NAME (optional)
+
+The user-defined output name for the created target. By default, name will be automatically determined from the target name. If you want to give a different name for the output (e.g. binaries), you can give by specifying this argument.
+
+Example:
+
+```cmake
+
+    project(proj.application VERSION 0.1.0 LANGUAGES CXX)
+
+    # This command would create an executable target with the name of
+    # `proj.application` without the explicit name specification.
+    # When `NAME` paramater is available, the value of `NAME` parameter
+    # will be used as target name instead.
+    make_target(
+        # Create a shared library target
+        TYPE EXECUTABLE
+        # Explicitly specify the name
+        NAME my_awesome_application
+        # Explicitly specify output name
+        OUTPUT_NAME mapp
+        # Specify include paths of linked libraries
+        INCLUDES /usr/lib/boost/include /usr/lib/spdlog/include
+        # Link libraries
+        LINK libboost_system.a libboost_thread.a libspdlog.a
+    )
+
+    # The output binary name will be mapp.exe
 ```
 
 ##### PREFIX (optional)
