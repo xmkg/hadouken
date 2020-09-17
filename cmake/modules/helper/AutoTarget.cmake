@@ -229,10 +229,10 @@ function(make_target)
         add_library(${TARGET_NAME} STATIC ${COMPILATION_UNIT} ${ARGS_SOURCES})
     elseif(${ARGS_TYPE} STREQUAL "UNIT_TEST")
         add_executable(${TARGET_NAME} ${COMPILATION_UNIT} ${ARGS_SOURCES})
-        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.test)
+        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.hadouken_autotargets.test)
     elseif(${ARGS_TYPE} STREQUAL "BENCHMARK")
         add_executable(${TARGET_NAME} ${COMPILATION_UNIT} ${ARGS_SOURCES})
-        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.benchmark)
+        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.hadouken_autotargets.benchmark)
     endif()
 
     # Add project's include directory to target's include directories
