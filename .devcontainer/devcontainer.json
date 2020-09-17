@@ -91,6 +91,8 @@
         // CMake Test Adapter for Test Explorer Sidebar
         "fredericbonnet.cmake-test-adapter",
         // Integrated hex editor
-        "ms-vscode.hexeditor"
+        "ms-vscode.hexeditor",
+        // Better C++ Syntax
+        "jeff-hykin.better-cpp-syntax"
     ]
 }

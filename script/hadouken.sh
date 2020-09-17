@@ -111,6 +111,12 @@ case $1 in
     -d|--documentation)
       ${RP["SCRIPT"]}/project-generate-documentation.sh ${@:2}
     ;;
+    -f|--format)
+      ${RP["SCRIPT"]}/project-format.sh ${@:2}
+    ;;
+    -ti|--tidy)
+      ${RP["SCRIPT"]}/project-tidy.sh ${@:2}
+    ;;
     -u|--upgrade)
       ${RP["SCRIPT"]}/update-hadouken.sh ${@:2}
     ;;
@@ -145,6 +151,12 @@ case $1 in
       echo -e "\t-t|--test\trun unit tests for project (using ctest)"
       echo -e "\t\t| run unit tests of previously build project. Any extra arguments will be forwarded to CTest."
       echo -e "\t\t| example: \`hadouken --test\`\t\t# pack via CMake."
+      echo -e "\t-f|--format\trun all clang-format targets for the project."
+      echo -e "\t\t| run all format targets defined for the project. Any extra arguments will be forwarded to CMake."
+      echo -e "\t\t| example: \`hadouken --format\`\t\t# call project.format target via CMake."
+      echo -e "\t-ti|--tidy\trun all clang-tidy targets for the project."
+      echo -e "\t\t| run all tidy targets defined for the project. Any extra arguments will be forwarded to CMake."
+      echo -e "\t\t| example: \`hadouken --tidy\`\t\t# call project.tidy target via CMake."
       echo -e "\t-a|--all\tclean->configure->build->pack project"
       echo -e "Hadouken:"
       echo -e "\t-u|--upgrade\tupgrade hadouken to latest release"

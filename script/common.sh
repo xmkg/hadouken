@@ -33,6 +33,24 @@ hadouken.define_relative_paths(){
     done
 }
 
+# Retrieve top level project name from
+hadouken.get_top_level_project_name(){
+    if [[ -z "$1" ]]; then
+        echo "hadokuen.get_top_level_project_name() requires a base path parameter."
+        exit 1
+    fi
+    
+    declare -A LRP
+    # Common headers
+    hadouken.define_relative_paths $1 LRP
+
+    if test -f "${LRP["PROJECT"]}/CMakeLists.txt"; then
+        hadouken_top_level_project_name=$(cat ${LRP["PROJECT"]}/CMakeLists.txt | grep -o -P "project\((.*)\)" | sed -e 's/project(//g' | sed 's/.$//')
+    else
+        return 1
+    fi    
+}
+
 # Returns 0 when running in docker
 hadouken.is_running_in_docker(){
     if grep docker /proc/1/cgroup -qa; then
