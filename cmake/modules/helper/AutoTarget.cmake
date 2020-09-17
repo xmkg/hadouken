@@ -299,6 +299,14 @@ function(make_target)
             COMMAND ${CLANG_FORMAT} -i -style=file ${COMPILATION_UNIT}
             COMMENT "Running `clang-format` on compilation unit of  `${TARGET_NAME}`"
         )
+
+        # Project-level meta format target
+        if (TARGET ${PB_PARENT_PROJECT_NAME}.format)
+            add_dependencies(${PB_PARENT_PROJECT_NAME}.format ${TARGET_NAME}.format)
+        else()
+            add_custom_target(${PB_PARENT_PROJECT_NAME}.format DEPENDS ${TARGET_NAME}.format)
+        endif()
+
     endif() 
 
     # Interface targets are excluded from tidy.
@@ -328,6 +336,14 @@ function(make_target)
                 COMMAND ${CMAKE_CXX_CLANG_TIDY} ${COMPILATION_UNIT} -- -std=c++${CMAKE_CXX_STANDARD} ${CT_INCLUDE_DIRECTORIES}
                 COMMENT "Running `clang-tidy` on compilation unit of `${TARGET_NAME}`"
             )
+
+            # Project-level meta tidy target
+            if (TARGET ${PB_PARENT_PROJECT_NAME}.tidy)
+                add_dependencies(${PB_PARENT_PROJECT_NAME}.tidy ${TARGET_NAME}.tidy)
+            else()
+                add_custom_target(${PB_PARENT_PROJECT_NAME}.tidy DEPENDS ${TARGET_NAME}.tidy)
+            endif()
+
         endif()
 
 
