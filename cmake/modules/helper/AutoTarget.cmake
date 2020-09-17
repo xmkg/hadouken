@@ -229,10 +229,10 @@ function(make_target)
         add_library(${TARGET_NAME} STATIC ${COMPILATION_UNIT} ${ARGS_SOURCES})
     elseif(${ARGS_TYPE} STREQUAL "UNIT_TEST")
         add_executable(${TARGET_NAME} ${COMPILATION_UNIT} ${ARGS_SOURCES})
-        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.test)
+        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.hadouken_autotargets.test)
     elseif(${ARGS_TYPE} STREQUAL "BENCHMARK")
         add_executable(${TARGET_NAME} ${COMPILATION_UNIT} ${ARGS_SOURCES})
-        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.benchmark)
+        target_link_libraries(${TARGET_NAME} PRIVATE ${PB_PARENT_PROJECT_NAME}.hadouken_autotargets.benchmark)
     endif()
 
     # Add project's include directory to target's include directories
@@ -299,6 +299,14 @@ function(make_target)
             COMMAND ${CLANG_FORMAT} -i -style=file ${COMPILATION_UNIT}
             COMMENT "Running `clang-format` on compilation unit of  `${TARGET_NAME}`"
         )
+
+        # Project-level meta format target
+        if (TARGET ${PB_PARENT_PROJECT_NAME}.format)
+            add_dependencies(${PB_PARENT_PROJECT_NAME}.format ${TARGET_NAME}.format)
+        else()
+            add_custom_target(${PB_PARENT_PROJECT_NAME}.format DEPENDS ${TARGET_NAME}.format)
+        endif()
+
     endif() 
 
     # Interface targets are excluded from tidy.
@@ -328,6 +336,14 @@ function(make_target)
                 COMMAND ${CMAKE_CXX_CLANG_TIDY} ${COMPILATION_UNIT} -- -std=c++${CMAKE_CXX_STANDARD} ${CT_INCLUDE_DIRECTORIES}
                 COMMENT "Running `clang-tidy` on compilation unit of `${TARGET_NAME}`"
             )
+
+            # Project-level meta tidy target
+            if (TARGET ${PB_PARENT_PROJECT_NAME}.tidy)
+                add_dependencies(${PB_PARENT_PROJECT_NAME}.tidy ${TARGET_NAME}.tidy)
+            else()
+                add_custom_target(${PB_PARENT_PROJECT_NAME}.tidy DEPENDS ${TARGET_NAME}.tidy)
+            endif()
+
         endif()
 
 
