@@ -161,6 +161,7 @@ SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CCACHE       FALSE CACHE BOOL "Enable
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOV         FALSE CACHE BOOL "Enable/disable gcov integration" FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LCOV         FALSE CACHE BOOL "Enable/disable lcov integration" FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOVR        FALSE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_DOXYGEN      FALSE CACHE BOOL "Enable/disable doxygen integration" FORCE)
 
 # Include hadouken
 include(.hadouken/hadouken.cmake)

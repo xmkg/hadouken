@@ -68,6 +68,7 @@ declare -A symlinks=(
     [".hadouken/dotfiles/.clang-tidy"]="${RP["PROJECT"]}/.clang-tidy" 
     [".hadouken/dotfiles/.lcovrc"]="${RP["PROJECT"]}/.lcovrc" 
     [".hadouken/dotfiles/.cppcheck-suppress"]="${RP["PROJECT"]}/.cppcheck-suppress" 
+    [".hadouken/dotfiles/.doxyfile"]="${RP["PROJECT"]}/.doxyfile" 
     ["../.hadouken/dotfiles/.vscode/settings.json"]="${RP["PROJECT"]}/.vscode/settings.json" 
     [".hadouken/.devcontainer"]="${RP["PROJECT"]}/.devcontainer" 
     [".hadouken/script/hadouken.sh"]="${RP["PROJECT"]}/hadouken"    

@@ -14,7 +14,14 @@
 # ______________________________________________________
 
 
-set(PB_PARENT_PROJECT_NAME ${PROJECT_NAME})
+
+set(PB_PARENT_PROJECT_NAME              ${PROJECT_NAME}             )
+set(PB_PARENT_PROJECT_VERSION           ${PROJECT_VERSION}          )
+set(PB_PARENT_PROJECT_DESCRIPTION       ${PROJECT_DESCRIPTION}      )
+set(PB_PARENT_PROJECT_SOURCE_DIR        ${PROJECT_SOURCE_DIR}       )
+set(PB_PARENT_PROJECT_BINARY_DIR        ${PROJECT_BINARY_DIR}       )
+set(PB_PARENT_PROJECT_HOMEPAGE_URL      ${PROJECT_HOMEPAGE_URL}     )
+
 string(TOUPPER ${PB_PARENT_PROJECT_NAME} PB_PARENT_PROJECT_NAME_UPPER)
 
 # Maket it C preprocessor macro friently

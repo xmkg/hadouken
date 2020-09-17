@@ -108,6 +108,9 @@ case $1 in
     -t|--test)
       ${RP["SCRIPT"]}/project-test.sh ${@:2}
     ;;
+    -d|--documentation)
+      ${RP["SCRIPT"]}/project-generate-documentation.sh ${@:2}
+    ;;
     -u|--upgrade)
       ${RP["SCRIPT"]}/update-hadouken.sh ${@:2}
     ;;
