@@ -108,6 +108,9 @@ case $1 in
     -t|--test)
       ${RP["SCRIPT"]}/project-test.sh ${@:2}
     ;;
+    -d|--documentation)
+      ${RP["SCRIPT"]}/project-generate-documentation.sh ${@:2}
+    ;;
     -f|--format)
       ${RP["SCRIPT"]}/project-format.sh ${@:2}
     ;;
