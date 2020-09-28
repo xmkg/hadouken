@@ -58,6 +58,7 @@
         - [PARTOF (optional)](#partof-optional)
         - [SOURCES (optional)](#sources-optional)
         - [HEADERS (optional)](#headers-optional)
+        - [ARGUMENTS (optional)](#arguments-optional)
         - [WITH_COVERAGE (optional)](#with_coverage-optional)
         - [WITH_INSTALL (optional)](#with_install-optional)
         - [COVERAGE_TARGETS (optional)](#coverage_targets-optional)
@@ -736,6 +737,7 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [HEADERS [<header_path> ...]]
                 [WITH_COVERAGE]
                 [WITH_INSTALL]
+                [ARGUMENTS] [<argument-1> <argument-2> ...<argument-n>]
                 [COVERAGE_TARGETS [<target_name> ...]]
                 [COVERAGE_LCOV_FILTER_PATTERN <lcov-pattern>]
                 [COVERAGE_GCOVR_FILTER_PATTERN <gcovr-pattern>]
@@ -1116,6 +1118,37 @@ Example:
     # Without `NO_AUTO_COMPILATION_UNIT` parameter is specified,
     # auto header gathering will still take place. Specified `HEADERS`
     # will be appended to auto-gathered header file list.
+```
+
+##### ARGUMENTS (optional)
+
+Arguments to be forwarded to the created target. `ARGUMENTS` will only make sense for targets which invoke an executable or command. The `ARGUMENTS` parameter is only defined for the types specified below:
+
+- UNIT_TEST (ARGUMENTS will be appended to the add_test COMMAND part)
+
+Example:
+
+```cmake
+    project(proj.component-x.test VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create an unit test target with the name of
+    # `project.component-x.test.component.x`
+    make_target(
+        # Create an unit test target
+        TYPE UNIT_TEST
+        # Specify the source file(s) of the target
+        SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ut_component_x.cpp
+        # Link the subject which will be tested
+        LINK proj.component-x
+        # Append `.component-x` suffix to the created target
+        SUFFIX .component-x
+        # Enable code coverage instrumentation
+        WITH_COVERAGE
+        # Arguments which will be passed to the add_test COMMAND part.
+        ARGUMENTS --gtest_shuffle --gtest_output=xml:${PROJECT_BINARY_DIR}/ut_reports/${PROJECT_NAME}.xml
+        # Disable auto source/header file gathering for this target
+        NO_AUTO_COMPILATION_UNIT
+    )
 ```
 
 ##### WITH_COVERAGE (optional)
