@@ -28,6 +28,11 @@ declare -A RP
 # Common headers
 source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
 
-echo "Not implemented (yet) ¯\_(ツ)_/¯"
+if [ -d "${RP["BUILD"]}" ]; then
+    cpack --config ${RP["BUILD"]}/CPackConfig.cmake -B ${RP["PACK"]} ${@:1}
+else
+    echo "Build root does not exist, run ./hadouken configure first."
+fi
+
 
 # TODO(mgilor): invoke cpack here
