@@ -26,6 +26,7 @@ hadouken.define_relative_paths(){
     HADOUKEN_RELATIVE_PATHS["BOILERPLATE"]=$(realpath ${HADOUKEN_RELATIVE_PATHS["SCRIPT"]}/..)
     HADOUKEN_RELATIVE_PATHS["PROJECT"]=$(realpath ${HADOUKEN_RELATIVE_PATHS["BOILERPLATE"]}/..)
     HADOUKEN_RELATIVE_PATHS["BUILD"]=$(realpath ${HADOUKEN_RELATIVE_PATHS["PROJECT"]}/build)
+    HADOUKEN_RELATIVE_PATHS["PACK"]=$(realpath ${HADOUKEN_RELATIVE_PATHS["BUILD"]}/pak)
 
     for key in "${!HADOUKEN_RELATIVE_PATHS[@]}"  # make sure you include the quotes there
     do
