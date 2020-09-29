@@ -144,7 +144,7 @@ endif()
 function(SETUP_TARGET_FOR_COVERAGE_LCOV)
 
     set(options NONE)
-    set(oneValueArgs NAME DIRECTORY FILTER_PATTERN)
+    set(oneValueArgs NAME DIRECTORY FILTER_PATTERN OUTPUT_DIRECTORY WORKING_DIRECTORY)
     set(multiValueArgs EXECUTABLE EXECUTABLE_ARGS DEPENDENCIES LCOV_ARGS GENHTML_ARGS)
     cmake_parse_arguments(Coverage "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -156,8 +156,16 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         message(FATAL_ERROR "genhtml not found! Aborting...")
     endif() # NOT GENHTML_PATH
 
+    if(NOT Coverage_OUTPUT_DIRECTORY)
+        set(Coverage_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+    endif()
+
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY})
     # Setup target
     add_custom_target(${Coverage_NAME}
+        DEPENDS ${Coverage_EXECUTABLE}
+        # # Create output directory
+        # COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Cleanup lcov
         COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -directory ${Coverage_DIRECTORY} --zerocounters
         # Create baseline to make sure untouched files show up in the report
@@ -176,15 +184,15 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} --directory ${Coverage_DIRECTORY} --capture --output-file ${Coverage_NAME}.info
         # add baseline counters
         COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Apply specified filter pattern to the final result
-        COMMAND ${LCOV_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -e ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned '${Coverage_FILTER_PATTERN}' --output-file ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        COMMAND ${LCOV_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${GCOV_PATH} -e ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned '${Coverage_FILTER_PATTERN}' --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Generating HTML 
-        COMMAND ${GENHTML_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc ${Coverage_GENHTML_ARGS} -o ${Coverage_NAME} ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        COMMAND ${GENHTML_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc ${Coverage_GENHTML_ARGS} -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME} ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Erase intermediate artifacts
-        COMMAND ${CMAKE_COMMAND} -E remove ${Coverage_NAME}.base ${Coverage_NAME}.total ${PROJECT_BINARY_DIR}/${Coverage_NAME}.info.cleaned
+        COMMAND ${CMAKE_COMMAND} -E remove ${Coverage_NAME}.base ${Coverage_NAME}.total ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
 
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+        WORKING_DIRECTORY ${Coverage_WORKING_DIRECTORY}
         DEPENDS ${Coverage_DEPENDENCIES}
         COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
     )
@@ -198,7 +206,7 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
     # Show info where to find the report
     add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
         COMMAND ;
-        COMMENT "Open ${PROJECT_BINARY_DIR}/${Coverage_NAME}/index.html in your browser to view the coverage report."
+        COMMENT "Open ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}/index.html in your browser to view the coverage report."
     )
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_LCOV
@@ -216,7 +224,7 @@ endfunction() # SETUP_TARGET_FOR_COVERAGE_LCOV
 function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
 
     set(options NONE)
-    set(oneValueArgs NAME FILTER_PATTERN)
+    set(oneValueArgs NAME FILTER_PATTERN OUTPUT_DIRECTORY WORKING_DIRECTORY)
     set(multiValueArgs EXECUTABLE EXECUTABLE_ARGS DEPENDENCIES)
     cmake_parse_arguments(Coverage "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -228,6 +236,10 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         message(FATAL_ERROR "gcovr not found! Aborting...")
     endif() # NOT GCOVR_PATH
 
+    if(NOT Coverage_OUTPUT_DIRECTORY)
+        set(Coverage_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+    endif()
+
     # Combine excludes to several -e arguments
     set(GCOVR_EXCLUDES "")
     foreach(EXCLUDE ${COVERAGE_GCOVR_EXCLUDES})
@@ -236,17 +248,20 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         list(APPEND GCOVR_EXCLUDES "${EXCLUDE_REPLACED}")
     endforeach()
 
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY})
+
     add_custom_target(${Coverage_NAME}
         # Run tests
         ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
-
+        # Create output directory
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Running gcovr
         COMMAND ${GCOVR_PATH} --xml
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
-            -o ${Coverage_NAME}.xml
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.xml
+        WORKING_DIRECTORY ${Coverage_WORKING_DIRECTORY}
         DEPENDS ${Coverage_DEPENDENCIES}
         COMMENT "Running gcovr to produce Cobertura code coverage report."
     )
@@ -254,7 +269,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
     # Show info where to find the report
     add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
         COMMAND ;
-        COMMENT "Cobertura code coverage report saved in ${Coverage_NAME}.xml."
+        COMMENT "Cobertura code coverage report saved in ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.xml."
     )
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_XML
@@ -272,7 +287,7 @@ endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_XML
 function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
 
     set(options NONE)
-    set(oneValueArgs NAME FILTER_PATTERN)
+    set(oneValueArgs NAME FILTER_PATTERN OUTPUT_DIRECTORY WORKING_DIRECTORY)
     set(multiValueArgs EXECUTABLE EXECUTABLE_ARGS DEPENDENCIES)
     cmake_parse_arguments(Coverage "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -284,6 +299,10 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         message(FATAL_ERROR "gcovr not found! Aborting...")
     endif() # NOT GCOVR_PATH
 
+    if(NOT Coverage_OUTPUT_DIRECTORY)
+        set(Coverage_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+    endif()
+
     # Combine excludes to several -e arguments
     set(GCOVR_EXCLUDES "")
     foreach(EXCLUDE ${COVERAGE_GCOVR_EXCLUDES})
@@ -292,20 +311,23 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         list(APPEND GCOVR_EXCLUDES "${EXCLUDE_REPLACED}")
     endforeach()
 
+    execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY})
+
     add_custom_target(${Coverage_NAME}
         # Run tests
         ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
-
+        # Create output directory
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Create folder
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/${Coverage_NAME}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}
 
         # Running gcovr
         COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
-            -o ${Coverage_NAME}/index.html
-        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+            -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}/index.html
+        WORKING_DIRECTORY ${Coverage_WORKING_DIRECTORY}
         DEPENDS ${Coverage_DEPENDENCIES}
         COMMENT "Running gcovr to produce HTML code coverage report."
     )
@@ -313,7 +335,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
     # Show info where to find the report
     add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
         COMMAND ;
-        COMMENT "Open ${PROJECT_BINARY_DIR}/${Coverage_NAME}/index.html in your browser to view the coverage report."
+        COMMENT "Open ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}/index.html in your browser to view the coverage report."
     )
 
 endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML

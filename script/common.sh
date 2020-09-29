@@ -45,8 +45,8 @@ hadouken.get_top_level_project_name(){
     # Common headers
     hadouken.define_relative_paths $1 LRP
 
-    if test -f "${LRP["PROJECT"]}/CMakeLists.txt"; then
-        hadouken_top_level_project_name=$(cat ${LRP["PROJECT"]}/CMakeLists.txt | grep -o -P "project\((.*)\)" | sed -e 's/project(//g' | sed 's/.$//')
+    if test -f "${LRP["BUILD"]}/CMakeCache.txt"; then
+        hadouken_top_level_project_name=$(grep CMAKE_PROJECT_NAME ${LRP["BUILD"]}/CMakeCache.txt | cut -d'=' -f2)
     else
         return 1
     fi    
