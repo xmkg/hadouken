@@ -358,11 +358,12 @@ function(make_target)
     # post options
     if(${ARGS_TYPE} STREQUAL "UNIT_TEST")
         add_test(
-            NAME ${TARGET_NAME} 
+            NAME ${TARGET_NAME}
             COMMAND ${TARGET_NAME} ${ARGS_ARGUMENTS} 
+            # # COMMAND 
             WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
         )
-        gtest_discover_tests(${TARGET_NAME})
+        gtest_discover_tests(${TARGET_NAME} WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY})
     endif()
 
 endfunction()
