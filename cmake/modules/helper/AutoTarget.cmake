@@ -110,7 +110,7 @@ function(add_target_options)
 endfunction()
 
 function(setup_coverage_targets)
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;" ${ARGN})
+    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;COVERAGE_REPORT_OUTPUT_DIRECTORY;WORKING_DIRECTORY;" ${ARGN})
     if(NOT DEFINED ARGS_TARGET_NAME)
         message(FATAL_ERROR "setup_coverage_targets() requires TARGET_NAME parameter.")
     endif()
@@ -129,6 +129,7 @@ function(setup_coverage_targets)
         set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${CMAKE_SOURCE_DIR}")
     endif()
 
+
     if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
         if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND GCOV)
             target_compile_options(${TARGET_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
@@ -146,13 +147,60 @@ function(setup_coverage_targets)
             endif()
             
             if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND GCOVR)
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(NAME ${TARGET_NAME}.gcovr.xml EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN})
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(NAME ${TARGET_NAME}.gcovr.html EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN})
+
+                SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
+                    NAME ${TARGET_NAME}.gcovr.xml 
+                    EXECUTABLE ${TARGET_NAME} 
+                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
+                    FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
+                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
+                )
+
+                SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(
+                    NAME ${TARGET_NAME}.gcovr.html 
+                    EXECUTABLE ${TARGET_NAME} 
+                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
+                    FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
+                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
+                )
+
+                # Project-level meta gcovr.xml target
+                if (TARGET ${PB_PARENT_PROJECT_NAME}.gcovr.xml)
+                    add_dependencies(${PB_PARENT_PROJECT_NAME}.gcovr.xml ${TARGET_NAME}.gcovr.xml)
+                else()
+                    add_custom_target(${PB_PARENT_PROJECT_NAME}.gcovr.xml DEPENDS ${TARGET_NAME}.gcovr.xml)
+                endif()
+
+                # Project-level meta gcovr.html target
+                if (TARGET ${PB_PARENT_PROJECT_NAME}.gcovr.html)
+                    add_dependencies(${PB_PARENT_PROJECT_NAME}.gcovr.html ${TARGET_NAME}.gcovr.html)
+                else()
+                    add_custom_target(${PB_PARENT_PROJECT_NAME}.gcovr.html DEPENDS ${TARGET_NAME}.gcovr.html)
+                endif()
+
             endif()
 
             if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND LCOV)
-                # dummy.component-x
-                SETUP_TARGET_FOR_COVERAGE_LCOV(NAME ${TARGET_NAME}.lcov EXECUTABLE ${TARGET_NAME} DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external)
+
+                SETUP_TARGET_FOR_COVERAGE_LCOV(
+                    NAME ${TARGET_NAME}.lcov 
+                    EXECUTABLE ${TARGET_NAME} 
+                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
+                    FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
+                    LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external
+                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
+                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
+                )
+
+                # Project-level meta lcov target
+                if (TARGET ${PB_PARENT_PROJECT_NAME}.lcov)
+                    add_dependencies(${PB_PARENT_PROJECT_NAME}.lcov ${TARGET_NAME}.lcov)
+                else()
+                    add_custom_target(${PB_PARENT_PROJECT_NAME}.lcov DEPENDS ${TARGET_NAME}.lcov)
+                endif()
+
             endif()
 
         endif() 
@@ -200,7 +248,7 @@ endfunction()
 # removing code repetition in cmake files.
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;OUTPUT_NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;ARGUMENTS;" ${ARGN})
+    cmake_parse_arguments(ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;" "TYPE;SUFFIX;PREFIX;NAME;OUTPUT_NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;COVERAGE_REPORT_OUTPUT_DIRECTORY;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;ARGUMENTS;" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -262,6 +310,8 @@ function(make_target)
             COVERAGE_TARGETS ${ARGS_COVERAGE_TARGETS} 
             COVERAGE_LCOV_FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
             COVERAGE_GCOVR_FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+            COVERAGE_REPORT_OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
+            WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
         )
     endif()
 
@@ -358,11 +408,12 @@ function(make_target)
     # post options
     if(${ARGS_TYPE} STREQUAL "UNIT_TEST")
         add_test(
-            NAME ${TARGET_NAME} 
+            NAME ${TARGET_NAME}
             COMMAND ${TARGET_NAME} ${ARGS_ARGUMENTS} 
+            # # COMMAND 
             WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
         )
-        gtest_discover_tests(${TARGET_NAME})
+        gtest_discover_tests(${TARGET_NAME} WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY})
     endif()
 
 endfunction()

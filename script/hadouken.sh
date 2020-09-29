@@ -108,6 +108,9 @@ case $1 in
     -t|--test)
       ${RP["SCRIPT"]}/project-test.sh ${@:2}
     ;;
+    -cv|--coverage)
+      ${RP["SCRIPT"]}/project-coverage.sh ${@:2}
+    ;;
     -d|--documentation)
       ${RP["SCRIPT"]}/project-generate-documentation.sh ${@:2}
     ;;
@@ -131,37 +134,54 @@ case $1 in
       echo -e ""
       echo "Use one of the following combos:"
       echo -e "Project:"
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-b|--build\tbuild project"
       echo -e "\t\t| build previously configured project. Any extra arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --build\`\t\t# build via CMake."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-x|--clean\tclean project"
       echo -e "\t\t| remove PROJECT_ROOT/build directory."
       echo -e "\t\t| example: \`hadouken --clean\`\t\t# removes PROJECT_ROOT/build directory."
       echo -e "\t\t| example: \`hadouken --clean --deep\`\t# runs git clean -fxd on project root."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-c|--configure"
       echo -e "\t\t| configure project located in PROJECT_ROOT to PROJECT_ROOT/build directory with cmake"
       echo -e "\t\t| any following arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --configure --target=Debug\`"
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-i|--install\tinstall project"
       echo -e "\t\t| install previosuly built project. Any extra arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --install\`\t\t# install via CMake."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-p|--pack\tpack project (using cpack)"
       echo -e "\t\t| package previously build project. Any extra arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --pack\`\t\t# pack via CMake."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-t|--test\trun unit tests for project (using ctest)"
       echo -e "\t\t| run unit tests of previously build project. Any extra arguments will be forwarded to CTest."
-      echo -e "\t\t| example: \`hadouken --test\`\t\t# pack via CMake."
+      echo -e "\t\t| example: \`hadouken --test\`\t\t# test via CTest."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+      echo -e "\t-cv|--coverage\trun code coverage for project"
+      echo -e "\t\t| run code coverage targets of previously build project."
+      echo -e "\t\t| example: \`hadouken --coverage --html\`\t\t# run all code coverage targets, generate HTML reports"
+      echo -e "\t\t| example: \`hadouken --coverage --xml\`\t# run all code coverage targets, generate XML reports in cobertura format."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-f|--format\trun all clang-format targets for the project."
       echo -e "\t\t| run all format targets defined for the project. Any extra arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --format\`\t\t# call project.format target via CMake."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-ti|--tidy\trun all clang-tidy targets for the project."
       echo -e "\t\t| run all tidy targets defined for the project. Any extra arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --tidy\`\t\t# call project.tidy target via CMake."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-a|--all\tclean->configure->build->pack project"
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "Hadouken:"
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-u|--upgrade\tupgrade hadouken to latest release"
       echo -e "\t\t| this basically runs submodule update, reduced to a command for ease of use."
       echo -e "\t\t| example: \`hadouken --upgrade\`\t\t# upgrade hadouken to latest master release."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       exit 1
     ;;
 esac
