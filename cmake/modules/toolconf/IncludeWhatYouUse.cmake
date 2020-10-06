@@ -25,9 +25,19 @@ if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_IWYU)
         find_program(iwyu_path NAMES include-what-you-use iwyu)
         if(iwyu_path)
             set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${iwyu_path})
-            list(APPEND CMAKE_CXX_INCLUDE_WHAT_YOU_USE 
-                "" # add options here
-            )
+
+            include(CMakeDetermineCCompiler)
+            include(CMakeDetermineCXXCompiler)
+            
+            if(CMAKE_CXX_COMPILER_ID MATCHES "[gG][nN][uU]")
+                list(APPEND CMAKE_CXX_INCLUDE_WHAT_YOU_USE 
+                    "--driver-mode=gcc" # add options here
+                )
+            else()
+                list(APPEND CMAKE_CXX_INCLUDE_WHAT_YOU_USE 
+                    "--driver-mode=clang" # add options here
+                )
+            endif()
 
             # TODO: Check if clang version required for installed iwyu exist on the system
             # (so fucking needy)
