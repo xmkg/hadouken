@@ -30,11 +30,7 @@
     "containerEnv": {},
     "remoteEnv": {},
     "build": { 
-        "args": 
-        { 
-            "apt_extra_package_list": "${localEnv:HADOUKEN_APT_EXTRA_PACKAGES}",
-            "pip_extra_package_list": "${localEnv:HADOUKEN_PIP_EXTRA_PACKAGES}"
-        } 
+        "args": {} 
     },
     // Run user-specified post creation script (if exist)
     // Also initialize git flow for repository.
