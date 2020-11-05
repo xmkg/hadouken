@@ -15,14 +15,40 @@
 # ______________________________________________________
 
 if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
-    message(STATUS "[*] Configuring `googletest & googlemock`")
 
-    find_package(GTest QUIET REQUIRED)
-    find_package(GMock QUIET REQUIRED)
+    set(HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME "gtest")
+    set(HADOUKEN_CONAN_GOOGLE_TEST_VERSION "1.10.0")
+
+    message(STATUS "[*] Configuring `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}` (${HADOUKEN_CONAN_GOOGLE_TEST_VERSION})")
+
+    # Determine installed "benchmark" package version
+    execute_process(COMMAND /usr/bin/env conan search ${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME} OUTPUT_VARIABLE CONAN_SEARCH_RESULT)
+
+    string(REGEX MATCH "gtest/(([0-9]+)\\.([0-9]+)\\.([0-9]+))" CONAN_SEARCH_RESULT_VERSION ${CONAN_SEARCH_RESULT})
+
+    if(NOT ${CMAKE_MATCH_COUNT} LESS 4)
+        if(${CMAKE_MATCH_1} STREQUAL ${HADOUKEN_CONAN_GOOGLE_TEST_VERSION})
+            message(STATUS "\t[+] Conan package  `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}` present in environment")
+        else()
+            message(STATUS "\t[?] Conan package is present with name `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}` but version does not match with required version `${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}` != `${CMAKE_MATCH_1}`, it will be fetched from remote")
+        endif()
+    else()
+        message(STATUS "\t[-] Conan package  `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}` is not present in environment, it will be fetched from remote")
+    endif()
+
+    include(GoogleTest)
+
+    conan_cmake_run(
+        REQUIRES ${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}
+        BASIC_SETUP CMAKE_TARGETS
+        BUILD missing
+        OUTPUT_QUIET
+    )
 
     make_target(
         NAME ${PB_PARENT_PROJECT_NAME}.hadouken_autotargets.test 
         TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp 
-        LINK PUBLIC GTest::GTest GTest::Main GMock::GMock GMock::Main
+        LINK PUBLIC CONAN_PKG::gtest
     )
+
 endif()
