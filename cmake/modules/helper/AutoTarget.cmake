@@ -261,6 +261,11 @@ function(make_target)
     # Create a name for the target
     make_target_name(NAME ${ARGS_NAME} PREFIX ${ARGS_PREFIX} SUFFIX ${ARGS_SUFFIX})
 
+    if(${PB_PARENT_PROJECT_NAME_UPPER}_DISABLE_${ARGS_TYPE}_TARGETS)
+        message(VERBOSE "Hadouken(make_target): Target ${TARGET_NAME} skipped since ${ARGS_TYPE} target build is disabled via option")
+        return ()
+    endif()
+
     if(NOT ARGS_NO_AUTO_COMPILATION_UNIT)
         # Gather sources of target to be created
         file_gather_compilation_unit()
