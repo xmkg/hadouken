@@ -29,7 +29,7 @@ declare -A RP
 source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
 
 if [ -d "${RP["BUILD"]}" ]; then
-    cmake --build ${RP["BUILD"]} ${@:1} -- -j $(nproc)
+    ${HADOUKEN_CMAKE_COMMAND} --build ${RP["BUILD"]} ${@:1} -- -j $(nproc)
 else
     echo "Build root does not exist, run ./hadouken --configure first."
 fi

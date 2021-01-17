@@ -29,7 +29,7 @@ declare -A RP
 source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
 
 if hadouken.get_top_level_project_name $SCRIPT_ROOT; then
-    cmake --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.tidy -- -j $(nproc)
+    ${HADOUKEN_CMAKE_COMMAND} --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.tidy -- -j $(nproc)
 else
     echo "Could not determine top level project name."
 fi

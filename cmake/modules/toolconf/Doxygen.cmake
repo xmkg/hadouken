@@ -22,33 +22,42 @@
 # PROJECT_LOGO           =
 # OUTPUT_DIRECTORY       =
 
-if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_DOXYGEN)
-    message(STATUS "[*] Configuring `Doxygen`")
+option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_DOXYGEN "Use doxygen in project" OFF)
+
+hdk_log_set_context("doxygen")
+
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_DOXYGEN)
+    hdk_log_status("Configuring tool `doxygen`")
+
     find_package(Doxygen QUIET)
     if(DOXYGEN_FOUND)
-        message(STATUS "\t[+] Found doxygen: ${DOXYGEN_EXECUTABLE}")
+        hdk_log_status("Found `doxygen` executable: ${DOXYGEN_EXECUTABLE}`")
 
-        list(APPEND INJECTED_PARAMETERS "echo PROJECT_NAME=${PB_PARENT_PROJECT_NAME}")
-        list(APPEND INJECTED_PARAMETERS "echo PROJECT_NUMBER=${PB_PARENT_PROJECT_VERSION}")
-        list(APPEND INJECTED_PARAMETERS "echo PROJECT_BRIEF=${PB_PARENT_PROJECT_DESCRIPTION}")
-        list(APPEND INJECTED_PARAMETERS "echo OUTPUT_DIRECTORY=${PB_PARENT_PROJECT_BINARY_DIR}/docs")
-        list(APPEND INJECTED_PARAMETERS "echo WARN_LOGFILE=${PB_PARENT_PROJECT_BINARY_DIR}/doxygen.warn.log")
+        list(APPEND INJECTED_PARAMETERS "echo PROJECT_NAME=${HDK_ROOT_PROJECT_NAME}")
+        list(APPEND INJECTED_PARAMETERS "echo PROJECT_NUMBER=${HDK_ROOT_PROJECT_VERSION}")
+        list(APPEND INJECTED_PARAMETERS "echo PROJECT_BRIEF=${HDK_ROOT_PROJECT_DESCRIPTION}")
+        list(APPEND INJECTED_PARAMETERS "echo OUTPUT_DIRECTORY=${HDK_ROOT_PROJECT_BINARY_DIR}/docs")
+        list(APPEND INJECTED_PARAMETERS "echo WARN_LOGFILE=${HDK_ROOT_PROJECT_BINARY_DIR}/doxygen.warn.log")
         # list(APPEND INJECTED_PARAMETERS "echo WARN_AS_ERROR=YES")
 
         list(JOIN INJECTED_PARAMETERS " ; " INJECTED_PARAMETERS_STRINGIZED)
 
 
-        if (NOT TARGET ${PB_PARENT_PROJECT_NAME}.documentation)
-            message(STATUS "\t[>] Auto-created `${PB_PARENT_PROJECT_NAME}.documentation` target")
-            add_custom_target(${PB_PARENT_PROJECT_NAME}.documentation
-                WORKING_DIRECTORY ${PB_PARENT_PROJECT_SOURCE_DIR}
+        if (NOT TARGET ${HDK_ROOT_PROJECT_NAME}.documentation)
+            hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.documentation` target")
+            add_custom_target(${HDK_ROOT_PROJECT_NAME}.documentation
+                WORKING_DIRECTORY ${HDK_ROOT_PROJECT_SOURCE_DIR}
                 COMMAND bash -c "( cat .doxyfile ; ${INJECTED_PARAMETERS_STRINGIZED} ) | doxygen - "
-                COMMENT "Generating API documentation for ${PB_PARENT_PROJECT_NAME} with Doxygen"
+                COMMENT "Generating API documentation for ${HDK_ROOT_PROJECT_NAME} with Doxygen"
                 VERBATIM
             )
         endif()
 
     else()
-        message(FATAL_ERROR "\t[+] `doxygen` not found in environment")
-    endif()   
+        hdk_log_err("`doxygen` not found in environment")
+    endif() 
+else()
+    hdk_log_verbose("Skipping tool configuration for `doxygen` (disabled)")
 endif()
+
+hdk_log_unset_context()
