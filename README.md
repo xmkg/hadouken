@@ -36,9 +36,9 @@
       - [IncludeWhatYouUse (IWYU)](#includewhatyouuse-iwyu)
       - [LinkWhatYouUse (LWYU)](#linkwhatyouuse-lwyu)
       - [CCache](#ccache)
-    - [Helpers](#helpers)
-      - [AutoCompilationUnit](#autocompilationunit)
-      - [AutoTarget](#autotarget)
+    - [Core modules](#core-modules)
+      - [MakeCompilationUnit](#makecompilationunit)
+      - [MakeTarget](#maketarget)
         - [TYPE (required)](#type-required)
           - [EXECUTABLE](#executable)
           - [STATIC](#static)
@@ -69,16 +69,19 @@
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
         - [WORKING_DIRECTORY (optional)](#working_directory-optional)
       - [Git](#git)
-        - [git_get_branch_name(DIRECTORY \<dir\>)](#git_get_branch_namedirectory-dir)
-        - [git_get_head_commit_hash(DIRECTORY \<dir\>)](#git_get_head_commit_hashdirectory-dir)
-        - [git_is_worktree_dirty(DIRECTORY \<dir\>)](#git_is_worktree_dirtydirectory-dir)
-        - [git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)](#git_get_configdirectory-dir-config_key-key_to_be_retrieved)
-        - [git_print_status()](#git_print_status)
+        - [hdk_git_get_branch_name(DIRECTORY \<dir\>)](#hdk_git_get_branch_namedirectory-dir)
+        - [hdk_git_get_head_commit_hash(DIRECTORY \<dir\>)](#hdk_git_get_head_commit_hashdirectory-dir)
+        - [hdk_git_is_worktree_dirty(DIRECTORY \<dir\>)](#hdk_git_is_worktree_dirtydirectory-dir)
+        - [hdk_git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)](#hdk_git_get_configdirectory-dir-config_key-key_to_be_retrieved)
+        - [hdk_git_print_status()](#hdk_git_print_status)
       - [Conan](#conan)
       - [HardwareConcurrency](#hardwareconcurrency)
     - [Build variant determination](#build-variant-determination)
     - [Finders](#finders)
     - [Feature check](#feature-check)
+  - [Internal modules](#internal-modules)
+    - [Banner](#banner)
+    - [Log](#log)
   - [Closing words](#closing-words)
   - [References](#references)
   - [Acknowledgements](#acknowledgements)
@@ -698,13 +701,13 @@ Ubuntu/Debian
     sudo apt-get install ccache
 ```
 
-### Helpers
+### Core modules
 
-Helper modules are wrappers which are used commonly in CMake based projects.
+Core modules are wrappers which are used commonly in CMake based projects.
 
-#### AutoCompilationUnit
+#### MakeCompilationUnit
 
-A CMake helper module to gather the files which will be compiled for the project. Requires project folder to be structured in `include/` `src/` form. To gather compilation unit of a project, simply invoke `file_gather_compilation_unit` function at project scope. This will define 3 CMake variables in project scope.
+CMake module which provides a function to gather the files which will be compiled for the project. Requires project folder to be structured in `include/` `src/` form. To gather compilation unit of a project, simply invoke `hdk_make_compilation_unit` function at project scope. This will define 3 CMake variables in project scope.
 
 ```CMake
     ${HEADERS} # Content of the include/ folder. Paths are relative to include/ folder.
@@ -712,9 +715,9 @@ A CMake helper module to gather the files which will be compiled for the project
     ${COMPILATION_UNIT} # Content of the both include/ and src/ folders.
 ```
 
-#### AutoTarget
+#### MakeTarget
 
-A CMake helper module to create several CMake target types with less typing. To create a target using AutoTarget, simply invoke `make_target` function with desired arguments. The `make_target` function operates on projects, so it must be invoked after `project()` CMake command is invoked for the desired project.
+CMake module which provides functions to create several CMake target types with less typing. To create a target using MakeTarget, simply invoke `make_target` function with desired arguments. The `make_target` function operates on projects, so it must be invoked after `project()` CMake command is invoked for the desired project.
 
 All arguments are optional, except the `TYPE` argument.
 
@@ -1354,14 +1357,14 @@ Specify working directory for the created target. It is only valid for the follo
 
 This module has several functions to invoke git functionality from CMake.
 
-##### git_get_branch_name(DIRECTORY \<dir\>)
+##### hdk_git_get_branch_name(DIRECTORY \<dir\>)
 
 A function to retrieve active branch name for the project. Sets both `GIT_BRANCH_NAME` variable and `GIT_BRANCH_NAME` (global) property.
 
 Example:
 
 ```cmake
-    git_get_branch_name(DIRECTORY ${PROJECT_SOURCE_DIR})
+    hdk_git_get_branch_name(DIRECTORY ${PROJECT_SOURCE_DIR})
     # ${GIT_BRANCH_NAME} now contains the branch name of the git repository in ${PROJECT_SOURCE_DIR}
     # or alternatively;
     get_property(ACTIVE_BRANCH_NAME GLOBAL PROPERTY GIT_BRANCH_NAME)
@@ -1370,54 +1373,54 @@ Example:
     # information about get_property usage.
 ```
 
-##### git_get_head_commit_hash(DIRECTORY \<dir\>)
+##### hdk_git_get_head_commit_hash(DIRECTORY \<dir\>)
 
 A function to retrieve commit hash of the head for the git repository located in specified directory. Sets both `GIT_HEAD_COMMIT_HASH` variable and `GIT_HEAD_COMMIT_HASH` (global) property.
 
 Example:
 
 ```cmake
-    git_get_head_commit_hash(DIRECTORY ${PROJECT_SOURCE_DIR})
+    hdk_git_get_head_commit_hash(DIRECTORY ${PROJECT_SOURCE_DIR})
     # ${GIT_HEAD_COMMIT_HASH} now contains the head commit hash of the git repository in ${PROJECT_SOURCE_DIR}
     # or alternatively;
     get_property(ACTIVE_BRANCH_CH GLOBAL PROPERTY GIT_HEAD_COMMIT_HASH)
     # ${ACTIVE_BRANCH_CH} now contains the head commit hash.
 ```
 
-##### git_is_worktree_dirty(DIRECTORY \<dir\>)
+##### hdk_git_is_worktree_dirty(DIRECTORY \<dir\>)
 
 A function to retrieve whether current work tree for the git repository located in specified directory is dirty. Sets both `GIT_IS_WORKTREE_DIRTY` variable and `GIT_IS_WORKTREE_DIRTY` (global) property.
 
 Example:
 
 ```cmake
-    git_is_worktree_dirty(DIRECTORY ${PROJECT_SOURCE_DIR})
+    hdk_git_is_worktree_dirty(DIRECTORY ${PROJECT_SOURCE_DIR})
     # ${GIT_IS_WORKTREE_DIRTY} now contains whether worktree of the git repository in ${PROJECT_SOURCE_DIR} is dirty or not.
     # or alternatively;
     get_property(ACTIVE_BRANCH_DIRTY GLOBAL PROPERTY GIT_IS_WORKTREE_DIRTY)
     # ${ACTIVE_BRANCH_DIRTY} now contains the dirtiness status.
 ```
 
-##### git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)
+##### hdk_git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)
 
 A function to retrieve a git configuration by its' key name. Sets both `GIT_CONFIG_VALUE` variable and `GIT_CONFIG_VALUE` (global) property.
 
 Example:
 
 ```cmake
-    git_get_config(DIRECTORY ${PROJECT_SOURCE_DIR} CONFIG_KEY user.email)
+    hdk_git_get_config(DIRECTORY ${PROJECT_SOURCE_DIR} CONFIG_KEY user.email)
     # ${GIT_CONFIG_VALUE} now contains the user.email configuration value of the git repository located in ${PROJECT_SOURCE_DIR} folder.
     # or alternatively;
     get_property(ACTIVE_BRANCH_UEMAIL GLOBAL PROPERTY GIT_CONFIG_VALUE)
     # ${ACTIVE_BRANCH_UEMAIL} now contains the dirtiness status.
 ```
 
-##### git_print_status()
+##### hdk_git_print_status()
 
 Print branch, commit hash and dirtiness status of the git repository specified in DIRECTORY argument.
 
 ```cmake
-    git_print_status()
+    hdk_git_print_status()
     # Possible output to stdout might be:
     # [+] VCS Status
     #   Branch: master
@@ -1506,14 +1509,14 @@ check_cxx_source_compiles("
         return result;
     }
     "
-    ${PB_PARENT_PROJECT_NAME_UPPER}_FEATURE_HAS_PTHREADS
+    ${HDK_ROOT_PROJECT_NAME_UPPER}_FEATURE_HAS_PTHREADS
 )
 # <project_name>_FEATURE_HAS_PTHREADS is set to true or false after this, indicating the compilation status.
 ```
 
-The result variable has a specific naming convention too. `FeatureCheck.cmake` expects the result variable to be defined in a specific way: (the actual check code is `if (NOT ${PB_PARENT_PROJECT_NAME_UPPER}_HAS_${ARG_AS_UPPER})`)
+The result variable has a specific naming convention too. `FeatureCheck.cmake` expects the result variable to be defined in a specific way: (the actual check code is `if (NOT ${HDK_ROOT_PROJECT_NAME_UPPER}_HAS_${ARG_AS_UPPER})`)
 
- `${PB_PARENT_PROJECT_NAME_UPPER}` is a CMake variable defined by hadouken which contains the top level project name, converted to uppercase and all non-alphanumeric characters replaced with an underscore (_). The glue `_HAS_` have to come after this. The last word should match with the feature check module (capitalized).
+ `${HDK_ROOT_PROJECT_NAME_UPPER}` is a CMake variable defined by hadouken which contains the top level project name, converted to uppercase and all non-alphanumeric characters replaced with an underscore (_). The glue `_HAS_` have to come after this. The last word should match with the feature check module (capitalized).
 
 Feature check modules have a specific naming convention. Every feature check module file name has to start with `Check`. The letters between `Check` and `.cmake` determines the feature check module name. The user will use this name to invoke feature check functions.
 
@@ -1532,6 +1535,18 @@ feature_check_assert(Pthreads)
 You can use Pthreads as a reference when creating new feature check modules.
 
 ****
+
+## Internal modules
+
+Hadouken uses some CMake modules for internal usage only.
+
+### Banner
+
+This is the CMake module which prints the hadouken's banner to the terminal when invoked.
+
+### Log
+
+CMake module which contains some utility functions which are responsible for printing hadouken's log output.
 
 ## Closing words
 

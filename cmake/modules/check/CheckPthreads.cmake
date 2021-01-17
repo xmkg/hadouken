@@ -51,5 +51,5 @@ check_cxx_source_compiles("
         return result;
     }
     "
-    ${PB_PARENT_PROJECT_NAME_UPPER}_FEATURE_HAS_PTHREADS
+    ${HDK_ROOT_PROJECT_NAME_UPPER}_FEATURE_HAS_PTHREADS
 )
