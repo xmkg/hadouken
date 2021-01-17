@@ -27,5 +27,5 @@ check_cxx_source_compiles("
         return 0;
     }
     "
-    ${PB_PARENT_PROJECT_NAME_UPPER}_FEATURE_HAS_GCC_BUILTIN_EXPECT
+    ${HDK_ROOT_PROJECT_NAME_UPPER}_FEATURE_HAS_GCC_BUILTIN_EXPECT
 )

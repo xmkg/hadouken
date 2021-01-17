@@ -34,6 +34,7 @@ find_library(HYPERSCAN_LINK_LIBRARIES_SHARED
     HINTS ${PC_HYPERSCAN_LIBDIR}
           ${PC_HYPERSCAN_LIBRARY_DIRS}
           "/usr/lib"
+          "/usr/lib/x86_64-linux-gnu"
 )
 
 find_library(HYPERSCAN_LINK_LIBRARIES_STATIC
@@ -41,6 +42,7 @@ find_library(HYPERSCAN_LINK_LIBRARIES_STATIC
     HINTS ${PC_HYPERSCAN_LIBDIR}
           ${PC_HYPERSCAN_LIBRARY_DIRS}
           "/usr/lib"
+          "/usr/lib/x86_64-linux-gnu"
 )
 
 if(HYPERSCAN_INCLUDE_DIR)

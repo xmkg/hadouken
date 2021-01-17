@@ -4,7 +4,7 @@
 # Contains helper functions to gather header and source files from projects
 # containing source files in `include/src` format.
 # 
-# @file 	AutoCompilationUnit.cmake
+# @file 	MakeCompilationUnit.cmake
 # @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
 # @date 	14.02.2020
 # 
@@ -17,12 +17,13 @@
 
 # Gather all files under `include` and `src` folders at current directory level 
 # to `COMPILATION_UNIT` variable in invocation scope.
-function(file_gather_compilation_unit)
+function(hdk_make_compilation_unit COMPILATION_UNIT)
+    hdk_log_set_context("mcu")
     file(GLOB_RECURSE HEADERS "include/*")
     file(GLOB_RECURSE SOURCES "src/*")
 
     set(HEADERS ${HEADERS} PARENT_SCOPE)
     set(SOURCES ${SOURCES} PARENT_SCOPE)
-    set(COMPILATION_UNIT ${HEADERS} ${SOURCES} PARENT_SCOPE)
+    set(${COMPILATION_UNIT} ${HEADERS} ${SOURCES} PARENT_SCOPE)
 endfunction()
 

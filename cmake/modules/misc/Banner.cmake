@@ -13,38 +13,27 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-option(${PB_PARENT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER "Enable/disable banner" OFF)
+option(${HDK_ROOT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER "Enable/disable banner"   OFF             )
 
-if(NOT ${PB_PARENT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER)
-# FIXME(mgilor): Retrieve version number from tags (somehow?)
-# git tag --points-at HEAD 
+if(NOT ${HDK_ROOT_PROJECT_NAME_UPPER}_MISC_NO_HADOUKEN_BANNER)
+
+execute_process(
+  COMMAND git tag --points-at HEAD
+  WORKING_DIRECTORY ${HDK_ROOT_DIRECTORY}
+  OUTPUT_VARIABLE HDK_VERSION
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 message(STATUS [=[
 ################################################################################
-                     _===__                                      
-                   //-==;=_~                                   
-                  ||('   ~)      ___      __ __ __------_        
-             __----\|    _-_____////     --__---         -_      
-            / _----_---_==__   |_|     __=-                \     
-           / |  _______     ----_    -=__                  |     
-           |  \_/      -----___| |       =-_              _/     
-           |           \ \     \\\\      __ ---__       _ -      
-           |            \ /     ^^^         ---  -------         
-            \_         _|-                                   
-             \_________/                                     
-           _/   -----  -_.                                   
-          /_/|  || ||   _/--__                               
-          /  |_      _-       --_                            
-         /     ------            |                           
-        /      __------____/     |                           
-       |      /           /     /                            
-     /      /            |     |                             
-    (     /              |____|                              
-    /\__/                 |  |                               
-   (  /                  |  /-__                             
-   \  |                  (______)                            
-    \\\)                                                     
+#      ██╗░░██╗░█████╗░██████╗░░█████╗░██╗░░░██╗██╗░░██╗███████╗███╗░░██╗    #
+#      ██║░░██║██╔══██╗██╔══██╗██╔══██╗██║░░░██║██║░██╔╝██╔════╝████╗░██║    #
+#      ███████║███████║██║░░██║██║░░██║██║░░░██║█████═╝░█████╗░░██╔██╗██║    #
+#      ██╔══██║██╔══██║██║░░██║██║░░██║██║░░░██║██╔═██╗░██╔══╝░░██║╚████║    #
+#      ██║░░██║██║░░██║██████╔╝╚█████╔╝╚██████╔╝██║░╚██╗███████╗██║░╚███║    #
+#      ╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░░╚════╝░░╚═════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝    #                                            
 ################################################################################
-# hadouken - c++ project development environment                 version 0.9.8 #
+# c++ project development environment                          version ]=] ${HDK_VERSION} [=[ #
 ]=])
   
 endif()

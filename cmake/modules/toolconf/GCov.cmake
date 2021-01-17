@@ -14,15 +14,21 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-option(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV "Use gcov in project" OFF)
+option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV "Use gcov in project" OFF)
 
-if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
-    message(STATUS "[*] Configuring `gcov`")
+hdk_log_set_context("gcov")
+
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
+    hdk_log_status("Configuring tool `gcov`")
 
     find_program(GCOV "gcov")
     if(GCOV)
-        message(STATUS "\t[+] Found gcov: ${GCOV}")
+        hdk_log_status("Found `gcov` executable: ${GCOV}`")
     else()
-        message(FATAL_ERROR "\t[-] `gcov` not found in environment")
+        hdk_log_err("`gcov` not found in environment")
     endif()   
+else()
+    hdk_log_verbose("Skipping tool configuration for `gcov` (disabled)")
 endif()
+
+hdk_log_unset_context()

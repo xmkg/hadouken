@@ -14,8 +14,13 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK)
-    message(STATUS "[*] Configuring `cppcheck`")
+option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK "Use cppcheck in project" OFF)
+
+hdk_log_set_context("cppcheck")
+
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK)
+    hdk_log_status("Configuring tool `cppcheck`")
+
     # Adding clang-format target if executable is found
     find_program(CPPCHECK "cppcheck")
     if(CPPCHECK)
@@ -27,8 +32,13 @@ if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK)
             "--inline-suppr"
             "--suppressions-list=${CMAKE_SOURCE_DIR}/.cppcheck-suppress"
         )
-        message(STATUS "\t[+] Found cppcheck: ${CPPCHECK}")
+        hdk_log_status("Found `cppcheck` executable: ${CPPCHECK}`")
     else()
-        message(FATAL_ERROR "\t[+] `cppcheck` not found in environment")
-    endif()   
+        hdk_log_err("`cppcheck` not found in environment")
+    endif()
+
+else()
+    hdk_log_verbose("Skipping tool configuration for `cppcheck` (disabled)")
 endif()
+
+hdk_log_unset_context()

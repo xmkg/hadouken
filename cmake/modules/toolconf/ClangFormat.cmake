@@ -17,16 +17,23 @@
 # ______________________________________________________
 
 
-option(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT "Use clang-format in project" OFF)
+option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT "Use clang-format in project" OFF)
 
-if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT)
-    message(STATUS "[*] Configuring `clang-format`")
+hdk_log_set_context("clang-format")
+
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT)
+    hdk_log_status("Configuring tool `clang-format`")
+
     # Adding clang-format target if executable is found
     find_program(CLANG_FORMAT NAMES "clang-format" "clang-format-10" "clang-format-9" "clang-format-8" "clang-format-7" "clang-format-6" "clang-format-5" "clang-format-4" "clang-format-3")
     if(CLANG_FORMAT)
-        message(STATUS "\t[+] Found clang-format: ${CLANG_FORMAT}")
+        hdk_log_status("Found `clang-format` executable: ${CLANG_FORMAT}`")
     else()
-        message(FATAL_ERROR "\t[-] `clang-format` not found in environment")
+        hdk_log_err("`clang-format` not found in environment")
     endif()
+
+else()
+    hdk_log_verbose("Skipping tool configuration for `clang-format` (disabled)")
 endif()
 
+hdk_log_unset_context()
