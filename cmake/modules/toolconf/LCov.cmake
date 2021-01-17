@@ -14,15 +14,21 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-option(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV "Use lcov in project" OFF)
+option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV "Use lcov in project" OFF)
 
-if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV)
-    message(STATUS "[*] Configuring `lcov`")
+hdk_log_set_context("lcov")
+
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV)
+    hdk_log_status("Configuring tool `lcov`")
 
     find_program(LCOV NAMES lcov lcov.bat lcov.exe lcov.perl)
     if(LCOV)
-        message(STATUS "\t[+] Found lcov: ${LCOV}")
+        hdk_log_status("Found `lcov` executable: ${LCOV}`")
     else()
-        message(FATAL_ERROR "\t[-] `lcov` not found in environment")
-    endif()   
+        hdk_log_err("`lcov` not found in environment")
+    endif()
+else()
+    hdk_log_verbose("Skipping tool configuration for `lcov` (disabled)")
 endif()
+
+hdk_log_unset_context()

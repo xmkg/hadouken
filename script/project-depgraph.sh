@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # ______________________________________________________
-# Hadouken project documentation generation script.
+# Hadouken project dependency graph generation script
 #
-# @file 	project-generate-documentation.sh
+# @file 	project-test.sh
 # @author   Mustafa Kemal GILOR <mgilor@nettsi.com>
-# @date 	17.09.2020
+# @date 	18.01.2021
 # 
 # Copyright (c) Nettsi Informatics Technology Inc. 
 # All rights reserved. Licensed under the Apache 2.0 License. 
@@ -28,8 +28,13 @@ declare -A RP
 # Common headers
 source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
 
-if hadouken.get_top_level_project_name $SCRIPT_ROOT; then
-    ${HADOUKEN_CMAKE_COMMAND} --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.documentation -- -j $(nproc)
+env_cmake_version=$(hadouken.get_cmake_version)
+hadouken.compare_versions $env_cmake_version 3.13.5
+result=$?
+
+if [ $result -lt 2 ]; then
+  ${HADOUKEN_CMAKE_COMMAND} ${HADOUKEN_CMAKE_ARGUMENTS} --graphviz=${RP["BUILD"]}/cmake-target-dependencies.dot -S ${RP["PROJECT"]} -B ${RP["BUILD"]} ${@:1}
 else
-    echo "Could not determine top level project name."
+  cd ${RP["BUILD"]}
+  ${HADOUKEN_CMAKE_COMMAND} ${HADOUKEN_CMAKE_ARGUMENTS} --graphviz=cmake-target-dependencies.dot ${RP["PROJECT"]} ${@:1}
 fi

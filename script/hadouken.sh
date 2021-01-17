@@ -29,37 +29,24 @@ source $SCRIPT_ROOT/common.sh && hadouken.define_relative_paths $SCRIPT_ROOT RP
 
 readonly CURRENT_HADOUKEN_VERSION=$(git -C ${RP["BOILERPLATE"]} tag --points-at)
 
+readonly NO_BANNER_COMMANDS="-v|--version"
+
 case $1 in
     -nb|--no-banner)
       shift
     ;;
+    -v|--version|-c|--configure|-dg|--dependency-graph)
+    ;;
     *)
       echo -e "################################################################################"
-      echo -e "                     _===__                                  "    
-      echo -e "                   //-==;=_~                                 "  
-      echo -e "                  ||('   ~)      ___      __ __ __------_    "    
-      echo -e "             __----\|    _-_____////     --__---         -_  "    
-      echo -e "            / _----_---_==__   |_|     __=-                \ "    
-      echo -e "           / |  _______     ----_    -=__                  | "    
-      echo -e "           |  \_/      -----___| |       =-_              _/ "    
-      echo -e "           |           \ \     \\\\      __ ---__       _ -  "    
-      echo -e "           |            \ /     ^^^         ---  -------     "    
-      echo -e "            \_         _|-                                   "
-      echo -e "             \_________/                                     "
-      echo -e "           _/   -----  -_.                                   "
-      echo -e "          /_/|  || ||   _/--__                               "
-      echo -e "          /  |_      _-       --_                            "
-      echo -e "         /     ------            |                           "
-      echo -e "        /      __------____/     |                           "
-      echo -e "       |      /           /     /                            "
-      echo -e "     /      /            |     |                             "
-      echo -e "    (     /              |____|                              "
-      echo -e "    /\__/                 |  |                               "
-      echo -e "   (  /                  |  /-__                             "
-      echo -e "   \  |                  (______)                            "
-      echo -e "    \\\)                                                     "
+      echo -e "#      ██╗░░██╗░█████╗░██████╗░░█████╗░██╗░░░██╗██╗░░██╗███████╗███╗░░██╗    #"
+      echo -e "#      ██║░░██║██╔══██╗██╔══██╗██╔══██╗██║░░░██║██║░██╔╝██╔════╝████╗░██║    #"
+      echo -e "#      ███████║███████║██║░░██║██║░░██║██║░░░██║█████═╝░█████╗░░██╔██╗██║    #"
+      echo -e "#      ██╔══██║██╔══██║██║░░██║██║░░██║██║░░░██║██╔═██╗░██╔══╝░░██║╚████║    #"
+      echo -e "#      ██║░░██║██║░░██║██████╔╝╚█████╔╝╚██████╔╝██║░╚██╗███████╗██║░╚███║    #"
+      echo -e "#      ╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░░╚════╝░░╚═════╝░╚═╝░░╚═╝╚══════╝╚═╝░░╚══╝    #"
       echo -e "################################################################################"
-      echo -e "# hadouken - c++ project development environment            version ${CURRENT_HADOUKEN_VERSION} "  
+      echo -e "# c++ project development environment                           version ${CURRENT_HADOUKEN_VERSION} #"
       echo -e ""
     ;;
 esac
@@ -120,6 +107,9 @@ case $1 in
     -ti|--tidy)
       ${RP["SCRIPT"]}/project-tidy.sh ${@:2}
     ;;
+    -dg|--dependency-graph)
+      ${RP["SCRIPT"]}/project-depgraph.sh ${@:2}
+    ;;
     -u|--upgrade)
       ${RP["SCRIPT"]}/update-hadouken.sh ${@:2}
     ;;
@@ -128,6 +118,10 @@ case $1 in
       ${RP["SCRIPT"]}/project-configure.sh ${@:2}
       ${RP["SCRIPT"]}/project-build.sh ${@:2}
       ${RP["SCRIPT"]}/project-test.sh ${@:2}
+    ;;
+    -v|--version)
+      echo "Hadouken version ${CURRENT_HADOUKEN_VERSION}"
+      echo "(C) Nettsi Informatics Technology Incorporated, 2021"
     ;;
     *)
       echo "¯\_(ツ)_/¯ ... i can't hadouken with that. "
@@ -173,6 +167,10 @@ case $1 in
       echo -e "\t-ti|--tidy\trun all clang-tidy targets for the project."
       echo -e "\t\t| run all tidy targets defined for the project. Any extra arguments will be forwarded to CMake."
       echo -e "\t\t| example: \`hadouken --tidy\`\t\t# call project.tidy target via CMake."
+      echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
+      echo -e "\t-dg|--dependency-graph\tGenerate CMake target dependency graph in graphviz file format."
+      echo -e "\t\t| Any extra arguments will be forwarded to CMake."
+      echo -e "\t\t| example: \`hadouken --dependency-graph\`\t\t# generate cmake-target-dependencies.dot file in BUILD folder."
       echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "
       echo -e "\t-a|--all\tclean->configure->build->pack project"
       echo -e "\t- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - "

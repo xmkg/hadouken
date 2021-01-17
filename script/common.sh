@@ -15,6 +15,10 @@
 # ______________________________________________________
 
 
+readonly HADOUKEN_CMAKE_COMMAND="cmake"
+readonly HADOUKEN_CMAKE_ARGUMENTS="-Wno-dev --no-warn-unused-cli" # --log-context
+
+
 # Declare an associative array which contains some common paths
 hadouken.define_relative_paths(){
     if [[ -z "$1" ]]; then
@@ -192,7 +196,7 @@ SET(${PROJECT_NAME_SANITIZED}_DISABLE_INTERFACE_TARGETS      FALSE CACHE BOOL "E
 include(.hadouken/hadouken.cmake)
 
 # Print VCS status to stdout
-git_print_status()
+hdk_git_print_status()
 
 # Components of the project
 add_subdirectory(app)

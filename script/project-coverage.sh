@@ -33,15 +33,15 @@ if hadouken.get_top_level_project_name $SCRIPT_ROOT; then
     case $1 in
       -gx|--gcov-xml)
         shift
-        cmake --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.gcovr.xml -- -j $(nproc)
+        ${HADOUKEN_CMAKE_COMMAND} --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.gcovr.xml -- -j $(nproc)
       ;;
       -gh|--gcov-html)
         shift
-        cmake --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.gcovr.html -- -j $(nproc)
+        ${HADOUKEN_CMAKE_COMMAND} --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.gcovr.html -- -j $(nproc)
       ;;
       -l|--lcov)
         shift
-        cmake --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.lcov -- -j $(nproc)
+        ${HADOUKEN_CMAKE_COMMAND} --build ${RP["BUILD"]} ${@:1} --target $hadouken_top_level_project_name.lcov -- -j $(nproc)
       ;;
       *)
         echo "Unrecognized argument. Valid arguments are: "

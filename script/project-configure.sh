@@ -40,10 +40,10 @@ hadouken.compare_versions $env_cmake_version 3.13.5
 result=$?
 
 if [ $result -lt 2 ]; then
-  cmake -S ${RP["PROJECT"]} -B ${RP["BUILD"]} ${@:1}
+  ${HADOUKEN_CMAKE_COMMAND} ${HADOUKEN_CMAKE_ARGUMENTS} -S ${RP["PROJECT"]} -B ${RP["BUILD"]} ${@:1}
 else
   cd ${RP["BUILD"]}
-  cmake ${RP["PROJECT"]} ${@:1}
+  ${HADOUKEN_CMAKE_COMMAND} ${HADOUKEN_CMAKE_ARGUMENTS} ${RP["PROJECT"]} ${@:1}
 fi
 
 
