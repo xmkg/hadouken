@@ -4,13 +4,13 @@
 
 ****
 
-# NETTSI C++ Project Development Environment
+# HADOUKEN: NETTSI C++ Project Development Environment
 
 > `(codename: HADOUKEN)`
 
 ## Table of contents
 
-- [NETTSI C++ Project Development Environment](#nettsi-c-project-development-environment)
+- [HADOUKEN: NETTSI C++ Project Development Environment](#hadouken-nettsi-c-project-development-environment)
   - [Table of contents](#table-of-contents)
   - [Preface](#preface)
   - [Author](#author)
@@ -68,15 +68,24 @@
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
         - [WORKING_DIRECTORY (optional)](#working_directory-optional)
+      - [TargetProperties](#targetproperties)
+        - [hdk_print_target_properties(\<target_name\>)](#hdk_print_target_propertiestarget_name)
+      - [EnvironmentUtilities](#environmentutilities)
+        - [hdk_read_environment_file(\<env_filename\> \<prefix\> [optional] \<suffix\> [optional])](#hdk_read_environment_fileenv_filename-prefix-optional-suffix-optional)
+      - [TargetUtilities](#targetutilities)
+        - [hdk_copy_target_artifact_to(TARGET_NAME \<target\> DESTINATION \<destination_path\> STEP \<step\>)](#hdk_copy_target_artifact_totarget_name-target-destination-destination_path-step-step)
       - [Git](#git)
-        - [hdk_git_get_branch_name(DIRECTORY \<dir\>)](#hdk_git_get_branch_namedirectory-dir)
-        - [hdk_git_get_head_commit_hash(DIRECTORY \<dir\>)](#hdk_git_get_head_commit_hashdirectory-dir)
-        - [hdk_git_is_worktree_dirty(DIRECTORY \<dir\>)](#hdk_git_is_worktree_dirtydirectory-dir)
-        - [hdk_git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)](#hdk_git_get_configdirectory-dir-config_key-key_to_be_retrieved)
+        - [hdk_git_get_branch_name(OUTPUT_VARIABLE DIRECTORY \<dir\>)](#hdk_git_get_branch_nameoutput_variable-directory-dir)
+        - [hdk_git_get_head_commit_hash(OUTPUT_VARIABLE DIRECTORY \<dir\>)](#hdk_git_get_head_commit_hashoutput_variable-directory-dir)
+        - [hdk_git_is_worktree_dirty(OUTPUT_VARIABLE DIRECTORY \<dir\>)](#hdk_git_is_worktree_dirtyoutput_variable-directory-dir)
+        - [hdk_git_get_config(OUTPUT_VARIABLE DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)](#hdk_git_get_configoutput_variable-directory-dir-config_key-key_to_be_retrieved)
+        - [hdk_git_get_tag(OUTPUT_VARIABLE DIRECTORY \<dir\> COMMIT \<commit_hash\> [optional])](#hdk_git_get_tagoutput_variable-directory-dir-commit-commit_hash-optional)
+        - [hdk_target_needs_git_lfs_files(TARGET \<target\> LFS_ROOT \<lfs_root\> LFS_FILE_LIST \<lfs_files...\>)](#hdk_target_needs_git_lfs_filestarget-target-lfs_root-lfs_root-lfs_file_list-lfs_files)
+        - [hdk_git_metadata_as_compile_defn(PREFIX \<prefix\> [optional] DIRECTORY \<directory\> [optional])](#hdk_git_metadata_as_compile_defnprefix-prefix-optional-directory-directory-optional)
         - [hdk_git_print_status()](#hdk_git_print_status)
       - [Conan](#conan)
       - [HardwareConcurrency](#hardwareconcurrency)
-    - [Build variant determination](#build-variant-determination)
+    - [Build variant determination and compiler diagnostic flags (warnings)](#build-variant-determination-and-compiler-diagnostic-flags-warnings)
     - [Finders](#finders)
     - [Feature check](#feature-check)
   - [Internal modules](#internal-modules)
@@ -1353,67 +1362,232 @@ Specify working directory for the created target. It is only valid for the follo
     )
 ```
 
+#### TargetProperties
+
+CMake module which provides information about a target's properties.
+
+##### hdk_print_target_properties(\<target_name\>)
+
+Prints all properties of the target specified. Useful for debug purposes.
+
+Example:
+
+```cmake
+    project(my_lib)
+    make_target(TYPE STATIC)
+
+    # Print properties of the target
+    hdk_print_target_properties(my_lib)
+```
+
+Possible output:
+
+```bash
+    [cmake] -- --------------------------------------------------------
+    [cmake] -- Printing properties of target `my_lib`
+    [cmake] -- --------------------------------------------------------
+    [cmake] --    my_lib AUTOGEN_ORIGIN_DEPENDS = ON
+    [cmake] --    my_lib AUTOMOC_COMPILER_PREDEFINES = ON
+    [cmake] --    my_lib AUTOMOC_MACRO_NAMES = Q_OBJECT
+    [cmake] --    my_lib AUTOMOC_PATH_PREFIX = OFF
+    [cmake] --    my_lib BINARY_DIR = /workspace/build
+    [cmake] --    my_lib BUILD_WITH_INSTALL_RPATH = OFF
+    [cmake] --    my_lib IMPORTED = FALSE
+    [cmake] --    my_lib IMPORTED_GLOBAL = FALSE
+    [cmake] --    my_lib INCLUDE_DIRECTORIES = /workspace/include/
+    [cmake] --    my_lib INSTALL_RPATH = 
+    [cmake] --    my_lib INSTALL_RPATH_USE_LINK_PATH = OFF
+    [cmake] --    my_lib INTERFACE_INCLUDE_DIRECTORIES = /workspace/include/
+    [cmake] --    my_lib INTERFACE_LINK_LIBRARIES = gcov
+    [cmake] --    my_lib LINK_LIBRARIES = gcov
+    [cmake] --    my_lib NAME = my_lib
+    [cmake] --    my_lib PCH_WARN_INVALID = ON
+    [cmake] --    my_lib RULE_LAUNCH_COMPILE = /usr/bin/ccache
+    [cmake] --    my_lib SKIP_BUILD_RPATH = OFF
+    [cmake] --    my_lib SOURCES = /workspace/source.cpp
+    [cmake] --    my_lib SOURCE_DIR = /workspace
+    [cmake] --    my_lib TYPE = STATIC_LIBRARY
+    [cmake] --    my_lib UNITY_BUILD_BATCH_SIZE = 8
+    [cmake] --    my_lib UNITY_BUILD_MODE = BATCH
+    [cmake] --    my_lib VISIBILITY_INLINES_HIDDEN = OFF
+```
+
+#### EnvironmentUtilities
+
+CMake module which contains utility functions for interacting with the environment.
+
+##### hdk_read_environment_file(\<env_filename\> \<prefix\> [optional] \<suffix\> [optional])
+
+Reads a dotenv (.env) file, and declares a CMake variable for each environment variable in it.
+
+Example:
+
+.env file content (test.env):
+
+```bash
+    # this is a comment an will be skipped
+    HADOUKEN="is great"
+    VERY="nice"
+```
+
+```cmake
+    hdk_read_environment_file("test.env", PRE_ _SUF)
+    # Now the environment variables in .env file are declared as
+    # `PRE_HADOUKEN_SUF` and `PRE_VERY_SUF`, containing the values specified
+    # in the file.
+```
+
+#### TargetUtilities
+
+CMake module which contains utility functions for interacting with CMake targets.
+
+##### hdk_copy_target_artifact_to(TARGET_NAME \<target\> DESTINATION \<destination_path\> STEP \<step\>)
+
+Copy the artifact produced by `<target>` to `<destination_path>` on `<step>`. Step can be `PRE_BUILD, PRE_LINK or POST_BUILD`.
+
+Example:
+
+```cmake
+    project(my_executable)
+
+    make_target(TYPE EXECUTABLE)
+
+    hdk_copy_target_artifact_to(
+        STEP POST_BUILD
+        TARGET_NAME my_executable
+        DESTINATION /tmp
+    )
+
+    # Executable produced by my_executable target will be copied to /tmp
+    # after target `my_executable` gets built.  
+```
+
 #### Git
 
 This module has several functions to invoke git functionality from CMake.
 
-##### hdk_git_get_branch_name(DIRECTORY \<dir\>)
+##### hdk_git_get_branch_name(OUTPUT_VARIABLE DIRECTORY \<dir\>)
 
-A function to retrieve active branch name for the project. Sets both `GIT_BRANCH_NAME` variable and `GIT_BRANCH_NAME` (global) property.
-
-Example:
-
-```cmake
-    hdk_git_get_branch_name(DIRECTORY ${PROJECT_SOURCE_DIR})
-    # ${GIT_BRANCH_NAME} now contains the branch name of the git repository in ${PROJECT_SOURCE_DIR}
-    # or alternatively;
-    get_property(ACTIVE_BRANCH_NAME GLOBAL PROPERTY GIT_BRANCH_NAME)
-    # ${ACTIVE_BRANCH_NAME} now contains the branch name.
-    # see: https://cmake.org/cmake/help/latest/command/get_property.html for further
-    # information about get_property usage.
-```
-
-##### hdk_git_get_head_commit_hash(DIRECTORY \<dir\>)
-
-A function to retrieve commit hash of the head for the git repository located in specified directory. Sets both `GIT_HEAD_COMMIT_HASH` variable and `GIT_HEAD_COMMIT_HASH` (global) property.
+A function to retrieve active branch name for the project. Sets `OUTPUT_VARIABLE` variable to current branch name.
 
 Example:
 
 ```cmake
-    hdk_git_get_head_commit_hash(DIRECTORY ${PROJECT_SOURCE_DIR})
-    # ${GIT_HEAD_COMMIT_HASH} now contains the head commit hash of the git repository in ${PROJECT_SOURCE_DIR}
-    # or alternatively;
-    get_property(ACTIVE_BRANCH_CH GLOBAL PROPERTY GIT_HEAD_COMMIT_HASH)
-    # ${ACTIVE_BRANCH_CH} now contains the head commit hash.
+    hdk_git_get_branch_name(CURRENT_BRANCH DIRECTORY ${PROJECT_SOURCE_DIR})
+    # ${CURRENT_BRANCH} now contains the branch name of the git repository in ${PROJECT_SOURCE_DIR}
 ```
 
-##### hdk_git_is_worktree_dirty(DIRECTORY \<dir\>)
+##### hdk_git_get_head_commit_hash(OUTPUT_VARIABLE DIRECTORY \<dir\>)
 
-A function to retrieve whether current work tree for the git repository located in specified directory is dirty. Sets both `GIT_IS_WORKTREE_DIRTY` variable and `GIT_IS_WORKTREE_DIRTY` (global) property.
+A function to retrieve commit hash of the head for the git repository located in specified directory. Sets  `OUTPUT_VARIABLE` variable to head commit hash of git repository located at `<dir>`.
 
 Example:
 
 ```cmake
-    hdk_git_is_worktree_dirty(DIRECTORY ${PROJECT_SOURCE_DIR})
-    # ${GIT_IS_WORKTREE_DIRTY} now contains whether worktree of the git repository in ${PROJECT_SOURCE_DIR} is dirty or not.
-    # or alternatively;
-    get_property(ACTIVE_BRANCH_DIRTY GLOBAL PROPERTY GIT_IS_WORKTREE_DIRTY)
-    # ${ACTIVE_BRANCH_DIRTY} now contains the dirtiness status.
+    hdk_git_get_head_commit_hash(HEAD_COMMIT DIRECTORY ${PROJECT_SOURCE_DIR})
+    # ${HEAD_COMMIT} now contains the head commit hash of the git repository in ${PROJECT_SOURCE_DIR}
 ```
 
-##### hdk_git_get_config(DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)
+##### hdk_git_is_worktree_dirty(OUTPUT_VARIABLE DIRECTORY \<dir\>)
 
-A function to retrieve a git configuration by its' key name. Sets both `GIT_CONFIG_VALUE` variable and `GIT_CONFIG_VALUE` (global) property.
+A function to retrieve whether current work tree for the git repository located in specified directory is dirty. Sets `OUTPUT_VARIABLE` variable to dirtiness status of git repository located at `<dir>`.
 
 Example:
 
 ```cmake
-    hdk_git_get_config(DIRECTORY ${PROJECT_SOURCE_DIR} CONFIG_KEY user.email)
-    # ${GIT_CONFIG_VALUE} now contains the user.email configuration value of the git repository located in ${PROJECT_SOURCE_DIR} folder.
-    # or alternatively;
-    get_property(ACTIVE_BRANCH_UEMAIL GLOBAL PROPERTY GIT_CONFIG_VALUE)
-    # ${ACTIVE_BRANCH_UEMAIL} now contains the dirtiness status.
+    hdk_git_is_worktree_dirty(IS_DIRTY DIRECTORY ${PROJECT_SOURCE_DIR})
+    # ${IS_DIRTY} now contains whether worktree of the git repository in ${PROJECT_SOURCE_DIR} is dirty or not.
 ```
+
+##### hdk_git_get_config(OUTPUT_VARIABLE DIRECTORY \<dir\> CONFIG_KEY \<key_to_be_retrieved\>)
+
+A function to retrieve a git configuration by its' key name. Sets `OUTPUT_VARIABLE` variable to value of the configuration value specified by `CONFIG_KEY` in git repository located at `<dir>`.
+
+Example:
+
+```cmake
+    hdk_git_get_config(USER_MAIL DIRECTORY ${PROJECT_SOURCE_DIR} CONFIG_KEY user.email)
+    # ${USER_MAIL} now contains the user.email configuration value of the git repository located in ${PROJECT_SOURCE_DIR} folder.
+```
+
+##### hdk_git_get_tag(OUTPUT_VARIABLE DIRECTORY \<dir\> COMMIT \<commit_hash\> [optional])
+
+A function to retrieve all tags pointing to `<commit_hash>` in git repository located at `<dir>`. Commit hash is defaulted to HEAD if not specified. Sets `OUTPUT_VARIABLE` to found tags.
+
+```cmake
+    hdk_git_get_tag(TAGS DIRECTORY ${PROJECT_SOURCE_DIR})
+    # ${TAGS} now contains the all tags pointing to head in git repository located at ${PROJECT_SOURCE_DIR} folder.
+```
+
+##### hdk_target_needs_git_lfs_files(TARGET \<target\> LFS_ROOT \<lfs_root\> LFS_FILE_LIST \<lfs_files...\>)
+
+A function to create a dependency to `<target>` target which fetches all git lfs files specified in `<lfs_files>` from the git lfs repository at `<lfs_root>` on CMake configuration.
+
+Example:
+
+```cmake
+    project(example.unit_test)
+
+    # This unit test needs `${PROJECT_SOURCE_DIR}/data/json-files/geo-location.json`
+    # `${PROJECT_SOURCE_DIR}/data/bin-files/archive.bin` files to be present in order
+    # to run.
+    make_target(
+        TYPE UNIT_TEST
+        SOURCES ${test_sources} ut_example.cpp
+    )
+
+    # This will cause `${PROJECT_SOURCE_DIR}/data/json-files/geo-location.json` and 
+    # `${PROJECT_SOURCE_DIR}/data/bin-files/archive.bin` to be fetched from git large
+    # file storage on CMake configure step.
+    # This ensures the files needed by the unit test are present when unit test is 
+    # being build and being run.
+    hdk_target_needs_git_lfs_files(
+        # LFS file dependent target
+        example.unit_test
+        # LFS repository path
+        ${PROJECT_SOURCE_DIR}/data
+        # LFS file list (semicolon separated, one file per line)
+        [=[
+        json-files/geo-location.json; 
+        bin-files/archive.bin
+        ]=]
+    )
+```
+
+##### hdk_git_metadata_as_compile_defn(PREFIX \<prefix\> [optional] DIRECTORY \<directory\> [optional])
+
+A function to export some important version control (git) variables as compile time definitions (preprocessor macros). Exported variables will be available to the all compiled code under the project. Variables are gathered from git repository located at `<directory>`. When no explicit directory is given as parameter, DIRECTORY will be defaulted to `${CMAKE_CURRENT_SOURCE_DIR}`.
+
+Exported variables are as follows:
+
+- `<prefix>`GIT_BRANCH_NAME
+- `<prefix>`GIT_COMMIT_ID
+- `<prefix>`GIT_WORKTREE_DIRTY
+- `<prefix>`GIT_AUTHOR_NAME (current git author name)
+- `<prefix>`GIT_AUTHOR_EMAIL (current git author e-mail )
+
+Example:
+
+```cmake
+    hdk_git_metadata_as_compile_defn(PREFIX MYPROJ_)
+```
+
+Later on, in code
+
+```cpp
+
+    #include <cstdio>
+
+    auto main(void) -> int {
+        std::printf("%s\n", MYPROJ_GIT_BRANCH_NAME); 
+        std::printf("%s\n", MYPROJ_GIT_COMMIT_ID); 
+        std::printf("%s\n", MYPROJ_GIT_WORKTREE_DIRTY); 
+        std::printf("%s\n", MYPROJ_GIT_AUTHOR_NAME); 
+        std::printf("%s\n", MYPROJ_GIT_AUTHOR_EMAIL); 
+    }
+
+```
+
 
 ##### hdk_git_print_status()
 
@@ -1422,8 +1596,9 @@ Print branch, commit hash and dirtiness status of the git repository specified i
 ```cmake
     hdk_git_print_status()
     # Possible output to stdout might be:
-    # [+] VCS Status
+    # VCS Status
     #   Branch: master
+    #   tag: v.0.14.0
     #   Commit: 8f14b151ec1aba749f5ac579b6f4f8209738dee5
     #   Dirty: false
 ```
@@ -1453,9 +1628,15 @@ conan_cmake_run(REQUIRES boost/1.70.0
 
 A CMake module to retrieve logical core count of the machine. Sets `${HARDWARE_CONCURRENCY}` CMake variable.
 
-### Build variant determination
+### Build variant determination and compiler diagnostic flags (warnings)
 
-This modules are designed for determining the common and compiler specific compilation parameters according to the build variant. The base functionality is provided by `BuildVariant.cmake` module, which determines the compiler (using CMakeDetermine[C/CXX]Compiler CMake modules), sets the build variant if not set by the user (default is RelWithDebugInfo), adjusts build variant specific compilation parameters, then includes the compiler specific module. Compiler-specific modules are suffixed with toolchain/compiler name and contains the distinct compilation flags for that compiler. These modules are used to enable some useful warnings, and also turn warnings into errors in release builds.
+This modules are designed for determining the common and compiler specific compilation parameters according to the build variant. The base functionality is provided by `BuildVariant.cmake` module, which determines the compiler (using CMakeDetermine[C/CXX]Compiler CMake modules), sets the build variant if not set by the user (default is RelWithDebInfo), adjusts build variant specific compilation parameters, then includes the compiler specific module. Compiler-specific modules are suffixed with toolchain/compiler name and contains the distinct compilation flags for that compiler. These modules are used to enable some useful warnings, and also turn warnings into errors in release builds.
+
+Warnings are important for keeping a bug-free and clean code base. Therefore, hadouken by default passes "-Wall" on debug and "-Wall -Werror" on release configuration to the compiler. On top of that, hadouken will pass additional useful warning flags depending on compiler version. These flags are contained in compiler specific diagnostic modules.
+
+Hadouken currently supports `GCC` and `Clang` specific diagnostics flag modules. These modules enables several important compiler warning flags. Diagnostic flag modules are compiler version aware, therefore the compiler warning flags which requires compiler version higher than current compiler version will not be enabled on configuration.
+
+See `DiagnosticFlags_GCC.cmake` and `DiagnosticFlags_Clang.cmake` for inspecting which version-specific, extra warning flags are being passed to the compiler.
 
 ### Finders
 
@@ -1572,6 +1753,7 @@ VSCode Remote Containers Documentation: <https://code.visualstudio.com/docs/remo
 
 * vscode developers: for creating such a flexible, versatile code editor and a huge ecosystem. <https://github.com/microsoft/vscode>
 * vscode-remote-containers team: <https://github.com/microsoft/vscode-dev-containers>
+* cmake-conan developers: <https://github.com/conan-io/cmake-conan>
 
 ## License
 

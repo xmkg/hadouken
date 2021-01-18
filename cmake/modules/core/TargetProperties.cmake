@@ -5,7 +5,7 @@
 #
 # Mainly used for diagnosis and debugging purposes.
 # 
-# @file 	PrintTargetProperties.cmake
+# @file 	TargetProperties.cmake
 # @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
 # @date 	17.01.2021
 # 
