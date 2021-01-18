@@ -45,16 +45,19 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
     hdk_log_status("Executing conan... (please be patient)")
     conan_cmake_run(
         REQUIRES ${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}
-        BASIC_SETUP CMAKE_TARGETS
+        GENERATORS cmake_find_package
         BUILD missing
         OUTPUT_QUIET
     )
     hdk_log_status("Conan execution done")
 
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HDK_ROOT_PROJECT_BINARY_DIR}) # (mgilor): Can we change this_?
+    find_package(${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME} REQUIRED)
+
     make_target(
         NAME ${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark    
         TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp 
-        LINK PUBLIC CONAN_PKG::benchmark
+        LINK PUBLIC benchmark::benchmark
     )
     hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark` target")
 
