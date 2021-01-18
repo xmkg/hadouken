@@ -46,16 +46,20 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
     hdk_log_status("Executing conan... (please be patient)")
     conan_cmake_run(
         REQUIRES ${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}
-        BASIC_SETUP CMAKE_TARGETS
+        GENERATORS cmake_find_package
         BUILD missing
         OUTPUT_QUIET
     )
+
     hdk_log_status("Conan execution done")
+
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HDK_ROOT_PROJECT_BINARY_DIR})
+    find_package(GTest REQUIRED)
 
     make_target(
         NAME ${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.test 
         TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp 
-        LINK PUBLIC CONAN_PKG::gtest
+        LINK PUBLIC GTest::GTest
     )
     hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.test` target")
    
