@@ -201,7 +201,7 @@ function(hdk_target_needs_git_lfs_files TARGET LFS_ROOT LFS_FILE_LIST)
     get_target_property(TARGET_BINARY_DIR ${TARGET} BINARY_DIR)
 
     add_custom_command(
-        OUTPUT ${ACU_CL_BUILD_DIRECTORY}/.has_${TARGET}_lfs_files
+        OUTPUT ${TARGET_BINARY_DIR}/.has_${TARGET}_lfs_files
         COMMAND git -C "${LFS_ROOT}" lfs pull --include="${LFS_FILE_LIST}"
         COMMAND touch ${TARGET_BINARY_DIR}/.has_${TARGET}_lfs_files
         COMMENT "Fetching LFS files for ${TARGET}"
