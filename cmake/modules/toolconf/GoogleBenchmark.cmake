@@ -51,7 +51,7 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
     )
     hdk_log_status("Conan execution done")
 
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HDK_ROOT_PROJECT_BINARY_DIR}) # (mgilor): Can we change this_?
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HDK_ROOT_PROJECT_BINARY_DIR})
     find_package(${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME} REQUIRED)
 
     make_target(

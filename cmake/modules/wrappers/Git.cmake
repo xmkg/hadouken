@@ -143,32 +143,36 @@ function (hdk_git_print_status)
 endfunction()
 
 function (hdk_git_metadata_as_compile_defn)
-    cmake_parse_arguments(ARGS "" "PREFIX;" "" ${ARGN})
+    cmake_parse_arguments(ARGS "" "PREFIX;" "DIRECTORY;" ${ARGN})
+
+    if(NOT ARGS_DIRECTORY)
+        set(ARGS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
 
     hdk_git_get_branch_name(
         GIT_BRANCH_NAME
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${ARGS_DIRECTORY}
     )
 
     hdk_git_get_head_commit_hash(
         GIT_HEAD_COMMIT_HASH
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${ARGS_DIRECTORY}
     )
 
     hdk_git_is_worktree_dirty(
         GIT_IS_WORKTREE_DIRTY
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${ARGS_DIRECTORY}
     )
 
     hdk_git_get_config(
         GIT_CONFIG_USER_NAME
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${ARGS_DIRECTORY}
         CONFIG_KEY user.name    
     )
 
     hdk_git_get_config(
         GIT_CONFIG_USER_EMAIL
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${ARGS_DIRECTORY}
         CONFIG_KEY user.email    
     )
 
