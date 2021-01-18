@@ -31,27 +31,15 @@ string(TOUPPER ${HDK_ROOT_PROJECT_NAME} HDK_ROOT_PROJECT_NAME_UPPER)
 # Maket it C preprocessor macro friently
 string(REGEX REPLACE "[^a-zA-Z0-9]" "_" HDK_ROOT_PROJECT_NAME_UPPER ${HDK_ROOT_PROJECT_NAME_UPPER})
 
-
 # Hadouken options
-set(${HDK_ROOT_PROJECT_NAME_UPPER}_CXX_FLAGS_DEBUG                                   "-O0 -g"           )
+set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_DEBUG                               "-O0 -g"           )
 set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_RELEASE                             "-O3 -DNDEBUG"     )
 set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_RELWITHDEBINFO                      "-O3 -g -DNDEBUG"  )
 set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_MINSIZEREL                          "-Os -DNDEBUG"     )
-set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_TREAT_WARNINGS_AS_ERRORS_ON_DEBUG         OFF                )
-set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_TREAT_WARNINGS_AS_ERRORS_ON_RELEASE       ON                 )
 
 # Enable testing for the project
 enable_testing()
-# Project-wide C++ standard declaration
-# (mgilor): It is a bit restrictive, removed for now.
-# set(CMAKE_CXX_STANDARD 17)
-#add_compile_options(-std=c++2a)
-#add_compile_options(-fconcepts)
-# Make C++ standard required.
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Show message context (new on CMake 3.17)
-# option(CMAKE_MESSAGE_CONTEXT_SHOW TRUE)
 # Warn on deprecated logs
 option(CMAKE_WARN_DEPRECATED  ON) 
 # Export compile commands for other tool usage
