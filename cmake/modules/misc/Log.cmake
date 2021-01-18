@@ -1,12 +1,11 @@
 #!/usr/bin/env cmake
 
 # ______________________________________________________
-# Contains helper functions to gather header and source files from projects
-# containing source files in `include/src` format.
+# Logging utilities for Hadouken.
 # 
-# @file 	MakeCompilationUnit.cmake
+# @file 	Log.cmake
 # @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
-# @date 	14.02.2020
+# @date 	17.01.2021
 # 
 # Copyright (c) Nettsi Informatics Technology Inc. 
 # All rights reserved. Licensed under the Apache 2.0 License. 
