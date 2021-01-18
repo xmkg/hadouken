@@ -12,7 +12,7 @@
         ".vscode": true,
         "hadouken": true,
     },
-    "cmake.configureArgs": ["-Wno-dev", "--no-warn-unused-cli"],
+    "cmake.configureArgs": ["-Wno-dev"],
     "cmake.configureOnOpen": true,
     "cmake.generator": "Unix Makefiles",
     "cmake.debugConfig": {},
@@ -41,5 +41,5 @@
     ],
     "doxdocgen.generic.dateFormat": "DD.MM.YYYY",
     "doxdocgen.generic.dateTemplate": "@date         {date}",
-    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools"
 }
