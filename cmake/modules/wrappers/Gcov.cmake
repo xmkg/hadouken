@@ -70,7 +70,7 @@
 #      make my_coverage_target
 #
 
-if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
 
     include(CMakeParseArguments)
 

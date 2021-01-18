@@ -14,13 +14,18 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
+
+option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH "Use google benchmark in project" OFF)
+
+hdk_log_set_context("benchmark")
+
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
 
     # Required conan package and package version
     set(HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME "benchmark")
     set(HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION "1.5.2")
 
-    message(STATUS "[*] Configuring `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}` (${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION})")
+    hdk_log_status("Configuring tool `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}` (${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION})")
 
     # Determine installed "benchmark" package version
     execute_process(COMMAND /usr/bin/env conan search ${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME} OUTPUT_VARIABLE CONAN_SEARCH_RESULT)
@@ -29,25 +34,35 @@ if(${PB_PARENT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
 
     if(NOT ${CMAKE_MATCH_COUNT} LESS 4)
         if(${CMAKE_MATCH_1} STREQUAL ${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION})
-            message(STATUS "\t[+] Conan package  `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}` present in environment")
+            hdk_log_status("Conan package  `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}` present in environment")
         else()
-            message(STATUS "\t[?] Conan package is present with name `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}` but version does not match with required version `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}` != `${CMAKE_MATCH_1}`, it will be fetched from remote")
+            hdk_log_status("Conan package is present with name `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}` but version does not match with required version `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}` != `${CMAKE_MATCH_1}`, it will be fetched from remote")
         endif()
     else()
-        message(STATUS "\t[-] Conan package  `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}` is not present in environment, it will be fetched from remote")
+       hdk_log_status("Conan package  `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}` is not present in environment, it will be fetched from remote")
     endif()
 
+    hdk_log_status("Executing conan... (please be patient)")
     conan_cmake_run(
         REQUIRES ${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}
-        BASIC_SETUP CMAKE_TARGETS
+        GENERATORS cmake_find_package
         BUILD missing
         OUTPUT_QUIET
     )
+    hdk_log_status("Conan execution done")
+
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HDK_ROOT_PROJECT_BINARY_DIR})
+    find_package(${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME} REQUIRED)
 
     make_target(
-        NAME ${PB_PARENT_PROJECT_NAME}.hadouken_autotargets.benchmark    
+        NAME ${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark    
         TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp 
-        LINK PUBLIC CONAN_PKG::benchmark
+        LINK PUBLIC benchmark::benchmark
     )
+    hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark` target")
 
+else()
+    hdk_log_verbose("Skipping tool configuration for `google benchmark` (disabled)")
 endif()
+
+hdk_log_unset_context()
