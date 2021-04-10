@@ -22,3 +22,10 @@ function(hdk_list_transform_prepend INPUT_LIST OUTPUT_VARIABLE PREFIX)
     endforeach()
     set(${OUTPUT_VARIABLE} "${temp}" PARENT_SCOPE)
 endfunction()
+
+# capitalize and sanitize name
+function(hdk_capsan_name NAME OUTPUT_VARIABLE)
+    string(TOUPPER ${NAME} TEMP)
+    string(REGEX REPLACE "[^a-zA-Z0-9]" "_" TEMP ${TEMP})
+    set(${OUTPUT_VARIABLE} "${TEMP}" PARENT_SCOPE)
+endfunction()

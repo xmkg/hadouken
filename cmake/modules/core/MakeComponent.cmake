@@ -109,6 +109,13 @@ function(make_component COMPONENT_NAME)
         endif()
     endif()
 
+    hdk_capsan_name(COMPONENT_NAME COMPONENT_NAME_UPPER)
+
+    if(${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${COMPONENT_NAME_UPPER})
+        hdk_log_verbose("make_component: Project ${COMPONENT_NAME} skipped since project ${COMPONENT_NAME} build is disabled via ${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${COMPONENT_NAME_UPPER} option")
+        return ()
+    endif()
+
     # Define a project for the component
     project(${COMPONENT_NAME}
         VERSION ${MAKE_COMPONENT_ARGS_VERSION}

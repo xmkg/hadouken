@@ -73,6 +73,7 @@
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
         - [WORKING_DIRECTORY (optional)](#working_directory-optional)
+        - [Excluding targets from build](#excluding-targets-from-build)
       - [MakeComponent](#makecomponent)
       - [TargetProperties](#targetproperties)
         - [hdk_print_target_properties(\<target_name\>)](#hdk_print_target_propertiestarget_name)
@@ -344,8 +345,8 @@ then
    # You might add your ssh keys automatically here, but it is not recommended
    # for security reasons.
 fi
-```
 
+```
 
 ### Tool integration modules
 
@@ -1058,7 +1059,6 @@ Another example:
         ALL_OUTPUT_NAME <PROJECT_NAME>
     )
 
-
 ```
 
 ##### PREFIX (optional)
@@ -1487,6 +1487,81 @@ Specify working directory for the created target. It is only valid for the follo
         NO_AUTO_COMPILATION_UNIT
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} # Set working directory to ${PROJECT_SOURCE_DIR}
     )
+```
+
+##### Excluding targets from build
+
+All targets created via hadouken can be excluded from build based on target type, target name and project name. The options to control
+target creation are:
+
+- <ROOT_PROJECT_NAME_UPPER_SANITIZED>_DISABLE_<TARGET_TYPE>_TARGETS
+- <ROOT_PROJECT_NAME_UPPER_SANITIZED>_WITHOUT_<PROJECT_NAME>
+- <ROOT_PROJECT_NAME_UPPER_SANITIZED>_WITHOUT_<TARGET_NAME>
+
+These options must be set on top level CMakeLists file of the project before including the main hadouken include file (.hadouken/hadouken.cmake)
+
+<ROOT_PROJECT_NAME_UPPER_SANITIZED> is the root project name with all capital, any non `a-zA-Z0-9` character is replaced with an underscore `_` (eg. hdk.test.x = HDK_TEST_X).
+
+Example (target type):
+
+```cmake
+
+project(proj)
+
+OPTION(PROJ_DISABLE_STATIC_TARGETS "Enable/disable project-wide static library target creation" ON )   
+OPTION(PROJ_DISABLE_SHARED_TARGETS "Enable/disable project-wide benchmark target creation" OFF )   
+
+
+# Include hadouken
+include(.hadouken/hadouken.cmake)
+
+# Will not create a target since `PROJ_DISABLE_STATIC_TARGETS` option is enabled
+make_target(TYPE STATIC)
+# Will create a target since `PROJ_DISABLE_SHARED_TARGETS' option is disabled
+make_target(TYPE SHARED)
+
+```
+
+Example (Project name):
+
+```cmake
+
+project(proj)
+
+OPTION(PROJ_WITHOUT_PROJ_COMPONENT1 "Enable/disable proj.component1 project" ON )  
+
+# Include hadouken
+include(.hadouken/hadouken.cmake)
+
+
+project(proj.component1)
+# Will not create a target since `PROJ_WITHOUT_PROJ_COMPONENT1` option is enabled
+make_target(TYPE STATIC)
+
+project(proj.component2)
+# Will create a target since `PROJ_DISABLE_SHARED_TARGETS' option is disabled
+make_target(TYPE SHARED)
+
+```
+
+Example (Target name):
+
+```cmake
+
+project(proj)
+
+OPTION(PROJ_WITHOUT_PROJ_COMPONENT1_STATIC  "Enable/disable proj.component1.static target" ON  )  
+OPTION(PROJ_WITHOUT_PROJ_COMPONENT1_SHARED  "Enable/disable proj.component1.shared target" OFF )  
+
+# Include hadouken
+include(.hadouken/hadouken.cmake)
+
+project(proj.component1)
+# Will not create a target since `PROJ_WITHOUT_PROJ_COMPONENT1` option is enabled
+make_target(TYPE STATIC AUTO_SUFFIX)
+# Will create a target since `PROJ_DISABLE_SHARED_TARGETS' option is disabled
+make_target(TYPE SHARED AUTO_SUFFIX)
+
 ```
 
 #### MakeComponent

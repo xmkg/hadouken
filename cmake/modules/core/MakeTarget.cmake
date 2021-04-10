@@ -60,10 +60,21 @@ function(make_target)
         )
     endif()
 
-   
+    hdk_capsan_name(${PROJECT_NAME} PROJECT_NAME_UPPER)
+    hdk_capsan_name(${TARGET_NAME} TARGET_NAME_UPPER)
 
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_DISABLE_${ARGS_TYPE}_TARGETS)
         hdk_log_verbose("make_target: Target ${TARGET_NAME} skipped since ${ARGS_TYPE} target build is disabled via option")
+        return ()
+    endif()
+
+    if(${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${PROJECT_NAME_UPPER})
+        hdk_log_verbose("make_target: Target ${TARGET_NAME} skipped since project ${PROJECT_NAME} build is disabled via ${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${PROJECT_NAME_UPPER} option")
+        return ()
+    endif()
+
+    if(${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${TARGET_NAME_UPPER})
+        hdk_log_verbose("make_target: Target ${TARGET_NAME} skipped since target ${TARGET_NAME} build is disabled via ${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${TARGET_NAME_UPPER} option")
         return ()
     endif()
 

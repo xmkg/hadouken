@@ -26,10 +26,17 @@ set(HDK_ROOT_PROJECT_LANGUAGES         ${PROJECT_LANGUAGES}        )
 
 set(HDK_ROOT_DIRECTORY     ${HDK_ROOT_PROJECT_SOURCE_DIR}/.hadouken)
 
-string(TOUPPER ${HDK_ROOT_PROJECT_NAME} HDK_ROOT_PROJECT_NAME_UPPER)
 
-# Maket it C preprocessor macro friently
-string(REGEX REPLACE "[^a-zA-Z0-9]" "_" HDK_ROOT_PROJECT_NAME_UPPER ${HDK_ROOT_PROJECT_NAME_UPPER})
+# Add hadouken cmake modules as cmake modules to parent project
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/)
+# Add custom find module path
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/find)
+
+# Common utility functions module
+include(misc/Utility)
+
+# Capitalize and sanitize project name
+hdk_capsan_name(${HDK_ROOT_PROJECT_NAME} HDK_ROOT_PROJECT_NAME_UPPER)
 
 # Hadouken options
 set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_DEBUG                               "-O0 -g"           )
@@ -60,19 +67,12 @@ cmake_policy(SET CMP0079 NEW)
 # This somehow tends to be unset, and causes third party library headers to generate warnings
 # which results in build failure.
 SET(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
-# Add hadouken cmake modules as cmake modules to parent project
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/)
-# Add custom find module path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/find)
 
 # Logging module
 include(misc/Log)
 
 # Banner module
 include(misc/Banner)
-
-# Common utility functions module
-include(misc/Utility)
 
 # Set logging context
 hdk_log_set_context("hadouken")
