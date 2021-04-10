@@ -16,13 +16,13 @@
 
 string(TIMESTAMP HADOUKEN_LOAD_START "%s" UTC)
 
-
 set(HDK_ROOT_PROJECT_NAME              ${PROJECT_NAME}             )
 set(HDK_ROOT_PROJECT_VERSION           ${PROJECT_VERSION}          )
 set(HDK_ROOT_PROJECT_DESCRIPTION       ${PROJECT_DESCRIPTION}      )
 set(HDK_ROOT_PROJECT_SOURCE_DIR        ${PROJECT_SOURCE_DIR}       )
 set(HDK_ROOT_PROJECT_BINARY_DIR        ${PROJECT_BINARY_DIR}       )
 set(HDK_ROOT_PROJECT_HOMEPAGE_URL      ${PROJECT_HOMEPAGE_URL}     )
+set(HDK_ROOT_PROJECT_LANGUAGES         ${PROJECT_LANGUAGES}        )
 
 set(HDK_ROOT_DIRECTORY     ${HDK_ROOT_PROJECT_SOURCE_DIR}/.hadouken)
 
@@ -70,6 +70,9 @@ include(misc/Log)
 
 # Banner module
 include(misc/Banner)
+
+# Common utility functions module
+include(misc/Utility)
 
 # Set logging context
 hdk_log_set_context("hadouken")

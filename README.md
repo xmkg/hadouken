@@ -54,10 +54,15 @@
         - [OUTPUT_NAME (optional)](#output_name-optional)
         - [PREFIX (optional)](#prefix-optional)
         - [SUFFIX (optional)](#suffix-optional)
+        - [AUTO_SUFFIX (optional)](#auto_suffix-optional)
         - [INCLUDES (optional)](#includes-optional)
         - [PARTOF (optional)](#partof-optional)
         - [SOURCES (optional)](#sources-optional)
         - [HEADERS (optional)](#headers-optional)
+      - [EXCLUDE_*(optional)](#exclude_optional)
+        - [EXCLUDE_SOURCES(optional)](#exclude_sourcesoptional)
+        - [EXCLUDE_HEADERS(optional)](#exclude_headersoptional)
+        - [Notes about regex filter](#notes-about-regex-filter)
         - [ARGUMENTS (optional)](#arguments-optional)
         - [WITH_COVERAGE (optional)](#with_coverage-optional)
         - [WITH_INSTALL (optional)](#with_install-optional)
@@ -68,6 +73,7 @@
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
         - [WORKING_DIRECTORY (optional)](#working_directory-optional)
+      - [MakeComponent](#makecomponent)
       - [TargetProperties](#targetproperties)
         - [hdk_print_target_properties(\<target_name\>)](#hdk_print_target_propertiestarget_name)
       - [EnvironmentUtilities](#environmentutilities)
@@ -757,6 +763,7 @@ The created target's compilation unit will be automatically gathered using AutoC
                 [PROJECT_METADATA_PREFIX <prefix>]
                 [NO_AUTO_COMPILATION_UNIT]
                 [WORKING_DIRECTORY <working_directory>]
+                [AUTO_SUFFIX]
     )
 ```
 
@@ -996,6 +1003,12 @@ Example:
 
 The user-defined output name for the created target. By default, name will be automatically determined from the target name. If you want to give a different name for the output (e.g. binaries), you can give by specifying this argument.
 
+There are some special keywords enclosed in angle brackets (`<>`), which can be used in `OUTPUT_NAME`:
+
+- <PROJECT_NAME> : Name of the current project
+- <TARGET_NAME> : Name of the current target
+- <TARGET_TYPE> : Type of the current target (lowercase) 
+
 Example:
 
 ```cmake
@@ -1022,6 +1035,32 @@ Example:
     # The output binary name will be mapp.exe
 ```
 
+Another example:
+
+```cmake
+
+    # This command would create a project named proj.component1 and
+    # two separate targets with name of proj.component1.static and 
+    # proj.component1.shared respectively.
+    # Their output name will be libproj.component1.a and libproj.component1.so
+    # since <PROJECT_NAME> is specified as output name.
+    make_component(
+        proj.component1
+        TARGET  TYPE STATIC 
+                LINK PRIVATE proj.component2.static
+        TARGET  TYPE SHARED  
+                LINK PRIVATE proj.component2.shared
+        ALL_LINK PUBLIC proj.component3 
+                        proj.component4
+                PRIVATE proj.component5
+        ALL_AUTO_SUFFIX
+        ALL_WITH_INSTALL
+        ALL_OUTPUT_NAME <PROJECT_NAME>
+    )
+
+
+```
+
 ##### PREFIX (optional)
 
 The prefix to be prepended to the created target name.
@@ -1042,9 +1081,24 @@ The suffix to be appended to the created target name. Usually used to distinguis
 
     make_target(TYPE SHARED SUFFIX .shared)
     # The target name will be `my-awesome-component.shared`
-    make_target(TYPE SHARED SUFFIX .shared-pic COMPILE_OPTIONS -fPIC)
-    # The target name will be `my-awesome-component.shared-pic
+    make_target(TYPE SHARED SUFFIX .shared.pic COMPILE_OPTIONS -fPIC)
+    # The target name will be `my-awesome-component.shared.pic
     make_target(TYPE STATIC SUFFIX .static)
+    # The target name will be `my-awesome-component.static`
+```
+
+##### AUTO_SUFFIX (optional)
+
+Creates a suffix from target type and appends to the created target name. This option does not override the explicitly given suffix, but it has precedence over the explicit suffix.
+
+```cmake
+    project(my-awesome-component)
+
+    make_target(TYPE SHARED AUTO_SUFFIX)
+    # The target name will be `my-awesome-component.shared`
+    make_target(TYPE SHARED AUTO_SUFFIX SUFFIX .pic COMPILE_OPTIONS -fPIC)
+    # The target name will be `my-awesome-component.shared.pic
+    make_target(TYPE STATIC AUTO_SUFFIX)
     # The target name will be `my-awesome-component.static`
 ```
 
@@ -1131,6 +1185,79 @@ Example:
     # auto header gathering will still take place. Specified `HEADERS`
     # will be appended to auto-gathered header file list.
 ```
+
+#### EXCLUDE_*(optional)
+
+Exclusion filters for auto compilation unit gathering.
+
+##### EXCLUDE_SOURCES(optional)
+
+A regular expression filter to exclude source files matching to the given pattern on auto compilation unit creation.
+
+```cmake
+    project(proj.component-y VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create a static library target with name of
+    # `proj.component-y`
+    make_target(
+        # Create a static library target
+        TYPE STATIC
+        EXCLUDE_SOURCES ".*test\\.cpp$"
+        # Link dependencies
+        LINK proj.component-x
+    )
+    # This target will have all files in src/ folder in its' compilation
+    # unit except test.cpp
+```
+
+##### EXCLUDE_HEADERS(optional)
+
+A regular expression filter to exclude header files matching to the given pattern on auto compilation unit creation.
+
+```cmake
+    project(proj.component-y VERSION 0.1.0 LANGUAGES CXX)
+
+    # Create a static library target with name of
+    # `proj.component-y`
+    make_target(
+        # Create a static library target
+        TYPE STATIC
+        EXCLUDE_HEADERS ".*[test\\.hpp|foo\\.hpp]$"
+        # Link dependencies
+        LINK proj.component-x
+    )
+    # This target will have all files in include/ folder in its' compilation
+    # unit except test.hpp and foo.hpp
+```
+
+##### Notes about regex filter
+
+From : https://cmake.org/cmake/help/v3.6/command/string.html#regex-specification
+
+The following characters have special meaning in regular expressions:
+
+```text
+^         Matches at beginning of input
+$         Matches at end of input
+.         Matches any single character
+[ ]       Matches any character(s) inside the brackets
+[^ ]      Matches any character(s) not inside the brackets
+ -        Inside brackets, specifies an inclusive range between
+          characters on either side e.g. [a-f] is [abcdef]
+          To match a literal - using brackets, make it the first
+          or the last character e.g. [+*/-] matches basic
+          mathematical operators.
+*         Matches preceding pattern zero or more times
++         Matches preceding pattern one or more times
+?         Matches preceding pattern zero or once only
+|         Matches a pattern on either side of the |
+()        Saves a matched subexpression, which can be referenced
+          in the REGEX REPLACE operation. Additionally it is saved
+          by all regular expression-related commands, including
+          e.g. if( MATCHES ), in the variables CMAKE_MATCH_(0..9).
+```
+
+Important note: You have to double-escape the literal dot to put a dot into the expression.
 
 ##### ARGUMENTS (optional)
 
@@ -1361,6 +1488,72 @@ Specify working directory for the created target. It is only valid for the follo
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR} # Set working directory to ${PROJECT_SOURCE_DIR}
     )
 ```
+
+#### MakeComponent
+
+CMake module which allows to define multiple targets with single call. It is a syntatic sugar for multiple `make_target` calls. It aims to reduce redundant writing.
+
+`make_component` automatically defines a new project, then iterates over all `TARGET`'s specified in the call, defining a target by calling `make_target` for each of them. It also forwards the common arguments prefixed with `ALL_` to the `make_target` call. All `make_target` arguments can be used with `ALL_` prefix. It will be applied to all targets defined in `make_component` call.
+
+```cmake
+    make_component(<COMPONENT_NAME>
+        TARGET <TARGET_ARGS...>
+        ALL_<TARGET_ARG>...
+    )
+```
+
+Example usage:
+
+```cmake
+
+    make_component(
+        proj.component1
+        VERSION 0.1.0
+        TARGET  TYPE STATIC 
+                LINK PRIVATE proj.component4.static
+        TARGET  TYPE SHARED
+                LINK PUBLIC proj.component4.shared
+        ALL_LINK PUBLIC proj.component2 
+                        proj.component3
+                PRIVATE boost::boost 
+        ALL_WITH_INSTALL
+        ALL_AUTO_SUFFIX
+    )
+
+```
+
+The usage illustrated above is exactly same functionality-wise with:
+
+```cmake
+
+    project(proj.component1 VERSION 0.1.0)
+
+    make_target(
+        TYPE STATIC 
+        AUTO_SUFFIX
+        LINK PUBLIC proj.component2 
+                    proj.component3
+            PRIVATE boost::boost 
+                    proj.component4.static
+        WITH_INSTALL
+    )
+
+    make_target(
+        TYPE SHARED 
+        AUTO_SUFFIX
+        LINK PUBLIC proj.component2 
+                    proj.component3
+            PRIVATE boost::boost 
+                    proj.component4.shared
+        WITH_INSTALL
+    )
+
+```
+
+Important notes:
+
+- The targets will be defined in their appearance order in the `make_component` call.
+- Defined project's version, description, homepage url and languages will be inherited from parent project, if not explicitly given.
 
 #### TargetProperties
 

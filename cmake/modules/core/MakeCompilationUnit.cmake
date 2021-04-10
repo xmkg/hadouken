@@ -19,11 +19,22 @@
 # to `COMPILATION_UNIT` variable in invocation scope.
 function(hdk_make_compilation_unit COMPILATION_UNIT)
     hdk_log_set_context("mcu")
+    cmake_parse_arguments(ARGS,  "" "EXCLUDE_SOURCES;EXCLUDE_HEADERS;" "" ${ARGN})
+
     file(GLOB_RECURSE HEADERS "include/*")
     file(GLOB_RECURSE SOURCES "src/*")
+    
+    if(ARGS_EXCLUDE_SOURCES)
+        list(FILTER SOURCES EXCLUDE REGEX "${ARGS_EXCLUDE_SOURCES}")
+    endif()
+
+    if(ARGS_EXCLUDE_HEADERS)
+        list(FILTER HEADERS EXCLUDE REGEX "${ARGS_EXCLUDE_HEADERS}")
+    endif()
 
     set(HEADERS ${HEADERS} PARENT_SCOPE)
     set(SOURCES ${SOURCES} PARENT_SCOPE)
+
     set(${COMPILATION_UNIT} ${HEADERS} ${SOURCES} PARENT_SCOPE)
 endfunction()
 
