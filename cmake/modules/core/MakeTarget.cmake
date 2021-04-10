@@ -14,323 +14,16 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-#[=======================================================================[.rst:
-    __hdk_make_target_name
-    ------------------- 
-    Visibility level: Private
+# make_targe function arguments
+set(__HDK_MAKE_TARGET_OPTION_ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;DEBUG_PRINT_PROPERTIES;AUTO_SUFFIX")
+set(__HDK_MAKE_TARGET_SINGLE_VALUE_ARGS "TYPE;SUFFIX;PREFIX;NAME;OUTPUT_NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;COVERAGE_REPORT_OUTPUT_DIRECTORY;EXCLUDE_SOURCES;EXCLUDE_HEADERS")
+set(__HDK_MAKE_TARGET_MULTI_VALUE_ARGS "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;ARGUMENTS")
 
-    Create a name with respect to given arguments
+mark_as_advanced(__HDK_MAKE_TARGET_OPTION_ARGS)
+mark_as_advanced(__HDK_MAKE_TARGET_SINGLE_VALUE_ARGS)
+mark_as_advanced(__HDK_MAKE_TARGET_MULTI_VALUE_ARGS)
 
-    This function automatically deduces target name from current context 
-    project's name. If user is explicitly specified a name, this function will
-    use it instead. The function prepends the prefix and appends the suffix to 
-    the name and sets `<output_variable_name>` as a result.
-
-    .. code-block:: cmake
-        hdk_make_target_name(<output_variable_name>
-            NAME <name> `Explicitly specified name [optional]`
-            PREFIX <prefix> `Prefix to prepend to the target name [optional]`
-            SUFFIX <suffix> `Suffix to append to the target name [optional]`
-        )
-
-    Note: This function is private and intended to be used internally. Do not call this directly.
-#]=======================================================================]
-function(__hdk_make_target_name TARGET_NAME)
-    hdk_log_set_context("hdk.mt")
-    hdk_log_trace("hdk_make_target_name(): called with args : ${ARGV}")
-    cmake_parse_arguments(ARGS "" "" "PREFIX;NAME;SUFFIX;" ${ARGN})
-    # By default, use project's name as target name.
-    set(PREFERRED_NAME ${PROJECT_NAME})
-    # If user specified a name, use it.
-    if(ARGS_NAME)
-        hdk_log_trace("hdk_make_target_name(): function has NAME parameter")
-        set(PREFERRED_NAME ${ARGS_NAME})
-    endif()
-    # Create target name
-    set(${TARGET_NAME} ${ARGS_PREFIX}${PREFERRED_NAME}${ARGS_SUFFIX} PARENT_SCOPE)
-endfunction()
-
-
-#[=======================================================================[.rst:
-    __hdk_add_project_include_directory
-    ------------------- 
-    Visibility level: Private
-
-    Add include directory to target's include directories.
-
-    `include` directory is searched relative to current project's source directory. The directory
-    will be added as PUBLIC unless target type is not INTERFACE type.
-
-    .. code-block:: cmake
-        hadouken_add_project_include_directory(
-            TARGET_NAME <name> `Target's name to add current project's include directory`
-            TYPE <prefix> `Type of the target`
-        )
-
-    Note: This function is private and intended to be used internally. Do not call this directly.
-#]=======================================================================]
-function(__hdk_add_project_include_directory)
-    hdk_log_set_context("hdk.mt")
-    hdk_log_trace("call hdk_add_project_include_directory() with args : ${ARGV}")
-    cmake_parse_arguments(ARGS,  "" "TARGET_NAME;TYPE;" "" ${ARGN})
-
-    if(NOT DEFINED TARGET_NAME)
-        hdk_log_err("hdk_add_project_include_directory(): function requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        hdk_log_err("hdk_add_project_include_directory(): function requires TYPE parameter.")
-    endif()
-
-    if(${ARGS_TYPE} STREQUAL "INTERFACE")
-        hdk_log_trace("hdk_add_project_include_directory(): type is INTERFACE")
-        target_include_directories(${TARGET_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include/)
-    else()
-        hdk_log_trace("hdk_add_project_include_directory(): type is not INTERFACE")
-        target_include_directories(${TARGET_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/)
-    endif()
-endfunction()
-
-
-#[=======================================================================[.rst:
-    __hdk_add_target_options
-    -------------------
-    Visibility level: Private
-
-    Add user-specified options to designated target.
-
-    .. code-block:: cmake
-        hdk_add_target_options(
-            TARGET_NAME <name> 
-            TYPE <prefix> 
-            PARTOF <target_name>
-            DEPENDS <target_name,...> 
-            LINK <target_name,...> 
-            COMPILE_OPTIONS <compile_option,...> 
-            COMPILE_DEFINITIONS <compile_definition,...> 
-            INCLUDES <include_directory,...> 
-            SOURCES <source_file_path,...> 
-            HEADERS <header_file_path,...> 
-            SYMBOL_VISIBILITY <default|hidden|protected>
-        )
-
-    Arguments:
-        TARGET_NAME         <name>                  `Designated target to add options to`
-        TYPE                <target_type>           `Type of the designated target`
-        PARTOF              <target_name>           `Make specified target dependent to this target [optional]`
-        DEPENDS             <target_name,...>       `Make this target dependent to specified target list [optional]`
-        LINK                <target_name,...>       `Link to specified targets or libraries. Arguments can be either CMake targets or library names. 
-                                                    This target will link against specified cmake target's non-private libraries and this target 
-                                                    will be able to see all non-private headers of specified targets. [optional]`
-        COMPILE_OPTIONS     <compile_option,...>   `Options and flags to pass compiler for this target [optional]`
-        COMPILE_DEFINITIONS <compile_option,...>   `Macro definitions to pass compiler for this target [optional]`
-
-    `target_type` can be: STATIC|SHARED|INTERFACE|EXECUTABLE|UNIT_TEST|BENCHMARK
-
-    Note: This function is private and intended to be used internally. Do not call this directly.
-#]=======================================================================]
-function(__hdk_add_target_options)
-    hdk_log_set_context("hdk.mt")
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;PARTOF;OUTPUT_NAME;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;" ${ARGN})
-
-    if(NOT DEFINED ARGS_TARGET_NAME)
-        message(FATAL_ERROR "add_target_options() requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        message(FATAL_ERROR "add_target_options() requires TYPE parameter.")
-    endif()
-
-    if(${ARGS_TYPE} STREQUAL "INTERFACE")
-        if(DEFINED ARGS_INCLUDES)
-            target_include_directories(${TARGET_NAME} INTERFACE ${ARGS_INCLUDES})
-        endif()
-        if(DEFINED ARGS_LINK)
-            target_link_libraries(${TARGET_NAME} INTERFACE ${ARGS_LINK})
-        endif()
-
-        if(DEFINED ARGS_COMPILE_OPTIONS)
-            target_compile_options(${TARGET_NAME} INTERFACE ${ARGS_COMPILE_OPTIONS})
-        endif()
-
-        if(DEFINED ARGS_SYMBOL_VISIBILITY)
-            target_compile_options(${TARGET_NAME} INTERFACE -fvisibility=${ARGS_SYMBOL_VISIBILITY})
-        endif()
-    else()
-
-        if(ARGS_INCLUDES)
-            target_include_directories(${TARGET_NAME} PUBLIC ${ARGS_INCLUDES})
-        endif()
-
-        if(ARGS_LINK)
-            target_link_libraries(${TARGET_NAME} PRIVATE ${ARGS_LINK})
-        endif()
-
-        if(ARGS_COMPILE_OPTIONS)
-            target_compile_options(${TARGET_NAME} PRIVATE ${ARGS_COMPILE_OPTIONS})
-        endif()
-        
-        if(ARGS_SYMBOL_VISIBILITY)
-            target_compile_options(${TARGET_NAME} PRIVATE -fvisibility=${ARGS_SYMBOL_VISIBILITY})
-        endif()
-    endif()
-
-    # Set output name for the target
-    if(ARGS_OUTPUT_NAME)
-        set_target_properties(${TARGET_NAME} PROPERTIES OUTPUT_NAME ${ARGS_OUTPUT_NAME})
-    endif()
-
-    if(ARGS_COMPILE_DEFINITIONS)
-        target_compile_definitions(${TARGET_NAME} PRIVATE ${ARGS_COMPILE_DEFINITIONS})
-    endif()
-
-    if(ARGS_DEPENDS)
-        add_dependencies(${TARGET_NAME} ${ARGS_DEPENDS})
-    endif()
-
-    # We allow created targets to be a part of a bigger meta-target.
-    if(ARGS_PARTOF) 
-        add_dependencies(${ARGS_PARTOF} ${TARGET_NAME})
-    endif()
-
-endfunction()
-
-function(__hdk_setup_coverage_targets)
-    hdk_log_set_context("hdk.mt")
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;COVERAGE_REPORT_OUTPUT_DIRECTORY;WORKING_DIRECTORY;" ${ARGN})
-    if(NOT DEFINED ARGS_TARGET_NAME)
-        message(FATAL_ERROR "setup_coverage_targets() requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        message(FATAL_ERROR "setup_coverage_targets() requires TYPE parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_COVERAGE_LCOV_FILTER_PATTERN)
-        # Default filter pattern
-        set(ARGS_COVERAGE_LCOV_FILTER_PATTERN "*")
-    endif()
-
-    if(NOT DEFINED ARGS_COVERAGE_GCOVR_FILTER_PATTERN)
-        # Default filter pattern
-        set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${CMAKE_SOURCE_DIR}")
-    endif()
-
-
-    if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
-        if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND GCOV)
-            target_compile_options(${TARGET_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
-            target_link_libraries(${TARGET_NAME} PRIVATE gcov)
-
-            if(ARGS_COVERAGE_TARGETS)
-                foreach(CT IN LISTS ARGS_COVERAGE_TARGETS)
-                    if(TARGET ${CT})
-                        target_compile_options(${CT} PRIVATE -fprofile-arcs -ftest-coverage)
-                        target_link_libraries(${CT} PRIVATE gcov)
-                    else()
-                        message(WARNING "${CT} is not a valid CMake target, skipping.")
-                    endif()
-                endforeach()
-            endif()
-            
-            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND GCOVR)
-
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
-                    NAME ${TARGET_NAME}.gcovr.xml 
-                    EXECUTABLE ${TARGET_NAME} 
-                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
-                    FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
-                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
-                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
-                )
-
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(
-                    NAME ${TARGET_NAME}.gcovr.html 
-                    EXECUTABLE ${TARGET_NAME} 
-                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
-                    FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
-                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
-                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
-                )
-
-                # Project-level meta gcovr.xml target
-                if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.xml)
-                    add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.xml ${TARGET_NAME}.gcovr.xml)
-                else()
-                    add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.xml DEPENDS ${TARGET_NAME}.gcovr.xml)
-                endif()
-
-                # Project-level meta gcovr.html target
-                if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.html)
-                    add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.html ${TARGET_NAME}.gcovr.html)
-                else()
-                    add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.html DEPENDS ${TARGET_NAME}.gcovr.html)
-                endif()
-
-            endif()
-
-            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND LCOV)
-
-                SETUP_TARGET_FOR_COVERAGE_LCOV(
-                    NAME ${TARGET_NAME}.lcov 
-                    EXECUTABLE ${TARGET_NAME} 
-                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
-                    FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
-                    LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external
-                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
-                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
-                )
-
-                # Project-level meta lcov target
-                if (TARGET ${HDK_ROOT_PROJECT_NAME}.lcov)
-                    add_dependencies(${HDK_ROOT_PROJECT_NAME}.lcov ${TARGET_NAME}.lcov)
-                else()
-                    add_custom_target(${HDK_ROOT_PROJECT_NAME}.lcov DEPENDS ${TARGET_NAME}.lcov)
-                endif()
-
-            endif()
-
-        endif() 
-    else()
-        target_compile_options(${TARGET_NAME} INTERFACE -fprofile-arcs -ftest-coverage)
-    endif()
-endfunction()
-
-
-function(__hdk_make_install)
-    hdk_log_set_context("hdk.mt")
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "" ${ARGN})
-
-    if(NOT DEFINED ARGS_TARGET_NAME)
-        message(FATAL_ERROR "make_install() requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        message(FATAL_ERROR "make_install() requires TYPE parameter.")
-    endif()
-
-    install (
-        TARGETS ${ARGS_TARGET_NAME}
-        ARCHIVE 
-            DESTINATION lib
-        LIBRARY 
-            DESTINATION lib
-        RUNTIME 
-            DESTINATION bin
-        PUBLIC_HEADER
-            DESTINATION include
-        PRIVATE_HEADER
-            DESTINATION include
-    )
-
-    install (
-        DIRECTORY ${PROJECT_SOURCE_DIR}/include/
-        DESTINATION include
-        FILES_MATCHING PATTERN "**/*"
-    )
-
-endfunction()
-
+include(.hadouken/cmake/modules/core/detail/helper_functions.cmake)
 
 # function hdk_make_target()
 
@@ -339,7 +32,7 @@ endfunction()
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
     hdk_log_set_context("hdk.mt")
-    cmake_parse_arguments(ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;DEBUG_PRINT_PROPERTIES;" "TYPE;SUFFIX;PREFIX;NAME;OUTPUT_NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;COVERAGE_REPORT_OUTPUT_DIRECTORY;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;ARGUMENTS;" ${ARGN})
+    cmake_parse_arguments(ARGS "${__HDK_MAKE_TARGET_OPTION_ARGS}" "${__HDK_MAKE_TARGET_SINGLE_VALUE_ARGS}" "${__HDK_MAKE_TARGET_MULTI_VALUE_ARGS}" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
         message(FATAL_ERROR "make_target() requires TYPE parameter.")
@@ -349,17 +42,51 @@ function(make_target)
         set(ARGS_WORKING_DIRECTORY ${PROJECT_BINARY_DIR})
     endif()
 
-    # Create a name for the target
-    __hdk_make_target_name(TARGET_NAME NAME ${ARGS_NAME} PREFIX ${ARGS_PREFIX} SUFFIX ${ARGS_SUFFIX})
+    if(ARGS_AUTO_SUFFIX)
+        # Create a name for the target
+        __hdk_make_target_name(TARGET_NAME 
+            NAME ${ARGS_NAME} 
+            PREFIX ${ARGS_PREFIX} 
+            SUFFIX ${ARGS_SUFFIX} 
+            TYPE ${ARGS_TYPE}
+            AUTO_SUFFIX
+        )
+    else()
+        # Create a name for the target
+        __hdk_make_target_name(TARGET_NAME 
+            NAME ${ARGS_NAME} 
+            PREFIX ${ARGS_PREFIX} 
+            SUFFIX ${ARGS_SUFFIX} 
+        )
+    endif()
+
+    hdk_capsan_name(${PROJECT_NAME} PROJECT_NAME_UPPER)
+    hdk_capsan_name(${TARGET_NAME} TARGET_NAME_UPPER)
 
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_DISABLE_${ARGS_TYPE}_TARGETS)
         hdk_log_verbose("make_target: Target ${TARGET_NAME} skipped since ${ARGS_TYPE} target build is disabled via option")
         return ()
     endif()
 
-    if(NOT ARGS_NO_AUTO_COMPILATION_UNIT)
+    if(${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${PROJECT_NAME_UPPER})
+        hdk_log_verbose("make_target: Target ${TARGET_NAME} skipped since project ${PROJECT_NAME} build is disabled via ${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${PROJECT_NAME_UPPER} option")
+        return ()
+    endif()
+
+    if(${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${TARGET_NAME_UPPER})
+        hdk_log_verbose("make_target: Target ${TARGET_NAME} skipped since target ${TARGET_NAME} build is disabled via ${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${TARGET_NAME_UPPER} option")
+        return ()
+    endif()
+
+    if(NOT ARGS_NO_AUTO_COMPILATION_UNIT OR NOT ${ARGS_NO_AUTO_COMPILATION_UNIT})
         # Gather sources of target to be created
-        hdk_make_compilation_unit(COMPILATION_UNIT)
+        hdk_make_compilation_unit(COMPILATION_UNIT
+            EXCLUDE_SOURCES "${ARGS_EXCLUDE_SOURCES}"
+            EXCLUDE_HEADERS "${ARGS_EXCLUDE_HEADERS}"
+        )
+
+        hdk_log_trace("make_target: Target ${TARGET_NAME} headers ${HEADERS}")
+        hdk_log_trace("make_target: Target ${TARGET_NAME} sources ${SOURCES}")
     endif()
 
     # Define target according to type
@@ -384,6 +111,15 @@ function(make_target)
         TARGET_NAME ${TARGET_NAME}
         TYPE ${ARGS_TYPE}
     )
+
+    # Make output name
+
+    if(ARGS_OUTPUT_NAME)
+        string(REPLACE "<PROJECT_NAME>" "${PROJECT_NAME}" ARGS_OUTPUT_NAME ${ARGS_OUTPUT_NAME})
+        string(REPLACE "<TARGET_NAME>" "${TARGET_NAME}" ARGS_OUTPUT_NAME ${ARGS_OUTPUT_NAME})
+        string(TOLOWER "${ARGS_TYPE}" TYPE_TOLOWER)
+        string(REPLACE "<TARGET_TYPE>" "${TYPE_TOLOWER}" ARGS_OUTPUT_NAME ${ARGS_OUTPUT_NAME})
+    endif()
 
     # Add othet target options
     __hdk_add_target_options(
@@ -413,7 +149,7 @@ function(make_target)
     endif()
 
     # Add install
-    if(ARGS_WITH_INSTALL)
+    if(${ARGS_WITH_INSTALL})
         __hdk_make_install(
             TARGET_NAME ${TARGET_NAME} 
             TYPE ${ARGS_TYPE} 
@@ -422,6 +158,9 @@ function(make_target)
 
     # Expose project metadata
     if(ARGS_EXPOSE_PROJECT_METADATA)
+        if(${ARGS_TYPE} STREQUAL "INTERFACE" AND ( NOT DEFINED ARGS_PROJECT_METADATA_PREFIX AND NOT DEFINED ARGS_PROJECT_METADATA_SUFFIX  ))
+            message(FATAL_ERROR "expose_project_metadata on INTERFACE targets require either prefix or suffix to be defined.")
+        endif()
         # Project metadata exposure
         hdk_project_metadata_as_compile_defn(
             TARGET_NAME ${TARGET_NAME}

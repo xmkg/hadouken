@@ -52,17 +52,22 @@ function(hdk_project_metadata_as_compile_defn)
         hdk_log_err("hdk_project_metadata_as_compile_defn(): function requires TARGET_NAME argument")
     endif()
 
-    if(NOT ARGS_TARGET_TYPE)
-        hdk_log_err("hdk_project_metadata_as_compile_defn(): function requires TARGET_TYPE argument")
+    if(NOT ARGS_TYPE)
+        hdk_log_err("hdk_project_metadata_as_compile_defn(): function requires TYPE argument")
     endif()
 
-    string(TOUPPER ${ARGS_PREFIX} ARGS_PREFIX)
-    string(TOUPPER ${ARGS_SUFFIX} ARGS_SUFFIX)
-
-    # Maket it C preprocessor macro friently
-    string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_PREFIX ${ARGS_PREFIX})
-    string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_SUFFIX ${ARGS_SUFFIX})
-
+    if(ARGS_PREFIX)
+        string(TOUPPER ${ARGS_PREFIX} ARGS_PREFIX)
+        # Make it C preprocessor macro friendly
+        string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_PREFIX ${ARGS_PREFIX})
+    endif()
+    if(ARGS_SUFFIX)
+        string(TOUPPER ${ARGS_SUFFIX} ARGS_SUFFIX)
+        # Make it C preprocessor macro friendly
+        string(REGEX REPLACE "[^a-zA-Z0-9]" "_" ARGS_SUFFIX ${ARGS_SUFFIX})
+    endif()
+    
+    
     if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
         set(CDEF_VISIBILITY PRIVATE)
     else()
