@@ -22,8 +22,8 @@ hdk_log_set_context("benchmark")
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
 
     # Required conan package and package version
-    set(HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME "benchmark")
-    set(HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION "1.5.2")
+    option(HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME "Hadouken google benchmark conan package name" "benchmark")
+    option(HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION "Hadouken conan package google benchmark version"  "1.5.3")
 
     hdk_log_status("Configuring tool `${HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}` (${HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION})")
 
