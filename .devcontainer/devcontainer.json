@@ -89,6 +89,8 @@
         // Integrated hex editor
         "ms-vscode.hexeditor",
         // Better C++ Syntax
-        "jeff-hykin.better-cpp-syntax"
+        "jeff-hykin.better-cpp-syntax",
+        // YAML language support
+        "redhat.vscode-yaml"
     ]
 }
