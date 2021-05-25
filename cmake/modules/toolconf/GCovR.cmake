@@ -24,6 +24,10 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR)
     find_program(GCOVR "gcovr")
     if(GCOVR)
         hdk_log_status("Found `gcovr` executable: ${GCOVR}`")
+        add_custom_target(
+            ${HDK_ROOT_PROJECT_NAME}.gcovr.summary
+            COMMAND gcovr -r ${HDK_ROOT_PROJECT_SOURCE_DIR} -e '.*/test/.*' -e '.*/CompilerIdCXX/.*'
+        )
     else()
         hdk_log_err("`gcovr` not found in environment")
     endif() 

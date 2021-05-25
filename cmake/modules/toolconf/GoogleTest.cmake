@@ -21,8 +21,8 @@ hdk_log_set_context("gtest")
 
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
 
-    set(HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME "gtest")
-    set(HADOUKEN_CONAN_GOOGLE_TEST_VERSION "1.10.0")
+    set(HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME "gtest" CACHE STRING "Hadouken google test conan package name")
+    set(HADOUKEN_CONAN_GOOGLE_TEST_VERSION  "1.10.0" CACHE STRING "Hadouken google test conan package version")
 
     hdk_log_status("Configuring tool `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}` (${HADOUKEN_CONAN_GOOGLE_TEST_VERSION})")
 
