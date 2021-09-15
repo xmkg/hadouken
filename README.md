@@ -33,6 +33,7 @@
       - [GCov/LCov](#gcovlcov)
         - [An example `lcov` unit test coverage scenario:](#an-example-lcov-unit-test-coverage-scenario)
       - [GoogleTest/GoogleMock](#googletestgooglemock)
+      - [Google Benchmark](#google-benchmark)
       - [IncludeWhatYouUse (IWYU)](#includewhatyouuse-iwyu)
       - [LinkWhatYouUse (LWYU)](#linkwhatyouuse-lwyu)
       - [CCache](#ccache)
@@ -619,27 +620,94 @@ Example code coverage output of an unit test is shown below(gcovr/html):
 
 Controlled by `<project_name>_TOOLCONF_USE_GOOGLE_TEST` variable.
 
-Locate google test & google mock in environment, if available. The status will be printed to stdout.
+Locate google test & google mock in local conan cache, if available. The status will be printed to stdout.
 
-Helper will create a target named `<project_name>.test` which includes google test & google mock header and libraries. You can link against this target in order to create an unit test.
+Helper will create a target named `<project_name>.hadouken_autotargets.test` which includes google test & google mock header and libraries. You can link against this target in order to create an unit test.
 
-If you are using `make_target`, the created target will be automatically linked against the test target.
+If you are using `make_target` with type `UNIT_TEST`, the created target will be automatically linked against the test target.
 
 ```cmake
-project(my-awesome-project)
-set(my-awesome-project_TOOLCONF_USE_GOOGLE_TEST TRUE)
-include(.hadouken/hadouken.cmake)        # Use hadouken
-# A target named `my-awesome-project.test` will be created if google test & google mock
-# are found in environment. Failure to do so results in CMake configure step failure.
+    project(my-awesome-project)
+    set(my-awesome-project_TOOLCONF_USE_GOOGLE_TEST TRUE)
+    include(.hadouken/hadouken.cmake)        # Use hadouken
+    # A target named `my-awesome-project.hadouken_autotargets.test` will be created if google test & google mock
+    # are found in environment. Failure to do so results in CMake configure step failure.
 ```
 
-You can install `gtest/gmock` either by downloading it from the official site <https://github.com/google/googletest/releases> or you can get from you package manager.
+Recommended usage:
 
-Ubuntu/Debian
+```cmake
+    # Targets created with type UNIT_TEST will be automatically linked against googletest/googlemock
+    # when <project_name>_TOOLCONF_USE_GOOGLE_TEST is enabled. `ut_component1.cpp` will be able to
+    # consume googletest/googlemock without any further action.
+    make_target(
+        TYPE UNIT_TEST 
+        SOURCES ut_component1.cpp
+        NO_AUTO_COMPILATION_UNIT
+    )
+```
 
-```bash
-    sudo apt-get update
-    sudo apt-get install libgtest-dev libgmock-dev
+GoogleTest/GoogleMock are automatically installed via Conan when enabled. You can control the package name, version and conan profile via predefined variables. Defaults will be used unless specified.
+
+```cmake
+    set(my-awesome-project_HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME "gtest") # Change conan package name for google test
+    set(my-awesome-project_HADOUKEN_CONAN_GOOGLE_TEST_PKG_VERSION "1.12.0") # Change conan package version for google test
+    set(my-awesome-project_HADOUKEN_CONAN_PROFILE_FILE "/workspace/.conan/profiles/gcc") # Change conan profile
+
+    # ... on configuration:
+    # [cmake] -- Starting tool configuration for Google Test (`gtest/1.12.0`)
+    # [cmake] --   Resolving conan dependency `gtest/1.12.0`
+    # [cmake] --     Executing conan for `gtest/1.12.0`... (please be patient)
+    # [cmake] --     Using user-defined conan profile file `/workspace/.conan/profiles/gcc`
+    # [cmake] --     Conan execution done for `gtest/1.12.0`
+    # [cmake] --   Auto-created `ncf.hadouken_autotargets.test` target
+```
+
+#### Google Benchmark
+
+Controlled by `<project_name>_TOOLCONF_USE_GOOGLE_BENCH` variable.
+
+Locate google benchmark in local conan cache, if available. The status will be printed to stdout.
+
+Helper will create a target named `<project_name>.hadouken_autotargets.bench` which includes google benchmark header and libraries. You can link against this target in order to create a microbenchmark.
+
+If you are using `make_target`, the created target will be automatically linked against the benchmark target.
+
+```cmake
+    project(my-awesome-project)
+    set(my-awesome-project_TOOLCONF_USE_GOOGLE_BENCH TRUE)
+    include(.hadouken/hadouken.cmake)        # Use hadouken
+    # A target named `my-awesome-project.hadouken_autotargets.bench` will be created if google benchmark
+    # is successfully resolved via Conan. Failure to do so results in CMake configure step failure.
+```
+
+Recommended usage:
+
+```cmake
+    # Targets created with type BENCHMARK will be automatically linked against google benchmark
+    # when <project_name>_TOOLCONF_USE_GOOGLE_BENCH is enabled. `bm_component1.cpp` will be able to
+    # consume google benchmark without any further action.
+    make_target(
+        TYPE BENCHMARK
+        SOURCES bm_component1.cpp
+        NO_AUTO_COMPILATION_UNIT
+    )
+```
+
+Google Benchmark is automatically installed via Conan when enabled. You can control the package name, version and conan profile via predefined variables. Defaults will be used unless specified.
+
+```cmake
+    set(my-awesome-project_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME "benchmark") # Change conan package name for google test
+    set(my-awesome-project_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_VERSION "1.5.4") # Change conan package version for google test
+    set(my-awesome-project_HADOUKEN_CONAN_PROFILE_FILE "/workspace/.conan/profiles/gcc") # Change conan profile
+
+    # ... on configuration:
+    # [cmake] -- Starting tool configuration for Google Benchmark (`benchmark/1.5.4`)
+    # [cmake] --   Resolving conan dependency `benchmark/1.5.4`
+    # [cmake] --     Executing conan for `benchmark/1.5.4`... (please be patient)
+    # [cmake] --     Using user-defined conan profile file `/workspace/.conan/profiles/gcc`
+    # [cmake] --     Conan execution done for `benchmark/1.5.4`
+    # [cmake] --   Auto-created `ncf.hadouken_autotargets.test` target
 ```
 
 #### IncludeWhatYouUse (IWYU)
@@ -1678,6 +1746,13 @@ Possible output:
     [cmake] --    my_lib UNITY_BUILD_BATCH_SIZE = 8
     [cmake] --    my_lib UNITY_BUILD_MODE = BATCH
     [cmake] --    my_lib VISIBILITY_INLINES_HIDDEN = OFF
+```
+
+There is also a flag which enables property printing for all targets:
+
+```cmake
+    project(proj)
+    OPTION(PROJ_DEBUG_TARGET_PRINT_PROPERTIES      "Enable/disable project-wide target property printing "               ON    ) 
 ```
 
 #### EnvironmentUtilities
