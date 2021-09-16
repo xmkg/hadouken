@@ -27,6 +27,7 @@ set(HDK_ROOT_PROJECT_LANGUAGES         ${PROJECT_LANGUAGES}        )
 set(HDK_ROOT_DIRECTORY     ${HDK_ROOT_PROJECT_SOURCE_DIR}/.hadouken)
 
 
+
 # Add hadouken cmake modules as cmake modules to parent project
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/)
 # Add custom find module path
@@ -43,6 +44,13 @@ set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_DEBUG                          
 set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_RELEASE                             "-O3 -DNDEBUG"     )
 set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_RELWITHDEBINFO                      "-O3 -g -DNDEBUG"  )
 set(${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_MINSIZEREL                          "-Os -DNDEBUG"     )
+
+# Check if user specified a conan profile file
+if (${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_PROFILE_FILE AND NOT ${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_PROFILE_FILE} STREQUAL "") 
+    set(${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_PROFILE_LINE "PROFILE ${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_PROFILE_FILE}")
+else()
+    set(${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_PROFILE_LINE "")
+endif()
 
 # Enable testing for the project
 enable_testing()

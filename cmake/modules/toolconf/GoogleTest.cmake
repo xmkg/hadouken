@@ -19,39 +19,22 @@ option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST "Use google test 
 
 hdk_log_set_context("gtest")
 
+include(core/FetchConanPackage)
+
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
 
-    set(HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME "gtest" CACHE STRING "Hadouken google test conan package name")
-    set(HADOUKEN_CONAN_GOOGLE_TEST_VERSION  "1.10.0" CACHE STRING "Hadouken google test conan package version")
+    set(${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME "gtest" CACHE STRING "Hadouken google test conan package name")
+    set(${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_TEST_VERSION  "1.11.0" CACHE STRING "Hadouken google test conan package version")
 
-    hdk_log_status("Configuring tool `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}` (${HADOUKEN_CONAN_GOOGLE_TEST_VERSION})")
-
-    # Determine installed "benchmark" package version
-    execute_process(COMMAND /usr/bin/env conan search ${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME} OUTPUT_VARIABLE CONAN_SEARCH_RESULT)
-
-    string(REGEX MATCH "gtest/(([0-9]+)\\.([0-9]+)\\.([0-9]+))" CONAN_SEARCH_RESULT_VERSION ${CONAN_SEARCH_RESULT})
-
-    if(NOT ${CMAKE_MATCH_COUNT} LESS 4)
-        if(${CMAKE_MATCH_1} STREQUAL ${HADOUKEN_CONAN_GOOGLE_TEST_VERSION})
-            hdk_log_status("Conan package  `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}` present in environment")
-        else()
-            hdk_log_status("Conan package is present with name `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}` but version does not match with required version `${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}` != `${CMAKE_MATCH_1}`, it will be fetched from remote")
-        endif()
-    else()
-        hdk_log_status("Conan package  `${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}` is not present in environment, it will be fetched from remote")
-    endif()
-
-    include(GoogleTest)
-
-    hdk_log_status("Executing conan... (please be patient)")
-    conan_cmake_run(
-        REQUIRES ${HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${HADOUKEN_CONAN_GOOGLE_TEST_VERSION}
-        GENERATORS cmake_find_package
-        BUILD missing
-        OUTPUT_QUIET
+    hdk_log_status("Starting tool configuration for Google Test (`${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME}/${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_TEST_VERSION}`)")
+    hdk_log_indent(1)
+    hdk_fetch_conan_package(
+        ${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME} 
+        ${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_TEST_VERSION}
+        ${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_PROFILE_FILE}
     )
 
-    hdk_log_status("Conan execution done")
+    include(GoogleTest)
 
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HDK_ROOT_PROJECT_BINARY_DIR})
     find_package(GTest REQUIRED)
@@ -62,9 +45,9 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
         LINK PUBLIC GTest::GTest
     )
     hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.test` target")
-   
+    hdk_log_unindent(1)
 else()
-    hdk_log_verbose("Skipping tool configuration for `gtest` (disabled)")
+    hdk_log_verbose("Skipping tool configuration for `Google Test` (disabled)")
 endif()
 
 hdk_log_unset_context()
