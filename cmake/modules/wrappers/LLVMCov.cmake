@@ -70,20 +70,19 @@
 #      make my_coverage_target
 #
 
-if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
 
     include(CMakeParseArguments)
 
     # Check prereqs
-    find_program(GCOV_PATH gcov)
     find_program(LLVM_COV_PATH llvm-cov)
     find_program(LCOV_PATH  NAMES lcov lcov.bat lcov.exe lcov.perl)
     find_program(GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat)
     find_program(GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
     find_package(Python COMPONENTS Interpreter)
 
-    if(NOT GCOV_PATH)
-        message(FATAL_ERROR "gcov not found! Aborting...")
+    if(NOT LLVM_COV_PATH)
+        message(FATAL_ERROR "llvm-cov not found! Aborting...")
     endif() # NOT GCOV_PATH
     # message(STATUS ${CMAKE_CXX_COMPILER_ID})
     # if("${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
@@ -123,13 +122,6 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
         message(STATUS "Code coverage results with an optimised (non-Debug) build may be misleading")
     endif() # NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
 
-    if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        link_libraries(gcov)
-    else()
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-    endif()
-
-
 endif()
 
 # Defines a target for running and collection code coverage information
@@ -142,7 +134,7 @@ endif()
 #     EXECUTABLE testrunner -j ${PROCESSOR_COUNT} # Executable in PROJECT_BINARY_DIR
 #     DEPENDENCIES testrunner                     # Dependencies to build first
 # )
-function(SETUP_TARGET_FOR_COVERAGE_LCOV)
+function(SETUP_TARGET_FOR_COVERAGE_LCOV_LLVM)
 
     set(options NONE)
     set(oneValueArgs NAME DIRECTORY FILTER_PATTERN OUTPUT_DIRECTORY WORKING_DIRECTORY)
@@ -222,7 +214,7 @@ endfunction() # SETUP_TARGET_FOR_COVERAGE_LCOV
 #     EXECUTABLE ctest -j ${PROCESSOR_COUNT} # Executable in PROJECT_BINARY_DIR
 #     DEPENDENCIES executable_target         # Dependencies to build first
 # )
-function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
+function(SETUP_TARGET_FOR_COVERAGE_GCOVR_LLVM_XML)
 
     set(options NONE)
     set(oneValueArgs NAME FILTER_PATTERN OUTPUT_DIRECTORY WORKING_DIRECTORY)
@@ -258,6 +250,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Running gcovr
         COMMAND ${GCOVR_PATH} --xml
+            --gcov-executable '${LLVM_COV_PATH} gcov'
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
@@ -273,19 +266,19 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         COMMENT "Cobertura code coverage report saved in ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.xml."
     )
 
-endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_XML
+endfunction() # SETUP_TARGET_FOR_COVERAGE_GCOVR_LLVM_XML
 
 # Defines a target for running and collection code coverage information
 # Builds dependencies, runs the given executable and outputs reports.
 # NOTE! The executable should always have a ZERO as exit code otherwise
 # the coverage generation will not complete.
 #
-# SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(
+# SETUP_TARGET_FOR_COVERAGE_GCOVR_LLVM_HTML(
 #     NAME ctest_coverage                    # New target name
 #     EXECUTABLE ctest -j ${PROCESSOR_COUNT} # Executable in PROJECT_BINARY_DIR
 #     DEPENDENCIES executable_target         # Dependencies to build first
 # )
-function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
+function(SETUP_TARGET_FOR_COVERAGE_GCOVR_LLVM_HTML)
 
     set(options NONE)
     set(oneValueArgs NAME FILTER_PATTERN OUTPUT_DIRECTORY WORKING_DIRECTORY)
@@ -312,6 +305,11 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         list(APPEND GCOVR_EXCLUDES "${EXCLUDE_REPLACED}")
     endforeach()
 
+    set(GCOVR_EXTRA_OPTIONS "")
+    if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
+        set(GCOVR_EXTRA_OPTIONS "")
+    endif()
+
     execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY})
 
     add_custom_target(${Coverage_NAME}
@@ -323,7 +321,8 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}
 
         # Running gcovr
-        COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details
+        COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details --html-title='Clang Code Coverage Report'
+            --gcov-executable '${LLVM_COV_PATH} gcov'
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
