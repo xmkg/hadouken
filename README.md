@@ -30,7 +30,7 @@
       - [ClangFormat](#clangformat)
       - [ClangTidy](#clangtidy)
       - [CppCheck](#cppcheck)
-      - [GCov/LCov](#gcovlcov)
+      - [GCov/LCov/GCovr/LLVM-Cov](#gcovlcovgcovrllvm-cov)
         - [An example `lcov` unit test coverage scenario:](#an-example-lcov-unit-test-coverage-scenario)
       - [GoogleTest/GoogleMock](#googletestgooglemock)
       - [Google Benchmark](#google-benchmark)
@@ -445,13 +445,13 @@ Ubuntu/Debian
     sudo apt-get install cppcheck
 ```
 
-#### GCov/LCov
+#### GCov/LCov/GCovr/LLVM-Cov
 
-Controlled by `<project_name>_TOOLCONF_USE_GCOV`, `<project_name>_TOOLCONF_USE_LCOV`, `<project_name>_TOOLCONF_USE_GCOVR` options.
+Controlled by `<project_name>_TOOLCONF_USE_GCOV`, `<project_name>_TOOLCONF_USE_LCOV`, `<project_name>_TOOLCONF_USE_GCOVR`, `<project_name>_TOOLCONF_USE_LLVM_COV` options.
 
 Locate `gcov & lcov` in environment, if available. The status will be printed to stdout.
 
-Code coverage is enabled per target basis. To enable code coverage target creation for a target, pass `WITH_COVERAGE` argument to `make_target` function. `WITH_COVERAGE` will cause `make_target` to create a new target named `<target_name>.lcov` (when lcov enabled and present) and `<target_name>.gcovr.xml,  <target_name>.gcovr.html` (when gcovr enabled and present) which runs code coverage analysis and generates code coverage report when run.
+Code coverage is enabled per target basis. To enable code coverage target creation for a target, pass `WITH_COVERAGE` argument to `make_target` function. `WITH_COVERAGE` will cause `make_target` to create a new target named `<target_name>.lcov` (gcov) or `<target_name>.llvm.lcov` (llvm-cov) (when lcov enabled and present) and `<target_name>.gcovr.xml,  <target_name>.gcovr.html` (gcov) or `<target_name>.llvm.gcovr.xml,  <target_name>.llvm.gcovr.html` (llvm-cov) (when gcovr enabled and present) which runs code coverage analysis and generates code coverage report when run.
 
 ```cmake
 project(my-awesome-project)                              # Declare a new project
@@ -561,12 +561,13 @@ Unit test's CMakeLists.txt:
     )
 ```
 
-`gcov`, `lcov` and `gcovr` integrations are also enabled by specifying following options:
+`gcov`, `lcov`, `llvm-cov` and `gcovr` integrations are also enabled by specifying following options:
 
 ```cmake
-    SET(HDKTEST_TOOLCONF_USE_GCOV TRUE CACHE BOOL "Enable/disable gcov integration" FORCE)
-    SET(HDKTEST_TOOLCONF_USE_LCOV TRUE CACHE BOOL "Enable/disable lcov integration" FORCE)
-    SET(HDKTEST_TOOLCONF_USE_GCOVR TRUE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_GCOV       TRUE CACHE BOOL "Enable/disable gcov integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_LCOV       TRUE CACHE BOOL "Enable/disable lcov integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_GCOVR      TRUE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_LLVM_COV   TRUE CACHE BOOL "Enable/disable llvm-cov integration" FORCE)
 ```
 
 As we specified `WITH_COVERAGE` option and enabling coverage tools, following additional targets will be available for build (which will trigger code coverage report generation):
