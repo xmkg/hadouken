@@ -451,7 +451,7 @@ Controlled by `<project_name>_TOOLCONF_USE_GCOV`, `<project_name>_TOOLCONF_USE_L
 
 Locate `gcov & lcov` in environment, if available. The status will be printed to stdout.
 
-Code coverage is enabled per target basis. To enable code coverage target creation for a target, pass `WITH_COVERAGE` argument to `make_target` function. `WITH_COVERAGE` will cause `make_target` to create a new target named `<target_name>.lcov` (gcov) or `<target_name>.llvm.lcov` (llvm-cov) (when lcov enabled and present) and `<target_name>.gcovr.xml,  <target_name>.gcovr.html` (gcov) or `<target_name>.llvm.gcovr.xml,  <target_name>.llvm.gcovr.html` (llvm-cov) (when gcovr enabled and present) which runs code coverage analysis and generates code coverage report when run.
+Code coverage is enabled per target basis. To enable code coverage target creation for a target, pass `WITH_COVERAGE` argument to `make_target` function. `WITH_COVERAGE` will cause `make_target` to create a new target named `<target_name>.lcov` (when lcov enabled and present) and `<target_name>.gcovr.xml,  <target_name>.gcovr.html` (when gcovr enabled and present) which runs code coverage analysis and generates code coverage report when run.
 
 ```cmake
 project(my-awesome-project)                              # Declare a new project
