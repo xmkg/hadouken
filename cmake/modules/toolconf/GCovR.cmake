@@ -32,12 +32,11 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR)
             hdk_log_status("Configuring tool `llvm-cov`")
             find_program(LLVM_COV "llvm-cov")
             hdk_log_status("Found `llvm-cov` executable: ${LLVM_COV}`")
-            set(GCOVR_GCOV_EXECUTABLE_PATH "llvm-cov gcov")
-            set(GCOVR_PREFIX_COVERAGE_NAME ".llvm")
+            set(GCOVR_GCOV_EXECUTABLE_PATH "${LLVM_COV} gcov")
         endif()
         add_custom_target(
-            ${HDK_ROOT_PROJECT_NAME}${GCOVR_PREFIX_COVERAGE_NAME}.gcovr.summary
-            COMMAND gcovr --gcov-executable=${GCOVR_GCOV_EXECUTABLE_PATH} -r ${HDK_ROOT_PROJECT_SOURCE_DIR} -e '.*/test/.*' -e '.*/CompilerIdCXX/.*'
+            ${HDK_ROOT_PROJECT_NAME}.gcovr.summary
+            COMMAND gcovr --gcov-executable ${GCOVR_GCOV_EXECUTABLE_PATH} -r ${HDK_ROOT_PROJECT_SOURCE_DIR} -e '.*/test/.*' -e '.*/CompilerIdCXX/.*'
         )
     else()
         hdk_log_err("`gcovr` not found in environment")
