@@ -107,19 +107,19 @@ hdk_log_unset_context()
 
 hdk_set_build_variant()
 
-# TODO (aaksoy): We will use HADOUKEN_COMPILER in here, instead of CMAKE_CXX_COMPILER_ID.
-# we cannot use it right now cause of there is a bug on that variable.
+
+
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_COVERAGE)
-    if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    if(${HADOUKEN_COMPILER} STREQUAL "GCC")
         hdk_log_status("GCC compiler detected, GCov is activated for test coverage.")
         set(HDK_TOOLCONF_COVERAGE_HTML_TITLE "Hadouken GCC Code Coverage Report")
-        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV ON)
-        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV OFF)
-    elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV ON CACHE BOOL "Enable/disable gcov")
+        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV OFF CACHE BOOL "Enable/disable llvm-cov")
+    elseif(${HADOUKEN_COMPILER} STREQUAL "CLANG")
         hdk_log_status("Clang compiler detected, LLVM Cov is activated for test coverage.")
         set(HDK_TOOLCONF_COVERAGE_HTML_TITLE "Hadouken Clang Code Coverage Report")
-        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OFF)
-        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV ON)
+        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OFF CACHE BOOL "Enable/disable gcov")
+        set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV ON CACHE BOOL "Enable/disable llvm-cov")
     endif()
 endif()
 
