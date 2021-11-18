@@ -30,6 +30,7 @@ if(${CMAKE_VERSION} VERSION_LESS "3.3.0")
     hdk_log_warn("Include what you use support requires at least version 3.3 of CMake.")
 elseif (NOT ${HADOUKEN_COMPILER} STREQUAL "CLANG")
     hdk_log_warn("Include what you use currently only works with clang compiler.")
+endif()
 
 if(HDK_TOOL_IWYU)
     set(CMAKE_CXX_INCLUDE_WHAT_YOU_USE ${HDK_TOOL_IWYU})
