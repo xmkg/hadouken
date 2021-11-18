@@ -171,11 +171,11 @@ function(make_target)
     endif()
 
     # Add format target (if clang-format is available)
-    if(CLANG_FORMAT)
+    if(HDK_TOOL_CLANG_FORMAT)
         add_custom_target(
             ${TARGET_NAME}.format
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-            COMMAND ${CLANG_FORMAT} -i -style=file ${COMPILATION_UNIT}
+            COMMAND ${HDK_TOOL_CLANG_FORMAT} -i -style=file ${COMPILATION_UNIT}
             COMMENT "Running `clang-format` on compilation unit of  `${TARGET_NAME}`"
         )
 

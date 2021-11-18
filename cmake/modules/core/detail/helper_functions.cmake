@@ -211,7 +211,7 @@ function(__hdk_setup_coverage_targets)
 
 
     if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
-        if((${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND GCOV) OR (${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV AND LLVM_COV))
+        if((${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND HDK_TOOL_GCOV) OR (${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV AND HDK_TOOL_LLVM_COV))
             target_compile_options(${TARGET_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
             target_link_libraries(${TARGET_NAME} PRIVATE gcov)
 
@@ -226,7 +226,8 @@ function(__hdk_setup_coverage_targets)
                 endforeach()
             endif()
             
-            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND GCOVR)
+            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND HDK_TOOL_GCOVR)
+
                 SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
                     NAME ${TARGET_NAME}.gcovr.xml 
                     EXECUTABLE ${TARGET_NAME} 
@@ -261,7 +262,7 @@ function(__hdk_setup_coverage_targets)
             
             endif()
 
-            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND LCOV)
+            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND HDK_TOOL_LCOV)
                 
                 SETUP_TARGET_FOR_COVERAGE_LCOV(
                     NAME ${TARGET_NAME}.lcov 
