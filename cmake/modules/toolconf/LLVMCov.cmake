@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
+
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV "Use llvm-cov in project" OFF)
 
 hdk_log_set_context("llvm-cov")
@@ -21,9 +23,10 @@ hdk_log_set_context("llvm-cov")
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
     hdk_log_status("Configuring tool `llvm-cov`")
 
-    find_program(LLVM_COV "llvm-cov")
+    hdk_find_program(LLVM_COV llvm-cov)
     if(LLVM_COV)
         hdk_log_status("Found `llvm-cov` executable: ${LLVM_COV}`")
+        set(HDK_TOOLPATH_COVERAGE_EXECUTABLE "${LLVM_COV} gcov") # gcov command line arguments is required for using this in lcov and gcovr as executable
     else()
         hdk_log_err("`llvm-cov` not found in environment")
     endif()   

@@ -14,16 +14,19 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
+
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV "Use gcov in project" OFF)
 
 hdk_log_set_context("gcov")
 
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
     hdk_log_status("Configuring tool `gcov`")
+    hdk_find_program(GCOV gcov)
 
-    find_program(GCOV "gcov")
     if(GCOV)
         hdk_log_status("Found `gcov` executable: ${GCOV}`")
+        set(HDK_TOOLPATH_COVERAGE_EXECUTABLE "${GCOV}")
     else()
         hdk_log_err("`gcov` not found in environment")
     endif()   

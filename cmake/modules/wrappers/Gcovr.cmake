@@ -75,36 +75,28 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_U
     include(CMakeParseArguments)
 
     # Check prereqs
-    find_program(GCOV_PATH gcov)
-    find_program(LLVM_COV_PATH llvm-cov)
     find_program(LCOV_PATH  NAMES lcov lcov.bat lcov.exe lcov.perl)
     find_program(GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat)
     find_program(GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
     find_package(Python COMPONENTS Interpreter)
 
-    # Variables for gcovr
-    set(COVERAGE_TOOL_EXECUTABLE_PATH "")
-    set(COVERAGE_HTML_TITLE "")
-
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
         message(FATAL_ERROR "Due to compatibility issues you cannot use both of gcov and llvm-cov together in project! Aborting...")
     endif()
 
-    if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
-        if(NOT GCOV_PATH AND ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
-            message(FATAL_ERROR "gcov not found! Aborting...")
-        endif() # NOT GCOV_PATH
-        set(COVERAGE_TOOL_EXECUTABLE_PATH "${GCOV_PATH}")
-        set(COVERAGE_HTML_TITLE "GCC Code Coverage Report")
-    endif() # ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV
-
-    if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
-        if(NOT LLVM_COV_PATH)
-            message(FATAL_ERROR "llvm-cov not found! Aborting...")
-        endif() # NOT LLVM_COT_PATH
-        set(COVERAGE_TOOL_EXECUTABLE_PATH "${LLVM_COV_PATH} gcov") # gcov command line argument is required for compatibility in gcovr
-        set(COVERAGE_HTML_TITLE "Clang Code Coverage Report")
-    endif() # ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV
+    # if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
+    #     find_program(GCOV_PATH gcov)
+    #     if(NOT GCOV_PATH AND ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
+    #         message(FATAL_ERROR "gcov not found! Aborting...")
+    #     endif() # NOT GCOV_PATH
+    # endif() # ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV
+    #
+    # if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
+    #     find_program(LLVM_COV_PATH llvm-cov)
+    #     if(NOT LLVM_COV_PATH)
+    #         message(FATAL_ERROR "llvm-cov not found! Aborting...")
+    #     endif() # NOT LLVM_COV_PATH
+    # endif() # ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV
 
     # message(STATUS ${CMAKE_CXX_COMPILER_ID})
     # if("${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
@@ -168,9 +160,13 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
     set(oneValueArgs NAME FILTER_PATTERN OUTPUT_DIRECTORY WORKING_DIRECTORY)
     set(multiValueArgs EXECUTABLE EXECUTABLE_ARGS DEPENDENCIES)
     cmake_parse_arguments(Coverage "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
+    
     if(NOT Python_FOUND)
         message(FATAL_ERROR "python not found! Aborting...")
+    endif()
+
+    if(NOT HDK_TOOLPATH_COVERAGE_EXECUTABLE)
+        message(FATAL_ERROR "coverage executable not found! Aborting...")
     endif()
 
     if(NOT GCOVR_PATH)
@@ -198,7 +194,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Running gcovr
         COMMAND ${GCOVR_PATH} --xml
-            --gcov-executable ${COVERAGE_TOOL_EXECUTABLE_PATH}
+            --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE}
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
@@ -237,6 +233,10 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         message(FATAL_ERROR "python not found! Aborting...")
     endif()
 
+    if(NOT HDK_TOOLPATH_COVERAGE_EXECUTABLE)
+        message(FATAL_ERROR "coverage executable not found! Aborting...")
+    endif()
+
     if(NOT GCOVR_PATH)
         message(FATAL_ERROR "gcovr not found! Aborting...")
     endif() # NOT GCOVR_PATH
@@ -264,8 +264,8 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}
 
         # Running gcovr
-        COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details --html-title ${COVERAGE_HTML_TITLE}
-            --gcov-executable ${COVERAGE_TOOL_EXECUTABLE_PATH}
+        COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details --html-title ${HDK_TOOLCONF_COVERAGE_HTML_TITLE}
+            --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE}
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
