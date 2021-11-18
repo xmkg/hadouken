@@ -70,14 +70,13 @@
 #      make my_coverage_target
 #
 
-include(wrappers/detail/coverage_set_variables)
+include(.hadouken/cmake/modules/wrappers/detail/coverage_set_variables.cmake)
 
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
 
     include(CMakeParseArguments)
 
     # Check prereqs
-    find_program(GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
     find_package(Python COMPONENTS Interpreter REQUIRED)
 
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
@@ -129,7 +128,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         # Create output directory
         COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Running gcovr
-        COMMAND ${GCOVR_PATH} --xml
+        COMMAND ${HDK_TOOL_GCOVR} --xml
             --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE}
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
@@ -173,9 +172,9 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         message(FATAL_ERROR "coverage executable not found! Aborting...")
     endif()
 
-    if(NOT GCOVR_PATH)
+    if(NOT HDK_TOOL_GCOVR)
         message(FATAL_ERROR "gcovr not found! Aborting...")
-    endif() # NOT GCOVR_PATH
+    endif() # NOT HDK_TOOL_GCOVR
 
     if(NOT Coverage_OUTPUT_DIRECTORY)
         set(Coverage_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
@@ -200,7 +199,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}
 
         # Running gcovr
-        COMMAND ${Python_EXECUTABLE} ${GCOVR_PATH} --html --html-details --html-title ${HDK_TOOLCONF_COVERAGE_HTML_TITLE}
+        COMMAND ${Python_EXECUTABLE} ${HDK_TOOL_GCOVR} --html --html-details --html-title ${${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_COVERAGE_HTML_TITLE}
             --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE}
             -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}

@@ -70,7 +70,7 @@
 #      make my_coverage_target
 #
 
-include(wrappers/detail/coverage_set_variables)
+include(.hadouken/cmake/modules/wrappers/detail/coverage_set_variables.cmake)
 
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
 
