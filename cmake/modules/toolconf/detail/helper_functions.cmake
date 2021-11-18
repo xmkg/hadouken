@@ -15,8 +15,8 @@
 # ______________________________________________________
 
 function(hdk_find_program program_name default_name)
-    if(DEFINED ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_GCOV_NAMES)
-        if(DEFINED ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_GCOV_PATHS)
+    if(DEFINED ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_${program_name}_NAMES)
+        if(DEFINED ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_${program_name}_PATHS)
             find_program(${program_name} ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_${program_name}_NAMES PATHS ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_${program_name}_PATHS)
         else()
             find_program(${program_name} ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_${program_name}_NAMES)
