@@ -4,7 +4,7 @@
 # Contains helper functions to invoke common git commands in CMake.
 # 
 # @file 	BuildVariant.cmake
-# @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @author Mustafa Kemal GILOR <mgilor@nettsi.com>
 # @date 	25.02.2020
 # 
 # Copyright (c) Nettsi Informatics Technology Inc. 
@@ -17,7 +17,7 @@
 include(CMakeDetermineCCompiler)
 include(CMakeDetermineCXXCompiler)
 
-function(hdk_set_build_variant)
+macro(hdk_set_build_variant)
   hdk_log_set_context("hadouken.buildvariant")
   hdk_log_status("Setting up build variant and flags")
 
@@ -38,7 +38,7 @@ function(hdk_set_build_variant)
   set(CMAKE_CXX_FLAGS_MINSIZEREL ${${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_CXX_FLAGS_MINSIZEREL})
 
 
-  if(CMAKE_CXX_COMPILER_ID MATCHES "[gG][nN][uU]")
+  if((CMAKE_CXX_COMPILER_ID MATCHES "[gG][nN][uU]") OR (CMAKE_C_COMPILER_ID MATCHES "[gG][nN][uU]"))
     hdk_log_status("Toolchain: GNU (GCC) version ${CMAKE_CXX_COMPILER_VERSION}")
     include(core/DiagnosticFlags_GCC)
   elseif((CMAKE_CXX_COMPILER_ID MATCHES "[cC][lL][aA][nN][gG]") OR (CMAKE_C_COMPILER_ID MATCHES "[cC][lL][aA][nN][gG]") )
@@ -112,7 +112,7 @@ function(hdk_set_build_variant)
   set(CMAKE_CXX_FLAGS_RELEASE         ${CMAKE_CXX_FLAGS_RELEASE}        PARENT_SCOPE)
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  ${CMAKE_CXX_FLAGS_RELWITHDEBINFO} PARENT_SCOPE)
   set(CMAKE_CXX_FLAGS_MINSIZEREL      ${CMAKE_CXX_FLAGS_MINSIZEREL}     PARENT_SCOPE)
-endfunction()
+endmacro()
 
 
 
