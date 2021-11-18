@@ -70,78 +70,21 @@
 #      make my_coverage_target
 #
 
+include(wrappers/detail/coverage_set_variables)
+
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
 
     include(CMakeParseArguments)
 
     # Check prereqs
-    find_program(LCOV_PATH  NAMES lcov lcov.bat lcov.exe lcov.perl)
-    find_program(GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat)
-    find_program(GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
-    find_package(Python COMPONENTS Interpreter)
+    # find_program(LCOV_PATH  NAMES lcov lcov.bat lcov.exe lcov.perl REQUIRED)
 
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
         message(FATAL_ERROR "Due to compatibility issues you cannot use both of gcov and llvm-cov together in project! Aborting...")
     endif()
 
-    #if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
-    #    find_program(GCOV_PATH gcov)
-    #    if(NOT GCOV_PATH AND ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV)
-    #        message(FATAL_ERROR "gcov not found! Aborting...")
-    #    endif() # NOT GCOV_PATH
-    #endif() # ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV
-    #
-    #if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
-    #    find_program(LLVM_COV_PATH llvm-cov)
-    #    if(NOT LLVM_COV_PATH)
-    #        message(FATAL_ERROR "llvm-cov not found! Aborting...")
-    #    endif() # NOT LLVM_COV_PATH
-    #endif() # ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV
-
-    # message(STATUS ${CMAKE_CXX_COMPILER_ID})
-    # if("${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?[Cc]lang")
-    #     if("${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS 3)
-    #         message(FATAL_ERROR "Clang version must be 3.0.0 or greater! Aborting...")
-    #     endif()
-    # elseif(NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "[gG][nN][uU]")
-    #     message(FATAL_ERROR "Compiler is not GNU gcc! Aborting...")
-    # endif()
-
-    set(COVERAGE_COMPILER_FLAGS "-g --coverage -fprofile-arcs -ftest-coverage"
-        CACHE INTERNAL "")
-
-    set(CMAKE_CXX_FLAGS_COVERAGE
-        ${COVERAGE_COMPILER_FLAGS}
-        CACHE STRING "Flags used by the C++ compiler during coverage builds."
-        FORCE )
-    set(CMAKE_C_FLAGS_COVERAGE
-        ${COVERAGE_COMPILER_FLAGS}
-        CACHE STRING "Flags used by the C compiler during coverage builds."
-        FORCE )
-    set(CMAKE_EXE_LINKER_FLAGS_COVERAGE
-        ""
-        CACHE STRING "Flags used for linking binaries during coverage builds."
-        FORCE )
-    set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE
-        ""
-        CACHE STRING "Flags used by the shared libraries linker during coverage builds."
-        FORCE )
-    mark_as_advanced(
-        CMAKE_CXX_FLAGS_COVERAGE
-        CMAKE_C_FLAGS_COVERAGE
-        CMAKE_EXE_LINKER_FLAGS_COVERAGE
-        CMAKE_SHARED_LINKER_FLAGS_COVERAGE )
-
-    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
-        message(STATUS "Code coverage results with an optimised (non-Debug) build may be misleading")
-    endif() # NOT CMAKE_BUILD_TYPE STREQUAL "Debug"
-
-    if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        link_libraries(gcov)
-    else()
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} --coverage")
-    endif()
-
+    set_common_variables()
+    
 endif()
 
 
@@ -166,14 +109,6 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         message(FATAL_ERROR "coverage executable not found! Aborting...")
     endif()
 
-    if(NOT LCOV_PATH)
-        message(FATAL_ERROR "lcov not found! Aborting...")
-    endif() # NOT LCOV_PATH
-
-    if(NOT GENHTML_PATH)
-        message(FATAL_ERROR "genhtml not found! Aborting...")
-    endif() # NOT GENHTML_PATH
-
     if(NOT Coverage_OUTPUT_DIRECTORY)
         set(Coverage_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
     endif()
@@ -185,9 +120,9 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         # # Create output directory
         # COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Cleanup lcov
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -directory ${Coverage_DIRECTORY} --zerocounters
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -directory ${Coverage_DIRECTORY} --zerocounters
         # Create baseline to make sure untouched files show up in the report
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -c -i -d ${Coverage_DIRECTORY} -o ${Coverage_NAME}.base
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -c -i -d ${Coverage_DIRECTORY} -o ${Coverage_NAME}.base
 
         # If unit test; 
         #   Gather link targets
@@ -199,12 +134,12 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         COMMAND ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
 
         # Capturing lcov counters and generating report
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --directory ${Coverage_DIRECTORY} --capture --output-file ${Coverage_NAME}.info
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --directory ${Coverage_DIRECTORY} --capture --output-file ${Coverage_NAME}.info
         # add baseline counters
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
-        COMMAND ${LCOV_PATH} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Apply specified filter pattern to the final result
-        COMMAND ${LCOV_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -e ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned '${Coverage_FILTER_PATTERN}' --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
+        COMMAND ${HDK_TOOL_LCOV} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -e ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned '${Coverage_FILTER_PATTERN}' --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Generating HTML 
         COMMAND ${GENHTML_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc ${Coverage_GENHTML_ARGS} -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME} ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Erase intermediate artifacts

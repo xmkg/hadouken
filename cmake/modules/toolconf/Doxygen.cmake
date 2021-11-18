@@ -22,6 +22,8 @@
 # PROJECT_LOGO           =
 # OUTPUT_DIRECTORY       =
 
+# include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
+
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_DOXYGEN "Use doxygen in project" OFF)
 
 hdk_log_set_context("doxygen")

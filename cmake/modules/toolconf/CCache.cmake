@@ -14,24 +14,16 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
+
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CCACHE "Use ccache in project" OFF)
 
-hdk_log_set_context("ccache")
-
-if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CCACHE)
-    hdk_log_status("Configuring tool `ccache`")
-
-    find_program(CCACHE_FOUND ccache)
-    if(CCACHE_FOUND)
-        hdk_log_status("Found `ccache` executable: ${CCACHE_FOUND}")
-        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_FOUND})
-        # set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) # Less useful to do it for linking, see edit2
-    else()
-        hdk_log_err("`ccache` not found in environment")
-    endif(CCACHE_FOUND)
-
-else()
-    hdk_log_verbose("Skipping tool configuration for `ccache` (disabled)")
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CCACHE 
+        CCACHE
+        DEFAULT_NAME ccache
+        REQUIRED
+    )
+if(HDK_TOOL_CCACHE)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE_FOUND})
+    # set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) # Less useful to do it for linking, see edit2
 endif()
-
-hdk_log_unset_context()

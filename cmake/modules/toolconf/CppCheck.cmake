@@ -14,31 +14,23 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
+
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK "Use cppcheck in project" OFF)
 
-hdk_log_set_context("cppcheck")
-
-if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK)
-    hdk_log_status("Configuring tool `cppcheck`")
-
-    # Adding clang-format target if executable is found
-    find_program(CPPCHECK "cppcheck")
-    if(CPPCHECK)
-        set(CMAKE_CXX_CPPCHECK ${CPPCHECK})
-        list(APPEND CMAKE_CXX_CPPCHECK 
-            "--enable=warning"
-            "--inconclusive"
-            "--force" 
-            "--inline-suppr"
-            "--suppressions-list=${CMAKE_SOURCE_DIR}/.cppcheck-suppress"
-        )
-        hdk_log_status("Found `cppcheck` executable: ${CPPCHECK}`")
-    else()
-        hdk_log_err("`cppcheck` not found in environment")
-    endif()
-
-else()
-    hdk_log_verbose("Skipping tool configuration for `cppcheck` (disabled)")
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK  
+        CPPCHECK
+        DEFAULT_NAME cppcheck
+        REQUIRED
+    )
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CPPCHECK CPPCHECK "cppcheck" REQUIRED)
+if(HDK_TOOL_CPPCHECK)
+    set(CMAKE_CXX_CPPCHECK ${CPPCHECK})
+    list(APPEND CMAKE_CXX_CPPCHECK 
+        "--enable=warning"
+        "--inconclusive"
+        "--force" 
+        "--inline-suppr"
+        "--suppressions-list=${CMAKE_SOURCE_DIR}/.cppcheck-suppress"
+    )
 endif()
-
-hdk_log_unset_context()

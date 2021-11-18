@@ -18,27 +18,18 @@ include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
 
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR                "Use gcovr in project"                          OFF)
 
-hdk_log_set_context("gcovr")
-
-if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR)
-    hdk_log_status("Configuring tool `gcovr`")
-    if(NOT (${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR))
-        message(FATAL_ERROR "gcov or llvm-cov must be activated to use gcovr for test coverage.")
-    endif()
-
-    hdk_find_program(GCOVR gcovr)
-    
-    if(GCOVR)
-        hdk_log_status("Found `gcovr` executable: ${GCOVR}`")
-        add_custom_target(
-            ${HDK_ROOT_PROJECT_NAME}.gcovr.summary
-            COMMAND gcovr --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -r ${HDK_ROOT_PROJECT_SOURCE_DIR} -e '.*/test/.*' -e '.*/CompilerIdCXX/.*'
-        )
-    else()
-        hdk_log_err("`gcovr` not found in environment")
-    endif()
-else()
-    hdk_log_verbose("Skipping tool configuration for `gcovr` (disabled)")
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND NOT (${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV))
+    message(FATAL_ERROR "gcov or llvm-cov must be activated to use gcovr for test coverage.")
 endif()
 
-hdk_log_unset_context()
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR 
+        GCOVR
+        DEFAULT_NAME gcovr
+        REQUIRED
+    )
+if(HDK_TOOL_GCOVR)
+    add_custom_target(
+                ${HDK_ROOT_PROJECT_NAME}.gcovr.summary
+                COMMAND gcovr --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -r ${HDK_ROOT_PROJECT_SOURCE_DIR} -e '.*/test/.*' -e '.*/CompilerIdCXX/.*'
+    )
+endif()

@@ -16,24 +16,13 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
 
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT "Use clang-format in project" OFF)
 
-hdk_log_set_context("clang-format")
-
-if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT)
-    hdk_log_status("Configuring tool `clang-format`")
-
-    # Adding clang-format target if executable is found
-    find_program(CLANG_FORMAT NAMES "clang-format" "clang-format-10" "clang-format-9" "clang-format-8" "clang-format-7" "clang-format-6" "clang-format-5" "clang-format-4" "clang-format-3")
-    if(CLANG_FORMAT)
-        hdk_log_status("Found `clang-format` executable: ${CLANG_FORMAT}`")
-    else()
-        hdk_log_err("`clang-format` not found in environment")
-    endif()
-
-else()
-    hdk_log_verbose("Skipping tool configuration for `clang-format` (disabled)")
-endif()
-
-hdk_log_unset_context()
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT  
+        CLANG_FORMAT
+        DEFAULT_NAME clang-format
+        NAMES clang-format-13 clang-format-12 clang-format-11 clang-format-10 
+        REQUIRED
+    )

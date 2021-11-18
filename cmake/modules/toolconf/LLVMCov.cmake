@@ -18,20 +18,12 @@ include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
 
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV "Use llvm-cov in project" OFF)
 
-hdk_log_set_context("llvm-cov")
-
-if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
-    hdk_log_status("Configuring tool `llvm-cov`")
-
-    hdk_find_program(LLVM_COV llvm-cov)
-    if(LLVM_COV)
-        hdk_log_status("Found `llvm-cov` executable: ${LLVM_COV}`")
-        set(HDK_TOOLPATH_COVERAGE_EXECUTABLE "${LLVM_COV} gcov") # gcov command line arguments is required for using this in lcov and gcovr as executable
-    else()
-        hdk_log_err("`llvm-cov` not found in environment")
-    endif()   
-else()
-    hdk_log_verbose("Skipping tool configuration for `llvm-cov` (disabled)")
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV 
+        LLVM_COV
+        DEFAULT_NAME llvm-cov
+        NAMES llvm-cov-13 llvm-cov-12 llvm-cov-11 llvm-cov-10
+        REQUIRED
+    )
+if(HDK_TOOL_LLVM_COV)
+    set(HDK_TOOLPATH_COVERAGE_EXECUTABLE "${HDK_TOOL_LLVM_COV} gcov")
 endif()
-
-hdk_log_unset_context()
