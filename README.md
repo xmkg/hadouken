@@ -31,8 +31,9 @@
       - [ClangTidy](#clangtidy)
       - [CppCheck](#cppcheck)
       - [GCov/LCov/GCovr/LLVM-Cov](#gcovlcovgcovrllvm-cov)
-      - [Automatic Coverage Tool Selection](#automatic-coverage-tool-selection)
+        - [Automatic Coverage Tool Selection](#automatic-coverage-tool-selection)
         - [An example `lcov` unit test coverage scenario:](#an-example-lcov-unit-test-coverage-scenario)
+        - [Customizing HTML Title in GCovr](#customizing-html-title-in-gcovr)
       - [GoogleTest/GoogleMock](#googletestgooglemock)
       - [Google Benchmark](#google-benchmark)
       - [IncludeWhatYouUse (IWYU)](#includewhatyouuse-iwyu)
@@ -486,7 +487,7 @@ make_target(TYPE UNIT_TEST WITH_COVERAGE)
 # Creates an unit test named my-awesome-project and my-awesome-project.cov coverage target.
 ```
 
-#### Automatic Coverage Tool Selection
+##### Automatic Coverage Tool Selection
 
 Controlled by `<project_name>_TOOLCONF_USE_COVERAGE` option.
 
@@ -666,6 +667,17 @@ Ubuntu/Debian
 
 Example code coverage output of an unit test is shown below(gcovr/html):
 ![Gcov result report][gcovr-report]
+
+##### Customizing HTML Title in GCovr
+
+Controlled by `<project_name>_TOOLCONF_COVERAGE_HTML_TITLE` variable.
+
+Example:
+
+```cmake
+    project(my-awesome-project)
+    set(my-awesome-project_TOOLCONF_COVERAGE_HTML_TITLE "My custom html title on coverage")
+```
 
 #### GoogleTest/GoogleMock
 
