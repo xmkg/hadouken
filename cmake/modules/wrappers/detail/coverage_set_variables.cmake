@@ -1,7 +1,7 @@
 # The module contains macros and functions that have common 
 # interfaces on both of LCov and GCovr variables.
 # 
-# @file 	ClangTidy.cmake
+# @file 	coverage_set_variables.cmake
 # @author 	Ahmet İbrahim AKSOY <aaksoy@nettsi.com>
 # @date 	18.11.2021
 # 

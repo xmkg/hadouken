@@ -129,7 +129,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_XML)
         # Running gcovr
         COMMAND ${HDK_TOOL_GCOVR} --xml
             --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE}
-            -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
+            -r ${HDK_ROOT_PROJECT_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
             -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.xml
@@ -200,7 +200,7 @@ function(SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML)
         # Running gcovr
         COMMAND ${Python_EXECUTABLE} ${HDK_TOOL_GCOVR} --html --html-details --html-title ${${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_COVERAGE_HTML_TITLE}
             --gcov-executable ${HDK_TOOLPATH_COVERAGE_EXECUTABLE}
-            -r ${CMAKE_SOURCE_DIR} ${GCOVR_EXCLUDES}
+            -r ${HDK_ROOT_PROJECT_SOURCE_DIR} ${GCOVR_EXCLUDES}
             --object-directory=${PROJECT_BINARY_DIR}
             --filter ${Coverage_FILTER_PATTERN}
             -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}/index.html

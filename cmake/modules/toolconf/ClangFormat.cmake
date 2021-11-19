@@ -23,6 +23,6 @@ option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT "Use clang-forma
 hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_CLANG_FORMAT  
         CLANG_FORMAT
         DEFAULT_NAME clang-format
-        NAMES clang-format-13 clang-format-12 clang-format-11 clang-format-10 
+        NAMES clang-format-13 clang-format-12 clang-format-11 clang-format-10 clang-format-9 clang-format-8 clang-format-7 clang-format-6 clang-format-5 clang-format-4 clang-format-3
         REQUIRED
     )

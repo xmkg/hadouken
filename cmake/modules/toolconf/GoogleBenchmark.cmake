@@ -40,7 +40,7 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
 
     make_target(
         NAME ${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark    
-        TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp 
+        TYPE STATIC SOURCES ${HDK_ROOT_PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp 
         LINK PUBLIC benchmark::benchmark
     )
     hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark` target")

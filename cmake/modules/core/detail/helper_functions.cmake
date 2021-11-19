@@ -202,7 +202,7 @@ function(__hdk_setup_coverage_targets)
 
     if(NOT DEFINED ARGS_COVERAGE_GCOVR_FILTER_PATTERN)
         # Default filter pattern
-        set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${CMAKE_SOURCE_DIR}")
+        set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${HDK_ROOT_PROJECT_SOURCE_DIR}")
     endif()
 
 
@@ -259,7 +259,7 @@ function(__hdk_setup_coverage_targets)
                 EXECUTABLE ${TARGET_NAME} 
                 DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
                 FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
-                LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external
+                LCOV_ARGS --directory ${PROJECT_SOURCE_DIR} --no-external
                 OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
                 WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
             )

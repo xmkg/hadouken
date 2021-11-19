@@ -119,9 +119,9 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         # # Create output directory
         # COMMAND ${CMAKE_COMMAND} -E make_directory ${Coverage_OUTPUT_DIRECTORY}
         # Cleanup lcov
-        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -directory ${Coverage_DIRECTORY} --zerocounters
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${HDK_ROOT_PROJECT_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -directory ${Coverage_DIRECTORY} --zerocounters
         # Create baseline to make sure untouched files show up in the report
-        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -c -i -d ${Coverage_DIRECTORY} -o ${Coverage_NAME}.base
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${HDK_ROOT_PROJECT_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -c -i -d ${Coverage_DIRECTORY} -o ${Coverage_NAME}.base
 
         # If unit test; 
         #   Gather link targets
@@ -133,14 +133,14 @@ function(SETUP_TARGET_FOR_COVERAGE_LCOV)
         COMMAND ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
 
         # Capturing lcov counters and generating report
-        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --directory ${Coverage_DIRECTORY} --capture --output-file ${Coverage_NAME}.info
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${HDK_ROOT_PROJECT_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --directory ${Coverage_DIRECTORY} --capture --output-file ${Coverage_NAME}.info
         # add baseline counters
-        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
-        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${HDK_ROOT_PROJECT_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -a ${Coverage_NAME}.base -a ${Coverage_NAME}.info --output-file ${Coverage_NAME}.total
+        COMMAND ${HDK_TOOL_LCOV} ${Coverage_LCOV_ARGS} --config-file ${HDK_ROOT_PROJECT_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} --remove ${Coverage_NAME}.total ${COVERAGE_LCOV_EXCLUDES} --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Apply specified filter pattern to the final result
-        COMMAND ${HDK_TOOL_LCOV} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -e ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned '${Coverage_FILTER_PATTERN}' --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
+        COMMAND ${HDK_TOOL_LCOV} --config-file ${HDK_ROOT_PROJECT_SOURCE_DIR}/.lcovrc --gcov-tool ${HDK_TOOLPATH_COVERAGE_EXECUTABLE} -e ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned '${Coverage_FILTER_PATTERN}' --output-file ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Generating HTML 
-        COMMAND ${GENHTML_PATH} --config-file ${CMAKE_SOURCE_DIR}/.lcovrc ${Coverage_GENHTML_ARGS} -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME} ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
+        COMMAND ${GENHTML_PATH} --config-file ${HDK_ROOT_PROJECT_SOURCE_DIR}/.lcovrc ${Coverage_GENHTML_ARGS} -o ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME} ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
         # Erase intermediate artifacts
         COMMAND ${CMAKE_COMMAND} -E remove ${Coverage_NAME}.base ${Coverage_NAME}.total ${Coverage_OUTPUT_DIRECTORY}/${Coverage_NAME}.info.cleaned
 

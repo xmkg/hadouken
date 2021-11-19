@@ -31,6 +31,6 @@ if(HDK_TOOL_CPPCHECK)
         "--inconclusive"
         "--force" 
         "--inline-suppr"
-        "--suppressions-list=${CMAKE_SOURCE_DIR}/.cppcheck-suppress"
+        "--suppressions-list=${HDK_ROOT_PROJECT_SOURCE_DIR}/.cppcheck-suppress"
     )
 endif()
