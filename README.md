@@ -30,8 +30,10 @@
       - [ClangFormat](#clangformat)
       - [ClangTidy](#clangtidy)
       - [CppCheck](#cppcheck)
-      - [GCov/LCov](#gcovlcov)
+      - [GCov/LCov/GCovr/LLVM-Cov](#gcovlcovgcovrllvm-cov)
+        - [Automatic Coverage Tool Selection](#automatic-coverage-tool-selection)
         - [An example `lcov` unit test coverage scenario:](#an-example-lcov-unit-test-coverage-scenario)
+        - [Customizing HTML Title in GCovr](#customizing-html-title-in-gcovr)
       - [GoogleTest/GoogleMock](#googletestgooglemock)
       - [Google Benchmark](#google-benchmark)
       - [IncludeWhatYouUse (IWYU)](#includewhatyouuse-iwyu)
@@ -445,9 +447,30 @@ Ubuntu/Debian
     sudo apt-get install cppcheck
 ```
 
-#### GCov/LCov
+#### GCov/LCov/GCovr/LLVM-Cov
 
-Controlled by `<project_name>_TOOLCONF_USE_GCOV`, `<project_name>_TOOLCONF_USE_LCOV`, `<project_name>_TOOLCONF_USE_GCOVR` options.
+Controlled by `<project_name>_TOOLCONF_USE_GCOV`, `<project_name>_TOOLCONF_USE_LCOV`, `<project_name>_TOOLCONF_USE_GCOVR`, `<project_name>_TOOLCONF_USE_LLVM_COV` options.
+
+Also to specify paths and names for customize search in your environment you can use these options:
+- `<project_name>_TOOLCONF_GCOV_PATHS`
+- `<project_name>_TOOLCONF_GCOV_NAMES`
+- `<project_name>_TOOLCONF_LLVM_COV_PATHS`
+- `<project_name>_TOOLCONF_LLVM_COV_NAMES`
+
+Example usage:
+
+```cmake
+project(my-awesome-project)                                                                 # Declare a new project
+set(my-awesome-project_TOOLCONF_USE_GCOV TRUE)                                              # Locate gcov and use it if available.
+set(my-awesome-project_TOOLCONF_GCOV_NAMES "gcov-tool" "gcov-new" "gcov-test")              # Specify search names for gcov tool.
+set(my-awesome-project_TOOLCONF_GCOV_PATHS "/usr/bin" "~/Desktop/toolchain")                # Specify search names for gcov tool.
+set(my-awesome-project_TOOLCONF_USE_GCOVR TRUE)                                             # Locate gcovr and use it if available.
+include(.hadouken/hadouken.cmake)                                                           # Use hadouken
+
+make_target(TYPE UNIT_TEST WITH_COVERAGE)
+# Creates an unit test named my-awesome-project and my-awesome-project.cov coverage target.
+
+```
 
 Locate `gcov & lcov` in environment, if available. The status will be printed to stdout.
 
@@ -457,6 +480,26 @@ Code coverage is enabled per target basis. To enable code coverage target creati
 project(my-awesome-project)                              # Declare a new project
 set(my-awesome-project_TOOLCONF_USE_GCOV TRUE)           # Locate gcov and use it if available.
 set(my-awesome-project_TOOLCONF_USE_LCOV TRUE)           # Locate lcov and use it if available.
+set(my-awesome-project_TOOLCONF_USE_GCOVR TRUE)          # Locate gcovr and use it if available.
+include(.hadouken/hadouken.cmake)                        # Use hadouken
+
+make_target(TYPE UNIT_TEST WITH_COVERAGE)
+# Creates an unit test named my-awesome-project and my-awesome-project.cov coverage target.
+```
+
+##### Automatic Coverage Tool Selection
+
+Controlled by `<project_name>_TOOLCONF_USE_COVERAGE` option.
+
+Automatically detects your compiler and select the appropriate coverage tool (`gcov` or `llvm-cov`) for you.
+
+Locate `gcov` or `llvm-cov` in environment, if available. The status will be printed to stdout.
+
+Code coverage is enabled per target basis. To enable code coverage target creation for a target, pass `WITH_COVERAGE` argument to `make_target` function. `WITH_COVERAGE` will cause `make_target` to create a new target named `<target_name>.lcov` (when lcov enabled and present) and `<target_name>.gcovr.xml,  <target_name>.gcovr.html` (when gcovr enabled and present) which runs code coverage analysis and generates code coverage report when run.
+
+```cmake
+project(my-awesome-project)                              # Declare a new project
+set(my-awesome-project_TOOLCONF_USE_COVERAGE TRUE)       # Locate your coverage tool in your environment (for clang llvm-cov) (for gcc gcov) and use it if available. 
 set(my-awesome-project_TOOLCONF_USE_GCOVR TRUE)          # Locate gcovr and use it if available.
 include(.hadouken/hadouken.cmake)                        # Use hadouken
 
@@ -561,13 +604,22 @@ Unit test's CMakeLists.txt:
     )
 ```
 
-`gcov`, `lcov` and `gcovr` integrations are also enabled by specifying following options:
+`gcov`, `lcov`, `llvm-cov` and `gcovr` integrations are also enabled by specifying following options:
 
 ```cmake
-    SET(HDKTEST_TOOLCONF_USE_GCOV TRUE CACHE BOOL "Enable/disable gcov integration" FORCE)
-    SET(HDKTEST_TOOLCONF_USE_LCOV TRUE CACHE BOOL "Enable/disable lcov integration" FORCE)
-    SET(HDKTEST_TOOLCONF_USE_GCOVR TRUE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_GCOV       TRUE CACHE BOOL "Enable/disable gcov integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_LCOV       TRUE CACHE BOOL "Enable/disable lcov integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_GCOVR      TRUE CACHE BOOL "Enable/disable gcovr integration" FORCE)
+    SET(HDKTEST_TOOLCONF_USE_LLVM_COV   TRUE CACHE BOOL "Enable/disable llvm-cov integration" FORCE)
 ```
+
+Also there is one more option to enable coverage (`gcov`, `llvm-cov`):
+
+```cmake
+    SET(HDKTEST_TOOLCONF_USE_COVERAGE   TRUE CACHE BOOL "Enable/disable coverage integration" FORCE)
+```
+
+**Note: This option overrides `HDKTEST_TOOLCONF_USE_GCOV` option and `HDKTEST_TOOLCONF_USE_LLVM_COV` option, cause this option will select coverage tool as automatically depends on your compiler.**
 
 As we specified `WITH_COVERAGE` option and enabling coverage tools, following additional targets will be available for build (which will trigger code coverage report generation):
 
@@ -615,6 +667,17 @@ Ubuntu/Debian
 
 Example code coverage output of an unit test is shown below(gcovr/html):
 ![Gcov result report][gcovr-report]
+
+##### Customizing HTML Title in GCovr
+
+Controlled by `<project_name>_TOOLCONF_COVERAGE_HTML_TITLE` variable.
+
+Example:
+
+```cmake
+    project(my-awesome-project)
+    set(my-awesome-project_TOOLCONF_COVERAGE_HTML_TITLE "My custom html title on coverage")
+```
 
 #### GoogleTest/GoogleMock
 
@@ -1360,7 +1423,7 @@ Example:
 
 ##### WITH_COVERAGE (optional)
 
-Generate code coverage report for the project (useful for unit test targets)
+Generate code coverage report for the project. Can be used for `UNIT_TEST` and `BENCHMARK` target types.
 
 Example:
 

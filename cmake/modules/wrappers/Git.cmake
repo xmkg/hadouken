@@ -118,22 +118,22 @@ function (hdk_git_print_status)
 
     hdk_git_get_branch_name(
         GIT_BRANCH_NAME
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${HDK_ROOT_PROJECT_SOURCE_DIR}
     )
 
     hdk_git_get_head_commit_hash(
         GIT_HEAD_COMMIT
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${HDK_ROOT_PROJECT_SOURCE_DIR}
     )
 
     hdk_git_get_tag(
         GIT_TAGS
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${HDK_ROOT_PROJECT_SOURCE_DIR}
     )
 
     hdk_git_is_worktree_dirty(
         GIT_WORKTREE_STATUS
-        DIRECTORY ${CMAKE_SOURCE_DIR}
+        DIRECTORY ${HDK_ROOT_PROJECT_SOURCE_DIR}
     )
 
     hdk_log_status("\tBranch: ${GIT_BRANCH_NAME}")

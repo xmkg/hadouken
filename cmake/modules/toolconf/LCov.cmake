@@ -14,21 +14,20 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
+
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV "Use lcov in project" OFF)
+set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_GENHTML_NAMES genhtml genhtml.perl genhtml.bat)
 
-hdk_log_set_context("lcov")
-
-if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV)
-    hdk_log_status("Configuring tool `lcov`")
-
-    find_program(LCOV NAMES lcov lcov.bat lcov.exe lcov.perl)
-    if(LCOV)
-        hdk_log_status("Found `lcov` executable: ${LCOV}`")
-    else()
-        hdk_log_err("`lcov` not found in environment")
-    endif()
-else()
-    hdk_log_verbose("Skipping tool configuration for `lcov` (disabled)")
-endif()
-
-hdk_log_unset_context()
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV 
+        LCOV
+        DEFAULT_NAME lcov
+        REQUIRED
+    )
+hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV 
+    GENHTML
+    DEFAULT_NAME genhtml
+    CONFIG_NAME GENHTML
+    NAMES genhtml.perl genhtml.bat
+    REQUIRED
+)

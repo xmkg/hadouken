@@ -190,13 +190,9 @@ endfunction()
 
 function(__hdk_setup_coverage_targets)
     hdk_log_set_context("hdk.mt")
-    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "LINK;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;COVERAGE_REPORT_OUTPUT_DIRECTORY;WORKING_DIRECTORY;" ${ARGN})
+    cmake_parse_arguments(ARGS "" "TARGET_NAME;" "LINK;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;COVERAGE_REPORT_OUTPUT_DIRECTORY;WORKING_DIRECTORY;" ${ARGN})
     if(NOT DEFINED ARGS_TARGET_NAME)
         message(FATAL_ERROR "setup_coverage_targets() requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        message(FATAL_ERROR "setup_coverage_targets() requires TYPE parameter.")
     endif()
 
     if(NOT DEFINED ARGS_COVERAGE_LCOV_FILTER_PATTERN)
@@ -206,87 +202,79 @@ function(__hdk_setup_coverage_targets)
 
     if(NOT DEFINED ARGS_COVERAGE_GCOVR_FILTER_PATTERN)
         # Default filter pattern
-        set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${CMAKE_SOURCE_DIR}")
+        set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${HDK_ROOT_PROJECT_SOURCE_DIR}")
     endif()
 
 
-    if(NOT ${ARGS_TYPE} STREQUAL "INTERFACE")
-        if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND GCOV)
-            target_compile_options(${TARGET_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
-            target_link_libraries(${TARGET_NAME} PRIVATE gcov)
+    if((${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND HDK_TOOL_GCOV) OR (${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV AND HDK_TOOL_LLVM_COV))
 
-            if(ARGS_COVERAGE_TARGETS)
-                foreach(CT IN LISTS ARGS_COVERAGE_TARGETS)
-                    if(TARGET ${CT})
-                        target_compile_options(${CT} PRIVATE -fprofile-arcs -ftest-coverage)
-                        target_link_libraries(${CT} PRIVATE gcov)
-                    else()
-                        message(WARNING "${CT} is not a valid CMake target, skipping.")
-                    endif()
-                endforeach()
+        if(ARGS_COVERAGE_TARGETS)
+            foreach(CT IN LISTS ARGS_COVERAGE_TARGETS)
+                if(NOT TARGET ${CT})
+                    message(FATAL_ERROR "${CT} is not a valid CMake target, cannot continue.")
+                endif()
+            endforeach()
+        endif()
+        
+        if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND HDK_TOOL_GCOVR)
+
+            SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
+                NAME ${TARGET_NAME}.gcovr.xml 
+                EXECUTABLE ${TARGET_NAME} 
+                DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
+                FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+                OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
+                WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
+            )
+
+            SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(
+                NAME ${TARGET_NAME}.gcovr.html 
+                EXECUTABLE ${TARGET_NAME} 
+                DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
+                FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+                OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
+                WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
+            )
+
+            # Project-level meta gcovr.xml target
+            if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.xml)
+                add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.xml ${TARGET_NAME}.gcovr.xml)
+            else()
+                add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.xml DEPENDS ${TARGET_NAME}.gcovr.xml)
             endif()
+
+            # Project-level meta gcovr.html target
+            if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.html)
+                add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.html ${TARGET_NAME}.gcovr.html)
+            else()
+                add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.html DEPENDS ${TARGET_NAME}.gcovr.html)
+            endif()
+        
+        endif()
+
+        if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND HDK_TOOL_LCOV)
             
-            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND GCOVR)
+            SETUP_TARGET_FOR_COVERAGE_LCOV(
+                NAME ${TARGET_NAME}.lcov 
+                EXECUTABLE ${TARGET_NAME} 
+                DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
+                FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
+                LCOV_ARGS --directory ${PROJECT_SOURCE_DIR} --no-external
+                OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
+                WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
+            )
 
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
-                    NAME ${TARGET_NAME}.gcovr.xml 
-                    EXECUTABLE ${TARGET_NAME} 
-                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
-                    FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
-                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
-                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
-                )
-
-                SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(
-                    NAME ${TARGET_NAME}.gcovr.html 
-                    EXECUTABLE ${TARGET_NAME} 
-                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
-                    FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
-                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
-                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
-                )
-
-                # Project-level meta gcovr.xml target
-                if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.xml)
-                    add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.xml ${TARGET_NAME}.gcovr.xml)
-                else()
-                    add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.xml DEPENDS ${TARGET_NAME}.gcovr.xml)
-                endif()
-
-                # Project-level meta gcovr.html target
-                if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.html)
-                    add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.html ${TARGET_NAME}.gcovr.html)
-                else()
-                    add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.html DEPENDS ${TARGET_NAME}.gcovr.html)
-                endif()
-
+            # Project-level meta lcov target
+            if (TARGET ${HDK_ROOT_PROJECT_NAME}.lcov)
+                add_dependencies(${HDK_ROOT_PROJECT_NAME}.lcov ${TARGET_NAME}.lcov)
+            else()
+                add_custom_target(${HDK_ROOT_PROJECT_NAME}.lcov DEPENDS ${TARGET_NAME}.lcov)
             endif()
 
-            if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND LCOV)
+        endif()
 
-                SETUP_TARGET_FOR_COVERAGE_LCOV(
-                    NAME ${TARGET_NAME}.lcov 
-                    EXECUTABLE ${TARGET_NAME} 
-                    DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
-                    FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
-                    LCOV_ARGS --directory ${CMAKE_SOURCE_DIR} --no-external
-                    OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
-                    WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
-                )
-
-                # Project-level meta lcov target
-                if (TARGET ${HDK_ROOT_PROJECT_NAME}.lcov)
-                    add_dependencies(${HDK_ROOT_PROJECT_NAME}.lcov ${TARGET_NAME}.lcov)
-                else()
-                    add_custom_target(${HDK_ROOT_PROJECT_NAME}.lcov DEPENDS ${TARGET_NAME}.lcov)
-                endif()
-
-            endif()
-
-        endif() 
-    else()
-        target_compile_options(${TARGET_NAME} INTERFACE -fprofile-arcs -ftest-coverage)
     endif()
+
 endfunction()
 
 

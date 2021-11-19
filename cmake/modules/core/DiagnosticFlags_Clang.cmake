@@ -4,7 +4,7 @@
 # CMake module for Clang specific build, warning and error flags 
 # settings.
 #
-# @file 	BuildVariant_GCC.cmake
+# @file 	DiagnosticFlags_Clang.cmake
 # @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
 # @date 	25.02.2020
 # 

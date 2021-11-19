@@ -136,9 +136,14 @@ function(make_target)
 
     # Add coverage option if set
     if(ARGS_WITH_COVERAGE)    
+
+        # WITH_COVERAGE is only meaningful for unit test and benchmark target types
+        if(NOT ${ARGS_TYPE} STREQUAL "UNIT_TEST" AND NOT ${ARGS_TYPE} STREQUAL "BENCHMARK")
+            message(FATAL_ERROR "WITH_COVERAGE can only be used together with UNIT_TEST and BENCHMARK targets.")
+        endif()
+        
         __hdk_setup_coverage_targets(
             TARGET_NAME ${TARGET_NAME} 
-            TYPE ${ARGS_TYPE} 
             LINK ${ARGS_LINK} 
             COVERAGE_TARGETS ${ARGS_COVERAGE_TARGETS} 
             COVERAGE_LCOV_FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
@@ -171,11 +176,11 @@ function(make_target)
     endif()
 
     # Add format target (if clang-format is available)
-    if(CLANG_FORMAT)
+    if(HDK_TOOL_CLANG_FORMAT)
         add_custom_target(
             ${TARGET_NAME}.format
             WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-            COMMAND ${CLANG_FORMAT} -i -style=file ${COMPILATION_UNIT}
+            COMMAND ${HDK_TOOL_CLANG_FORMAT} -i -style=file ${COMPILATION_UNIT}
             COMMENT "Running `clang-format` on compilation unit of  `${TARGET_NAME}`"
         )
 

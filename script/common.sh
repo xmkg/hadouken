@@ -6,11 +6,11 @@
 # @file 	common.sh
 # @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
 # @date 	14.02.2020
-# 
-# Copyright (c) Nettsi Informatics Technology Inc. 
-# All rights reserved. Licensed under the Apache 2.0 License. 
+#
+# Copyright (c) Nettsi Informatics Technology Inc.
+# All rights reserved. Licensed under the Apache 2.0 License.
 # See LICENSE in the project root for license information.
-# 
+#
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
@@ -31,7 +31,7 @@ hadouken.define_relative_paths(){
     HADOUKEN_RELATIVE_PATHS["PROJECT"]=$(realpath ${HADOUKEN_RELATIVE_PATHS["BOILERPLATE"]}/..)
     HADOUKEN_RELATIVE_PATHS["BUILD"]=$(realpath ${HADOUKEN_RELATIVE_PATHS["PROJECT"]}/build)
     HADOUKEN_RELATIVE_PATHS["PACK"]=$(realpath ${HADOUKEN_RELATIVE_PATHS["BUILD"]}/pak)
-
+    
     for key in "${!HADOUKEN_RELATIVE_PATHS[@]}"  # make sure you include the quotes there
     do
         eval ${2}["$key"]="${HADOUKEN_RELATIVE_PATHS["$key"]}"
@@ -48,12 +48,12 @@ hadouken.get_top_level_project_name(){
     declare -A LRP
     # Common headers
     hadouken.define_relative_paths $1 LRP
-
+    
     if test -f "${LRP["BUILD"]}/CMakeCache.txt"; then
         hadouken_top_level_project_name=$(grep CMAKE_PROJECT_NAME ${LRP["BUILD"]}/CMakeCache.txt | cut -d'=' -f2)
     else
         return 1
-    fi    
+    fi
 }
 
 # Returns 0 when running in docker
@@ -102,8 +102,8 @@ hadouken.get_cmake_version(){
     echo ${version_v[2]}
 }
 
-# Checks whether specified directory contains a 
-# CMakeLists.txt file.  
+# Checks whether specified directory contains a
+# CMakeLists.txt file.
 hadouken.has_cmakelist(){
     if test -e "$1/CMakeLists.txt"; then
         return 0
@@ -111,9 +111,9 @@ hadouken.has_cmakelist(){
     return 1
 }
 
-# Checks whether specified directory contains a 
+# Checks whether specified directory contains a
 # conanfile.txt file.
-hadouken.has_conanfile(){     
+hadouken.has_conanfile(){
     if test -e "$1/conanfile.txt"; then
         return 0
     fi
@@ -126,33 +126,33 @@ hadouken.bootstrap_cmake_project(){
     TARGET_FOLDER=$1
     CREATE_YEAR=$(date +"%Y")
     CREATE_DATE=$(date +"%d.%m.%Y")
-
+    
     echo -e "Project name:"
     read PROJECT_NAME
-
+    
     # Replace non-alphanumeric characters with an underscore
     PROJECT_NAME_SANITIZED="${PROJECT_NAME//[^[:alnum:]]/_}"
     # Convert to uppercase
     PROJECT_NAME_SANITIZED=""${PROJECT_NAME_SANITIZED^^}
     GIT_CFG_USER_NAME=$(git -C $TARGET_FOLDER config user.name)
     GIT_CFG_USER_EMAIL=$(git -C $TARGET_FOLDER config user.email)
-
+    
     if [ ! -d "$TARGET_FOLDER" ]; then
         echo -e "Target folder $TARGET_FOLDER does not exist."
         exit 1
     fi
-
+    
     if hadouken.has_cmakelist $TARGET_FOLDER ; then
         echo -e "Target folder $TARGET_FOLDER already has a CMakeLists.txt!"
         exit 1
     fi
-
+    
     echo "$GIT_CFG_USER_NAME $GIT_CFG_USER_EMAIL"
     if [ -z "$GIT_CFG_USER_NAME" ] || [ -z "$GIT_CFG_USER_EMAIL" ]; then
         echo -e "Set git user name and e-mail before quick-starting a project."
         exit 1
     fi
-
+    
     # Project top level CMakeLists.txt
     cat > $TARGET_FOLDER/CMakeLists.txt << EOF
 # ______________________________________________________
@@ -173,29 +173,33 @@ cmake_minimum_required(VERSION 3.00)
 project($PROJECT_NAME VERSION 0.0.1 LANGUAGES CXX)
 
 # Turn on any desired tool/feature below.
-SET(${PROJECT_NAME_SANITIZED}_MISC_NO_HADOUKEN_BANNER        FALSE CACHE BOOL "Enable/disable hadouken banner printing" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_IWYU              FALSE CACHE BOOL "Enable/disable include what you use integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GOOGLE_TEST       FALSE CACHE BOOL "Enable/disable gtest/gmock integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GOOGLE_BENCH      FALSE CACHE BOOL "Enable/disable google benchmark integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_FORMAT      FALSE CACHE BOOL "Enable/disable clang-format integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_TIDY        FALSE CACHE BOOL "Enable/disable clang-tidy integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CPPCHECK          FALSE CACHE BOOL "Enable/disable cppcheck integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CCACHE            FALSE CACHE BOOL "Enable/disable ccache integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOV              FALSE CACHE BOOL "Enable/disable gcov integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LCOV              FALSE CACHE BOOL "Enable/disable lcov integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOVR             FALSE CACHE BOOL "Enable/disable gcovr integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_DOXYGEN           FALSE CACHE BOOL "Enable/disable doxygen integration" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_DISABLE_UNIT_TEST_TARGETS      FALSE CACHE BOOL "Enable/disable project-wide unit test target creation" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_DISABLE_BENCHMARK_TARGETS      FALSE CACHE BOOL "Enable/disable project-wide benchmark target creation" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_DISABLE_STATIC_TARGETS         FALSE CACHE BOOL "Enable/disable project-wide static library target creation" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_DISABLE_SHARED_TARGETS         FALSE CACHE BOOL "Enable/disable project-wide benchmark target creation" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_DISABLE_EXECUTABLE_TARGETS     FALSE CACHE BOOL "Enable/disable project-wide executable target creation" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_DISABLE_INTERFACE_TARGETS      FALSE CACHE BOOL "Enable/disable project-wide interface target creation" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME           FALSE CACHE STRING "gtest" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_TEST_PKG_VERSION        FALSE CACHE STRING "1.11.0" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME      FALSE CACHE STRING "benchmark" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_VERSION   FALSE CACHE STRING "1.5.3" FORCE)
-SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_PROFILE_FILE                   FALSE CACHE STRING "" FORCE)
+SET(${PROJECT_NAME_SANITIZED}_MISC_NO_HADOUKEN_BANNER                       FALSE CACHE BOOL "Enable/disable hadouken banner printing"                      FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_IWYU                             FALSE CACHE BOOL "Enable/disable include what you use integration"              FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GOOGLE_TEST                      FALSE CACHE BOOL "Enable/disable gtest/gmock integration"                       FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GOOGLE_BENCH                     FALSE CACHE BOOL "Enable/disable google benchmark integration"                  FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_FORMAT                     FALSE CACHE BOOL "Enable/disable clang-format integration"                      FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_TIDY                       FALSE CACHE BOOL "Enable/disable clang-tidy integration"                        FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CPPCHECK                         FALSE CACHE BOOL "Enable/disable cppcheck integration"                          FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CCACHE                           FALSE CACHE BOOL "Enable/disable ccache integration"                            FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOV                             FALSE CACHE BOOL "Enable/disable gcov integration"                              FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LLVM_COV                         FALSE CACHE BOOL "Enable/disable gcov integration"                              FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_COVERAGE                         FALSE CACHE BOOL "Enable/disable automatic coverage selection integration"      FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LCOV                             FALSE CACHE BOOL "Enable/disable lcov integration"                              FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOVR                            FALSE CACHE BOOL "Enable/disable gcovr integration"                             FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_DOXYGEN                          FALSE CACHE BOOL "Enable/disable doxygen integration"                           FORCE)
+SET(${PROJECT_NAME_SANITIZED}_DISABLE_UNIT_TEST_TARGETS                     FALSE CACHE BOOL "Enable/disable project-wide unit test target creation"        FORCE)
+SET(${PROJECT_NAME_SANITIZED}_DISABLE_BENCHMARK_TARGETS                     FALSE CACHE BOOL "Enable/disable project-wide benchmark target creation"        FORCE)
+SET(${PROJECT_NAME_SANITIZED}_DISABLE_STATIC_TARGETS                        FALSE CACHE BOOL "Enable/disable project-wide static library target creation"   FORCE)
+SET(${PROJECT_NAME_SANITIZED}_DISABLE_SHARED_TARGETS                        FALSE CACHE BOOL "Enable/disable project-wide benchmark target creation"        FORCE)
+SET(${PROJECT_NAME_SANITIZED}_DISABLE_EXECUTABLE_TARGETS                    FALSE CACHE BOOL "Enable/disable project-wide executable target creation"       FORCE)
+SET(${PROJECT_NAME_SANITIZED}_DISABLE_INTERFACE_TARGETS                     FALSE CACHE BOOL "Enable/disable project-wide interface target creation"        FORCE)
+SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_TEST_PKG_NAME           "gtest"     CACHE STRING "Google unit test tool default package name"           FORCE)
+SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_TEST_PKG_VERSION        "1.11.0"    CACHE STRING "Google unit test tool default package version"        FORCE)
+SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME      "benchmark" CACHE STRING "Google benchmark tool default package name"           FORCE)
+SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_VERSION   "1.5.3"     CACHE STRING "Google benchmark tool default package version"        FORCE)
+SET(${PROJECT_NAME_SANITIZED}_HADOUKEN_CONAN_PROFILE_FILE                   ""          CACHE STRING "Conan profile file path"                              FORCE)
+# SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_GCOV_PATHS                           "/usr/bin"  CACHE STRING "GCov executable search paths"                         FORCE)
+# SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_GCOV_NAMES                           "gcov"      CACHE STRING "GCov executable search names"                         FORCE)
 
 
 # Include hadouken
@@ -212,7 +216,7 @@ EOF
     mkdir $TARGET_FOLDER/app
     mkdir $TARGET_FOLDER/app/include
     mkdir $TARGET_FOLDER/app/src
-
+    
     cat > $TARGET_FOLDER/app/CMakeLists.txt << EOF
 # ______________________________________________________
 # Example application project CMakeLists file
@@ -232,7 +236,7 @@ project($PROJECT_NAME.app)
 # Create an executagble target
 make_target(TYPE EXECUTABLE)
 EOF
-
+    
     cat > $TARGET_FOLDER/app/src/main.cpp << EOF
 /**
  * ______________________________________________________
@@ -261,6 +265,6 @@ auto main() -> int{
     return 0;
 }
 EOF
-
+    
 }
 

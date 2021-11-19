@@ -41,7 +41,7 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
 
     make_target(
         NAME ${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.test 
-        TYPE STATIC SOURCES ${PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp 
+        TYPE STATIC SOURCES ${HDK_ROOT_PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp 
         LINK PUBLIC GTest::GTest
     )
     hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.test` target")
