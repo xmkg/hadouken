@@ -1423,7 +1423,7 @@ Example:
 
 ##### WITH_COVERAGE (optional)
 
-Generate code coverage report for the project (useful for unit test targets)
+Generate code coverage report for the project. Can be used for `UNIT_TEST` and `BENCHMARK` target types.
 
 Example:
 
