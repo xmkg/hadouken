@@ -21,7 +21,7 @@ option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV "Use llvm-cov in pro
 hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV 
         LLVM_COV
         DEFAULT_NAME llvm-cov
-        NAMES llvm-cov-13 llvm-cov-12 llvm-cov-11 llvm-cov-10
+        NAMES llvm-cov-14 llvm-cov-13 llvm-cov-12 llvm-cov-11 llvm-cov-10 llvm-cov-9 llvm-cov-8 llvm-cov-7 llvm-cov-6 llvm-cov-5 llvm-cov-4 llvm-cov-3
         REQUIRED
     )
 if(HDK_TOOL_LLVM_COV)
