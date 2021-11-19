@@ -70,7 +70,7 @@
 #      make my_coverage_target
 #
 
-include(.hadouken/cmake/modules/wrappers/detail/coverage_set_variables.cmake)
+
 
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
 
@@ -82,9 +82,8 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_U
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
         message(FATAL_ERROR "Due to compatibility issues you cannot use both of gcov and llvm-cov together in project! Aborting...")
     endif()
-
-    set_common_variables()
-
+    
+    include(.hadouken/cmake/modules/wrappers/detail/coverage_set_variables.cmake)
 endif()
 
 # Defines a target for running and collection code coverage information
