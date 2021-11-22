@@ -17,7 +17,7 @@
 include(CMakeDetermineCCompiler)
 include(CMakeDetermineCXXCompiler)
 
-macro(hdk_set_build_variant)
+function(hdk_set_build_variant)
   hdk_log_set_context("hadouken.buildvariant")
   hdk_log_status("Setting up build variant and flags")
 
@@ -112,7 +112,7 @@ macro(hdk_set_build_variant)
   set(CMAKE_CXX_FLAGS_RELEASE         ${CMAKE_CXX_FLAGS_RELEASE}        PARENT_SCOPE)
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO  ${CMAKE_CXX_FLAGS_RELWITHDEBINFO} PARENT_SCOPE)
   set(CMAKE_CXX_FLAGS_MINSIZEREL      ${CMAKE_CXX_FLAGS_MINSIZEREL}     PARENT_SCOPE)
-endmacro()
+endfunction()
 
 
 
