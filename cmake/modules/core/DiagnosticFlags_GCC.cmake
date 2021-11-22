@@ -21,7 +21,7 @@
 # see: https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html for
 # all warning flag documentations used in this code
 
-set(HADOUKEN_COMPILER GCC)
+set(HADOUKEN_COMPILER GCC PARENT_SCOPE)
 
 ##########################################################
 # GCC 3.4 and above

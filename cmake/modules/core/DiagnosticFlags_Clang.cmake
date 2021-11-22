@@ -15,7 +15,7 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-set(HADOUKEN_COMPILER CLANG)
+set(HADOUKEN_COMPILER CLANG PARENT_SCOPE)
 
 # Clang 3.2 and above
 set(CLANG_32_WARN_BUT_NO_ERROR "" )
