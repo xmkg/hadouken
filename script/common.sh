@@ -182,7 +182,7 @@ SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CLANG_TIDY                       FALS
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CPPCHECK                         FALSE CACHE BOOL "Enable/disable cppcheck integration"                          FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_CCACHE                           FALSE CACHE BOOL "Enable/disable ccache integration"                            FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOV                             FALSE CACHE BOOL "Enable/disable gcov integration"                              FORCE)
-SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LLVM_COV                         FALSE CACHE BOOL "Enable/disable gcov integration"                              FORCE)
+SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LLVM_COV                         FALSE CACHE BOOL "Enable/disable llvm-cov integration"                          FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_COVERAGE                         FALSE CACHE BOOL "Enable/disable automatic coverage selection integration"      FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_LCOV                             FALSE CACHE BOOL "Enable/disable lcov integration"                              FORCE)
 SET(${PROJECT_NAME_SANITIZED}_TOOLCONF_USE_GCOVR                            FALSE CACHE BOOL "Enable/disable gcovr integration"                             FORCE)
