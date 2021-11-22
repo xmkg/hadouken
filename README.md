@@ -507,6 +507,8 @@ make_target(TYPE UNIT_TEST WITH_COVERAGE)
 # Creates an unit test named my-awesome-project and my-awesome-project.cov coverage target.
 ```
 
+**Note: When you want to use `<project_name>_TOOLCONF_USE_COVERAGE` option, you have to delete or comment out `<project_name>_TOOLCONF_USE_GCOV` and `<project_name>_TOOLCONF_USE_LLVM_COV` options from your CMakeLists.txt.**
+
 ##### An example `lcov` unit test coverage scenario:
 
 In this scenario, we have the following library and the corresponding unit test code:
