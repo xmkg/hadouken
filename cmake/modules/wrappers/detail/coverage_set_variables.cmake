@@ -18,4 +18,5 @@ if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Code coverage results with an optimised (non-Debug) build may be misleading")
 endif()
 
-add_link_options(--coverage)
+add_link_options(--coverage) # for implying -lgcov
+add_compile_options(--coverage) # for implying -fprofile-arcs -ftest-coverage
