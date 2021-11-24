@@ -17,7 +17,7 @@
 
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH "Use google benchmark in project" OFF)
 
-hdk_log_set_context("benchmark")
+hdk_log_set_context("hdk.tc.benchmark")
 
 include(core/FetchConanPackage)
 
@@ -26,7 +26,7 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
     set(${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME "benchmark" CACHE STRING "Hadouken google benchmark conan package name")
     set(${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION  "1.5.3" CACHE STRING "Hadouken google benchmark conan package version")
 
-    hdk_log_status("Starting tool configuration for Google Benchmark (`${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}`)")
+    hdk_log_status("Configuring tool `Google Benchmark` (`${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_PKG_NAME}/${${HDK_ROOT_PROJECT_NAME_UPPER}_HADOUKEN_CONAN_GOOGLE_BENCHMARK_VERSION}`)")
     hdk_log_indent(1)
     # PACKAGE_NAME PACKAGE_VERSION PROFILE_FILE
     hdk_fetch_conan_package(
@@ -36,14 +36,14 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_BENCH)
     )
 
     set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HDK_ROOT_PROJECT_BINARY_DIR})
-    find_package(benchmark REQUIRED)
+    find_package(benchmark REQUIRED QUIET)
 
     make_target(
         NAME ${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark    
         TYPE STATIC SOURCES ${HDK_ROOT_PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleBenchmark.cpp 
         LINK PUBLIC benchmark::benchmark
     )
-    hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark` target")
+    hdk_log_debug("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.benchmark` target")
 
     hdk_log_unindent(1)
 
