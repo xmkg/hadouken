@@ -33,7 +33,7 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_DOXYGEN)
 
     find_package(Doxygen QUIET)
     if(DOXYGEN_FOUND)
-        hdk_log_status("Found `doxygen` executable: ${DOXYGEN_EXECUTABLE}`")
+        hdk_log_debug("Found `doxygen` executable: ${DOXYGEN_EXECUTABLE}`")
 
         list(APPEND INJECTED_PARAMETERS "echo PROJECT_NAME=${HDK_ROOT_PROJECT_NAME}")
         list(APPEND INJECTED_PARAMETERS "echo PROJECT_NUMBER=${HDK_ROOT_PROJECT_VERSION}")
@@ -46,7 +46,7 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_DOXYGEN)
 
 
         if (NOT TARGET ${HDK_ROOT_PROJECT_NAME}.documentation)
-            hdk_log_status("Auto-created `${HDK_ROOT_PROJECT_NAME}.documentation` target")
+            hdk_log_debug("Auto-created `${HDK_ROOT_PROJECT_NAME}.documentation` target")
             add_custom_target(${HDK_ROOT_PROJECT_NAME}.documentation
                 WORKING_DIRECTORY ${HDK_ROOT_PROJECT_SOURCE_DIR}
                 COMMAND bash -c "( cat .doxyfile ; ${INJECTED_PARAMETERS_STRINGIZED} ) | doxygen - "
