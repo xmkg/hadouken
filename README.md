@@ -72,6 +72,8 @@
         - [COVERAGE_TARGETS (optional)](#coverage_targets-optional)
         - [COVERAGE_LCOV_FILTER_PATTERN (optional)](#coverage_lcov_filter_pattern-optional)
         - [COVERAGE_GCOVR_FILTER_PATTERN (optional)](#coverage_gcovr_filter_pattern-optional)
+        - [ADD_TEST_PARAMETERS (optional)](#add_test_parameters-optional)
+        - [GTEST_DISCOVER_PARAMETERS (optional)](#gtest_discover_parameters-optional)
         - [EXPOSE_PROJECT_METADATA (optional)](#expose_project_metadata-optional)
         - [PROJECT_METADATA_PREFIX (optional)](#project_metadata_prefix-optional)
         - [NO_AUTO_COMPILATION_UNIT (optional)](#no_auto_compilation_unit-optional)
@@ -1536,6 +1538,38 @@ Example:
     # Be aware that GCOVR's filter is a regex pattern. Use forward slash `/` as
     # path separator.
 ```
+
+##### ADD_TEST_PARAMETERS (optional)
+
+Additional parameter list to pass into `add_test()` calls made by hadouken for UNIT_TEST target type. Only valid for UNIT_TEST targets.
+
+Example:
+
+```cmake
+    make_target(
+        TYPE UNIT_TEST
+        ADD_TEST_PARAMETERS WORKING_DIRECTORY /home/user/bin
+        # change working directory of the test executable
+    )
+```
+
+See <https://cmake.org/cmake/help/latest/command/add_test.html> for all possible `add_test()` parameters.
+
+##### GTEST_DISCOVER_PARAMETERS (optional)
+
+Additional parameter list to pass into `gtest_discover_tests()` calls made by hadouken for UNIT_TEST target type. Only valid for UNIT_TEST targets.
+
+Example:
+
+```cmake
+    make_target(
+        TYPE UNIT_TEST
+        GTEST_DISCOVER_PARAMETERS PROPERTIES RUN_SERIIAL TRUE 
+        # prohibit all resulting tests of `gtest_discover_test()` from running in parallel.
+    )
+```
+
+See <https://cmake.org/cmake/help/git-stage/module/GoogleTest.html#command:gtest_discover_tests> for all possible `gtest_discover_test()` parameters.
 
 ##### EXPOSE_PROJECT_METADATA (optional)
 
