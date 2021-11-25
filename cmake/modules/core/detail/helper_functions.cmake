@@ -1,3 +1,21 @@
+#!/usr/bin/env cmake
+
+# ______________________________________________________
+# Helper functions
+# 
+# @file 	Utility.cmake
+# @author 	Mustafa Kemal GILOR <mgilor@nettsi.com>
+# @date 	10.04.2021
+# 
+# Copyright (c) Nettsi Informatics Technology Inc. 
+# All rights reserved. Licensed under the Apache 2.0 License. 
+# See LICENSE in the project root for license information.
+# 
+# SPDX-License-Identifier:	Apache 2.0
+# ______________________________________________________
+
+include_guard(DIRECTORY)
+
 #[=======================================================================[.rst:
     __hdk_make_target_name
     ------------------- 
@@ -65,15 +83,8 @@ endfunction()
 function(__hdk_add_project_include_directory)
     hdk_log_set_context("hdk.mt")
     hdk_log_trace("call hdk_add_project_include_directory() with args : ${ARGV}")
-    cmake_parse_arguments(ARGS,  "" "TARGET_NAME;TYPE;" "" ${ARGN})
-
-    if(NOT DEFINED TARGET_NAME)
-        hdk_log_err("hdk_add_project_include_directory(): function requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        hdk_log_err("hdk_add_project_include_directory(): function requires TYPE parameter.")
-    endif()
+    cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "" ${ARGN})
+    hdk_function_required_arguments(ARGS_TARGET_NAME ARGS_TYPE)
 
     if(${ARGS_TYPE} STREQUAL "INTERFACE")
         hdk_log_trace("hdk_add_project_include_directory(): type is INTERFACE")
@@ -125,14 +136,7 @@ endfunction()
 function(__hdk_add_target_options)
     hdk_log_set_context("hdk.mt")
     cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;PARTOF;OUTPUT_NAME;" "LINK;COMPILE_OPTIONS;COMPILE_DEFINITIONS;DEPENDS;INCLUDES;SOURCES;HEADERS;SYMBOL_VISIBILITY;" ${ARGN})
-
-    if(NOT DEFINED ARGS_TARGET_NAME)
-        message(FATAL_ERROR "add_target_options() requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        message(FATAL_ERROR "add_target_options() requires TYPE parameter.")
-    endif()
+    hdk_function_required_arguments(ARGS_TARGET_NAME ARGS_TYPE)
 
     if(${ARGS_TYPE} STREQUAL "INTERFACE")
         if(DEFINED ARGS_INCLUDES)
@@ -191,20 +195,12 @@ endfunction()
 function(__hdk_setup_coverage_targets)
     hdk_log_set_context("hdk.mt")
     cmake_parse_arguments(ARGS "" "TARGET_NAME;" "LINK;COVERAGE_TARGETS;COVERAGE_LCOV_FILTER_PATTERN;COVERAGE_GCOVR_FILTER_PATTERN;COVERAGE_REPORT_OUTPUT_DIRECTORY;WORKING_DIRECTORY;" ${ARGN})
-    if(NOT DEFINED ARGS_TARGET_NAME)
-        message(FATAL_ERROR "setup_coverage_targets() requires TARGET_NAME parameter.")
-    endif()
+    hdk_function_required_arguments(ARGS_TARGET_NAME ARGS_COVERAGE_TARGETS)
+    hdk_parameter_default_value(ARGS_COVERAGE_LCOV_FILTER_PATTERN "*")
+    hdk_parameter_default_value(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${HDK_ROOT_PROJECT_SOURCE_DIR}")
 
-    if(NOT DEFINED ARGS_COVERAGE_LCOV_FILTER_PATTERN)
-        # Default filter pattern
-        set(ARGS_COVERAGE_LCOV_FILTER_PATTERN "*")
-    endif()
-
-    if(NOT DEFINED ARGS_COVERAGE_GCOVR_FILTER_PATTERN)
-        # Default filter pattern
-        set(ARGS_COVERAGE_GCOVR_FILTER_PATTERN "${HDK_ROOT_PROJECT_SOURCE_DIR}")
-    endif()
-
+    set(LVAR_TARGET_HAS_COVERAGE_ENABLED FALSE)
+    set(LVAR_COVERAGE_FILTER_PATTERNS "")
 
     if((${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV AND HDK_TOOL_GCOV) OR (${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV AND HDK_TOOL_LLVM_COV))
 
@@ -213,41 +209,93 @@ function(__hdk_setup_coverage_targets)
                 if(NOT TARGET ${CT})
                     message(FATAL_ERROR "${CT} is not a valid CMake target, cannot continue.")
                 endif()
+
+                get_target_property(CURRENT_TARGET_TYPE ${CT} TYPE)
+                get_target_property(CURRENT_TARGET_INCLUDE_DIRECTORIES ${CT} INCLUDE_DIRECTORIES)
+                get_target_property(CURRENT_TARGET_IINCLUDE_DIRECTORIES ${CT} INTERFACE_INCLUDE_DIRECTORIES)
+                get_target_property(CURRENT_TARGET_SOURCES ${CT} SOURCES)
+
+                if(NOT "${CURRENT_TARGET_INCLUDE_DIRECTORIES}" STREQUAL "CURRENT_TARGET_INCLUDE_DIRECTORIES-NOTFOUND")
+                    foreach(cpath IN LISTS CURRENT_TARGET_INCLUDE_DIRECTORIES)
+                        list(APPEND LVAR_COVERAGE_FILTER_PATTERNS ${cpath})
+                    endforeach()
+                endif()
+
+                if(NOT "${CURRENT_TARGET_SOURCES}" STREQUAL "CURRENT_TARGET_SOURCES-NOTFOUND")
+                    foreach(cpath IN LISTS CURRENT_TARGET_SOURCES)
+                        list(APPEND LVAR_COVERAGE_FILTER_PATTERNS ${cpath})
+                    endforeach()
+                endif()
+
+                if(NOT "${CURRENT_TARGET_IINCLUDE_DIRECTORIES}" STREQUAL "CURRENT_TARGET_IINCLUDE_DIRECTORIES-NOTFOUND")
+                    foreach(cpath IN LISTS CURRENT_TARGET_IINCLUDE_DIRECTORIES)
+                        list(APPEND LVAR_COVERAGE_FILTER_PATTERNS ${cpath})
+                    endforeach()
+                endif()
+
+                # (mgilor): If filter pattern is empty, use target paths as filter pattern
+                #list(APPEND LVAR_COVERAGE_FILTER_PATTERNS ${CURRENT_TARGET_SOURCE_DIR})
+
+                if(${CURRENT_TARGET_TYPE} STREQUAL "INTERFACE_LIBRARY")
+                    # (mgilor): Header-only libraries will be part of the target TU
+                    # so we should enable --coverage flags for target TU instead
+                    if(NOT ${LVAR_TARGET_HAS_COVERAGE_ENABLED})
+                        target_link_options(${ARGS_TARGET_NAME} PRIVATE --coverage)
+                        target_compile_options(${ARGS_TARGET_NAME} PRIVATE --coverage )
+                        #target_compile_options(${ARGS_TARGET_NAME} PRIVATE $<$<CXX_COMPILER_ID:GNU>:-fno-inline -fno-inline-small-functions -fno-default-inline>)
+                        set(LVAR_TARGET_HAS_COVERAGE_ENABLED TRUE)
+                    endif()
+                    continue()
+                elseif(${CURRENT_TARGET_TYPE} STREQUAL "STATIC_LIBRARY")
+                    # target_link_options is public, because if we're set a coverage target that is static library
+                    # linkage is done at consumer side
+                    target_link_options(${CT} PUBLIC --coverage)
+                else()
+                    # linkage for rest of target types are PRIVATE
+                    target_link_options(${CT} PRIVATE --coverage)
+                endif()
+            
+                target_compile_options(${CT} PRIVATE --coverage)
+
             endforeach()
         endif()
         
         if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOVR AND HDK_TOOL_GCOVR)
 
-            SETUP_TARGET_FOR_COVERAGE_GCOVR_XML(
-                NAME ${TARGET_NAME}.gcovr.xml 
-                EXECUTABLE ${TARGET_NAME} 
+            hdk_setup_gcovr_coverage_target(
+                NAME ${ARGS_TARGET_NAME}.gcovr.xml
+                REPORT_TYPE XML
+                EXECUTABLE ${ARGS_TARGET_NAME} 
                 DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
                 FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+                FILTER_PATTERNS ${LVAR_COVERAGE_FILTER_PATTERNS}
                 OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
                 WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
             )
 
-            SETUP_TARGET_FOR_COVERAGE_GCOVR_HTML(
-                NAME ${TARGET_NAME}.gcovr.html 
-                EXECUTABLE ${TARGET_NAME} 
+            hdk_setup_gcovr_coverage_target(
+                NAME ${ARGS_TARGET_NAME}.gcovr.html 
+                REPORT_TYPE HTML
+                EXECUTABLE ${ARGS_TARGET_NAME} 
                 DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
                 FILTER_PATTERN ${ARGS_COVERAGE_GCOVR_FILTER_PATTERN}
+                FILTER_PATTERNS ${LVAR_COVERAGE_FILTER_PATTERNS}
                 OUTPUT_DIRECTORY ${ARGS_COVERAGE_REPORT_OUTPUT_DIRECTORY}
                 WORKING_DIRECTORY ${ARGS_WORKING_DIRECTORY}
             )
 
             # Project-level meta gcovr.xml target
             if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.xml)
-                add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.xml ${TARGET_NAME}.gcovr.xml)
+                add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.xml ${ARGS_TARGET_NAME}.gcovr.xml)
             else()
-                add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.xml DEPENDS ${TARGET_NAME}.gcovr.xml)
+                add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.xml DEPENDS ${ARGS_TARGET_NAME}.gcovr.xml)
             endif()
 
             # Project-level meta gcovr.html target
             if (TARGET ${HDK_ROOT_PROJECT_NAME}.gcovr.html)
-                add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.html ${TARGET_NAME}.gcovr.html)
+                add_dependencies(${HDK_ROOT_PROJECT_NAME}.gcovr.html ${ARGS_TARGET_NAME}.gcovr.html)
             else()
-                add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.html DEPENDS ${TARGET_NAME}.gcovr.html)
+                add_custom_target(${HDK_ROOT_PROJECT_NAME}.gcovr.html DEPENDS ${ARGS_TARGET_NAME}.gcovr.html)
             endif()
         
         endif()
@@ -255,8 +303,8 @@ function(__hdk_setup_coverage_targets)
         if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LCOV AND HDK_TOOL_LCOV)
             
             SETUP_TARGET_FOR_COVERAGE_LCOV(
-                NAME ${TARGET_NAME}.lcov 
-                EXECUTABLE ${TARGET_NAME} 
+                NAME ${ARGS_TARGET_NAME}.lcov 
+                EXECUTABLE ${ARGS_TARGET_NAME} 
                 DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/../ 
                 FILTER_PATTERN ${ARGS_COVERAGE_LCOV_FILTER_PATTERN} 
                 LCOV_ARGS --directory ${PROJECT_SOURCE_DIR} --no-external
@@ -266,9 +314,9 @@ function(__hdk_setup_coverage_targets)
 
             # Project-level meta lcov target
             if (TARGET ${HDK_ROOT_PROJECT_NAME}.lcov)
-                add_dependencies(${HDK_ROOT_PROJECT_NAME}.lcov ${TARGET_NAME}.lcov)
+                add_dependencies(${HDK_ROOT_PROJECT_NAME}.lcov ${ARGS_TARGET_NAME}.lcov)
             else()
-                add_custom_target(${HDK_ROOT_PROJECT_NAME}.lcov DEPENDS ${TARGET_NAME}.lcov)
+                add_custom_target(${HDK_ROOT_PROJECT_NAME}.lcov DEPENDS ${ARGS_TARGET_NAME}.lcov)
             endif()
 
         endif()
@@ -281,14 +329,7 @@ endfunction()
 function(__hdk_make_install)
     hdk_log_set_context("hdk.mt")
     cmake_parse_arguments(ARGS "" "TARGET_NAME;TYPE;" "" ${ARGN})
-
-    if(NOT DEFINED ARGS_TARGET_NAME)
-        message(FATAL_ERROR "make_install() requires TARGET_NAME parameter.")
-    endif()
-
-    if(NOT DEFINED ARGS_TYPE)
-        message(FATAL_ERROR "make_install() requires TYPE parameter.")
-    endif()
+    hdk_function_required_arguments(ARGS_TARGET_NAME ARGS_TYPE)
 
     install (
         TARGETS ${ARGS_TARGET_NAME}

@@ -84,35 +84,67 @@ function(hdk_log_trace MESSAGE)
     hdk_log(TRACE ${MESSAGE})
 endfunction()
 
-function (hdk_log_set_context CONTEXT)
+macro(hdk_fnlog_err MESSAGE)
+    hdk_log_err("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_warn MESSAGE)
+    hdk_log_warn("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_author_warn MESSAGE)
+    hdk_log_author_warn("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_deprecated MESSAGE)
+    hdk_log_deprecated("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_notice MESSAGE)
+    hdk_log_notice("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_status MESSAGE)
+    hdk_log_status("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_verbose MESSAGE)
+    hdk_log_verbose("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_debug MESSAGE)
+    hdk_log_debug("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+macro(hdk_fnlog_trace MESSAGE)
+    hdk_log_trace("(${CMAKE_CURRENT_FUNCTION} ${CMAKE_CURRENT_LIST_FILE}): ${MESSAGE}")
+endmacro()
+
+## Utility
+macro (hdk_log_set_context CONTEXT)
     list(APPEND CMAKE_MESSAGE_CONTEXT "${CONTEXT}")
-    # Propogate to top
-    set(CMAKE_MESSAGE_CONTEXT "${CMAKE_MESSAGE_CONTEXT}" PARENT_SCOPE)
-endfunction()
+endmacro()
 
-function(hdk_log_unset_context)
+macro(hdk_log_unset_context)
     list(POP_BACK CMAKE_MESSAGE_CONTEXT)
-    set(CMAKE_MESSAGE_CONTEXT "${CMAKE_MESSAGE_CONTEXT}" PARENT_SCOPE)
-endfunction()
+endmacro()
 
-function (hdk_log_indent LEVEL)
+macro (hdk_log_indent LEVEL)
     foreach(idx RANGE ${LEVEL})
         list(APPEND CMAKE_MESSAGE_INDENT " ")
     endforeach()
-    set(CMAKE_MESSAGE_INDENT "${CMAKE_MESSAGE_INDENT}" PARENT_SCOPE)
-endfunction()
+endmacro()
 
-function (hdk_log_unindent LEVEL)
+macro (hdk_log_unindent LEVEL)
     foreach(idx RANGE ${LEVEL})
         list(POP_BACK CMAKE_MESSAGE_INDENT)
     endforeach()
-    set(CMAKE_MESSAGE_INDENT "${CMAKE_MESSAGE_INDENT}" PARENT_SCOPE)
-endfunction()
+endmacro()
 
-# function hdk_log_reset_indent(LEVEL)
+# macro hdk_log_reset_indent(LEVEL)
 #     foreach(idx RANGE ${LEVEL})
 #         list(POP_BACK CMAKE_MESSAGE_INDENT)
 #     endforeach()
-# endfunction()
+# endmacro()
 
 # list(POP_BACK CMAKE_MESSAGE_INDENT)

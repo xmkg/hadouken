@@ -15,6 +15,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 # Gather all files under `include` and `src` folders at current directory level 
 # to `COMPILATION_UNIT` variable in invocation scope.
 function(hdk_make_compilation_unit COMPILATION_UNIT)

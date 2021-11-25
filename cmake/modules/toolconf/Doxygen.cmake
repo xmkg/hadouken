@@ -14,7 +14,6 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
-
 # (mgilor): We will inject the variables below on doxygen invocation.
 # PROJECT_NAME           = "ACU Classifier"
 # PROJECT_NUMBER         =
@@ -22,7 +21,7 @@
 # PROJECT_LOGO           =
 # OUTPUT_DIRECTORY       =
 
-# include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
+include_guard(DIRECTORY)
 
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_DOXYGEN "Use doxygen in project" OFF)
 

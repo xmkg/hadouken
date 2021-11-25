@@ -14,6 +14,7 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
 
 include(.hadouken/cmake/modules/core/MakeTarget.cmake)
 
@@ -70,11 +71,11 @@ function(make_component COMPONENT_NAME)
     cmake_parse_arguments(MAKE_COMPONENT_ARGS "${__HDK_MAKE_COMPONENT_OPTION_ARGS}" "${__HDK_MAKE_COMPONENT_SINGLE_VALUE_ARGS}" "${__HDK_MAKE_COMPONENT_MULTI_VALUE_ARGS}" ${ARGN})
 
     if(NOT DEFINED COMPONENT_NAME)
-        message(FATAL_ERROR "make_component() requires COMPONENT_NAME parameter to be present.")
-    endif()
+        hdk_log_err("make_component() requires COMPONENT_NAME parameter to be present")
+    endif() 
 
     if(NOT DEFINED MAKE_COMPONENT_ARGS_TARGET)
-        message(FATAL_ERROR "make_component() requires at least one TARGET parameter.")
+        hdk_log_err("make_component() [${MAKE_COMPONENT_ARGS_COMPONENT_NAME}]: make_component() requires at least one TARGET parameter")
     endif()
 
     if(NOT DEFINED MAKE_COMPONENT_ARGS_VERSION)
@@ -109,6 +110,10 @@ function(make_component COMPONENT_NAME)
         endif()
     endif()
 
+    if(DEFINED MAKE_COMPONENT_ARGS_UNPARSED_ARGUMENTS)
+        hdk_log_warn("make_component: Component ${COMPONENT_NAME} has stray arguments: ${MAKE_COMPONENT_ARGS_UNPARSED_ARGUMENTS}")
+    endif()
+
     hdk_capsan_name(COMPONENT_NAME COMPONENT_NAME_UPPER)
 
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${COMPONENT_NAME_UPPER})
@@ -126,28 +131,41 @@ function(make_component COMPONENT_NAME)
 
     hdk_log_trace("make_component: created project ${PROJECT_NAME} ${PROJECT_VERSION} ${PROJECT_DESCRIPTION} ${PROJECT_HOMEPAGE_URL} ${PROJECT_LANGUAGES}")
 
-    # The code below iterates all defined variables in this context and filters out
-    # the ones starting with MAKE_COMPONENT_ARGS_ALL_
-    # I know, it is not clean but AFAIK there is no clean way to do this.
-
     ####################################################################################
     # Aggregate common arguments into the list
     set(ALL_TARGET_PARAMETERS "")
-    get_cmake_property(_variableNames VARIABLES)
-    list (SORT _variableNames)
-    foreach (_variableName ${_variableNames})
-        hdk_log_trace("make_component: Checking variable ${_variableName}=${${_variableName}} to common variables list")
-        if(_variableName MATCHES "^MAKE_COMPONENT_ARGS_ALL_.*")
-            string(REPLACE "MAKE_COMPONENT_ARGS_ALL_"  "" NEW_VAR_NAME ${_variableName})
-            # (mgilor): This is a little hack to omit booleans
-            # with false values. Their presence in argument list
-            # interpreted as true when forwarded, even though
-            # their value is FALSE. So, we have to filter them out.
-            if(NOT "${${_variableName}}" STREQUAL "FALSE")
-                hdk_log_verbose("make_component: Added ${NEW_VAR_NAME}=${${_variableName}} to common variables list")
-                list(APPEND ALL_TARGET_PARAMETERS ${NEW_VAR_NAME})
-                list(APPEND ALL_TARGET_PARAMETERS ${${_variableName}})
-            endif()
+
+    # Iterate over all available non-option make_target() parameter names
+    foreach (_variableName IN LISTS __HDK_MAKE_TARGET_SINGLE_VALUE_ARGS __HDK_MAKE_TARGET_MULTI_VALUE_ARGS)
+        hdk_log_verbose("make_component: Checking variable ${_variableName}")
+        # Check if argument is present
+        if(NOT DEFINED MAKE_COMPONENT_ARGS_ALL_${_variableName})
+            continue()
+        endif()
+        string(REPLACE "MAKE_COMPONENT_ARGS_ALL_"  "" NEW_VAR_NAME ${_variableName})
+        hdk_log_verbose("make_component: found defined ALL argument -> MAKE_COMPONENT_ARGS_ALL_${_variableName} : ${MAKE_COMPONENT_ARGS_ALL_${_variableName}} : resulting var name ${NEW_VAR_NAME}")
+        list(APPEND ALL_TARGET_PARAMETERS ${NEW_VAR_NAME})
+        list(APPEND ALL_TARGET_PARAMETERS ${MAKE_COMPONENT_ARGS_ALL_${_variableName}})
+    endforeach()
+
+    # Iterate over all available option make_target() parameter names
+    foreach (_variableName IN LISTS __HDK_MAKE_TARGET_OPTION_ARGS)
+        hdk_log_verbose("make_component: Checking variable ${_variableName}")
+        # Check if argument is present
+        if(NOT DEFINED MAKE_COMPONENT_ARGS_ALL_${_variableName})
+            continue()
+        endif()
+        
+        string(REPLACE "MAKE_COMPONENT_ARGS_ALL_"  "" NEW_VAR_NAME ${_variableName})
+        hdk_log_verbose("make_component: found defined ALL argument -> MAKE_COMPONENT_ARGS_ALL_${_variableName} : ${MAKE_COMPONENT_ARGS_ALL_${_variableName}} : resulting var name ${NEW_VAR_NAME}")
+        # (mgilor): This is a little hack to omit booleans
+        # with false values. Their presence in argument list
+        # interpreted as true when forwarded, even though
+        # their value is FALSE. So, we have to filter them out.
+        if(NOT "${MAKE_COMPONENT_ARGS_ALL_${_variableName}}" STREQUAL "FALSE")
+            hdk_log_verbose("make_component: Added ${NEW_VAR_NAME}=${MAKE_COMPONENT_ARGS_ALL_${_variableName}} option common variables list")
+            list(APPEND ALL_TARGET_PARAMETERS ${NEW_VAR_NAME})
+            # (mgilor): Option parameters require no value, so value is omitted here
         endif()
     endforeach()
     ####################################################################################

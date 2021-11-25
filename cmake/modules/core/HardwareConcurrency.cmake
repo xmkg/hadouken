@@ -14,5 +14,7 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 include(ProcessorCount)
 ProcessorCount(HARDWARE_CONCURRENCY)

@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LWYU "Use lwyu in project" OFF)
 
 hdk_log_set_context("lwyu")

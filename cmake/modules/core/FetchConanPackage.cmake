@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 function(hdk_fetch_conan_package PACKAGE_NAME PACKAGE_VERSION PROFILE_FILE)
     hdk_log_set_context("hdk.fcp")
     # Required conan package and package version, set if not specified

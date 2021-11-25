@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
 
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_IWYU "Use include-what-you-use in project" OFF)
