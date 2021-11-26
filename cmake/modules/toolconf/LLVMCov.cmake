@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 include(.hadouken/cmake/modules/toolconf/detail/helper_functions.cmake)
 
 option(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV "Use llvm-cov in project" OFF)
@@ -24,6 +26,7 @@ hdk_find_program_if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV
         NAMES llvm-cov-14 llvm-cov-13 llvm-cov-12 llvm-cov-11 llvm-cov-10 llvm-cov-9 llvm-cov-8 llvm-cov-7 llvm-cov-6 llvm-cov-5 llvm-cov-4 llvm-cov-3
         REQUIRED
     )
+
 if(HDK_TOOL_LLVM_COV)
     set(HDK_TOOLPATH_COVERAGE_EXECUTABLE "${HDK_TOOL_LLVM_COV} gcov")
 endif()

@@ -15,6 +15,7 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
 
 function(hdk_copy_target_artifact_to)
     cmake_parse_arguments(ARGS "" "TARGET_NAME;DESTINATION;STEP;" "" ${ARGN} )
@@ -22,7 +23,6 @@ function(hdk_copy_target_artifact_to)
     if(NOT DEFINED ARGS_TARGET_NAME)
         message(FATAL_ERROR "hdk_copy_target_artifact_to() requires TARGET_NAME parameter.")
     endif()
-
 
     if(NOT DEFINED ARGS_STEP)
         message(FATAL_ERROR "hdk_copy_target_artifact_to() requires ARGS_STEP parameter.")

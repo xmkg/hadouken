@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 #[=======================================================================[.rst:
     hdk_project_metadata_as_compile_defn
     ------------------- 

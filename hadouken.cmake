@@ -107,25 +107,26 @@ hdk_log_unset_context()
 
 hdk_set_build_variant()
 
-
+if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_COVERAGE OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OR ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV)
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        hdk_log_status("Code coverage results with an optimised (non-Debug) build may be misleading")
+    endif()
+endif()
 
 if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_COVERAGE)
     if(${HADOUKEN_COMPILER} STREQUAL "GCC")
         hdk_log_debug("GCC compiler detected, GCov is activated for test coverage.")
-        if(NOT DEFINED ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_COVERAGE_HTML_TITLE)
-            set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_COVERAGE_HTML_TITLE "Hadouken GCC Code Coverage Report")
-        endif()
         set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV ON CACHE BOOL "Enable/disable gcov")
         set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV OFF CACHE BOOL "Enable/disable llvm-cov")
     elseif(${HADOUKEN_COMPILER} STREQUAL "CLANG")
         hdk_log_debug("Clang compiler detected, LLVM Cov is activated for test coverage.")
-        if(NOT DEFINED ${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_COVERAGE_HTML_TITLE)
-            set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_COVERAGE_HTML_TITLE "Hadouken Clang Code Coverage Report")
-        endif()
+      
         set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GCOV OFF CACHE BOOL "Enable/disable gcov")
         set(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_LLVM_COV ON CACHE BOOL "Enable/disable llvm-cov")
     endif()
 endif()
+
+hdk_parameter_default_value(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_COVERAGE_HTML_TITLE " Code Coverage Report")
 
 hdk_log_set_context("hadouken.load.wrapper")
 list(LENGTH WRAPPER_MODULES WRAPPER_MODULES_SIZE)

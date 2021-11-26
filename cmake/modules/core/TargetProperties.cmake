@@ -16,6 +16,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 # Get all propreties that cmake supports
 execute_process(COMMAND ${CMAKE_COMMAND} --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)
 

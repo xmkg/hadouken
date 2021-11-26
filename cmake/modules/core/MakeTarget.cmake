@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 # make_targe function arguments
 set(__HDK_MAKE_TARGET_OPTION_ARGS "WITH_COVERAGE;WITH_INSTALL;EXPOSE_PROJECT_METADATA;NO_AUTO_COMPILATION_UNIT;DEBUG_PRINT_PROPERTIES;AUTO_SUFFIX")
 set(__HDK_MAKE_TARGET_SINGLE_VALUE_ARGS "TYPE;SUFFIX;PREFIX;NAME;OUTPUT_NAME;PARTOF;PROJECT_METADATA_PREFIX;WORKING_DIRECTORY;COVERAGE_REPORT_OUTPUT_DIRECTORY;EXCLUDE_SOURCES;EXCLUDE_HEADERS")
@@ -32,6 +34,11 @@ include(.hadouken/cmake/modules/core/detail/helper_functions.cmake)
 # We're doing pretty much the same stuff on all of our library targets.
 function(make_target)
     hdk_log_set_context("hdk.mt")
+
+    # foreach(Q RANGE 0 ${ARGC}-1)
+    #     hdk_log_verbose("make_target() called with ${ARGV${Q}}")
+    # endforeach()
+    
     cmake_parse_arguments(ARGS "${__HDK_MAKE_TARGET_OPTION_ARGS}" "${__HDK_MAKE_TARGET_SINGLE_VALUE_ARGS}" "${__HDK_MAKE_TARGET_MULTI_VALUE_ARGS}" ${ARGN})
 
     if(NOT DEFINED ARGS_TYPE)
@@ -76,6 +83,10 @@ function(make_target)
     if(${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${TARGET_NAME_UPPER})
         hdk_log_verbose("make_target: Target ${TARGET_NAME} skipped since target ${TARGET_NAME} build is disabled via ${HDK_ROOT_PROJECT_NAME_UPPER}_WITHOUT_${TARGET_NAME_UPPER} option")
         return ()
+    endif()
+
+    if(DEFINED ARGS_UNPARSED_ARGUMENTS)
+        hdk_log_warn("make_target: Target ${TARGET_NAME} has stray arguments: ${ARGS_UNPARSED_ARGUMENTS}")
     endif()
 
     if(NOT ARGS_NO_AUTO_COMPILATION_UNIT OR NOT ${ARGS_NO_AUTO_COMPILATION_UNIT})
@@ -139,7 +150,11 @@ function(make_target)
 
         # WITH_COVERAGE is only meaningful for unit test and benchmark target types
         if(NOT ${ARGS_TYPE} STREQUAL "UNIT_TEST" AND NOT ${ARGS_TYPE} STREQUAL "BENCHMARK")
-            message(FATAL_ERROR "WITH_COVERAGE can only be used together with UNIT_TEST and BENCHMARK targets.")
+            hdk_fnlog_err("make_target() [${TARGET_NAME}]]: WITH_COVERAGE can only be used together with UNIT_TEST and BENCHMARK targets.")
+        endif()
+
+        if(NOT DEFINED ARGS_COVERAGE_TARGETS)
+            hdk_fnlog_err("make_target() [${TARGET_NAME}]: WITH_COVERAGE requires at least one COVERAGE_TARGET")
         endif()
         
         __hdk_setup_coverage_targets(

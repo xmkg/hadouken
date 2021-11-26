@@ -17,6 +17,8 @@
 # TODO (aaksoy): find_package implementation will be added.
 # TODO (aaksoy): Forwarding arguments into cmake_language function calls.
 
+include_guard(DIRECTORY)
+
 function(hdk_find variable_name)
     set(oneValueArgs TYPE CONFIG_NAME DEFAULT_NAME)
     set(multiValueArgs NAMES)

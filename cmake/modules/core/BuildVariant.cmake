@@ -14,6 +14,8 @@
 # SPDX-License-Identifier:	Apache 2.0
 # ______________________________________________________
 
+include_guard(DIRECTORY)
+
 include(CMakeDetermineCCompiler)
 include(CMakeDetermineCXXCompiler)
 
@@ -87,6 +89,9 @@ function(hdk_set_build_variant)
     endforeach()
   endforeach()
 
+  string(STRIP "${WARN_BUT_NO_ERROR}" WARN_BUT_NO_ERROR)
+  string(STRIP "${EXTENDED_WARNINGS}" EXTENDED_WARNINGS)
+  string(STRIP "${EXCLUDED_WARNINGS}" EXCLUDED_WARNINGS)
 
   if((CMAKE_BUILD_TYPE MATCHES RelWithDebInfo) OR (CMAKE_BUILD_TYPE MATCHES Release))
     if(NOT ${HDK_ROOT_PROJECT_NAME_UPPER}_HDK_NO_DEBUG_RELEASE_WARNING)
