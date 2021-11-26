@@ -63,6 +63,7 @@
 set(GCC_34_WARN_BUT_NO_ERROR "-Wold-style-cast -Wmissing-noreturn" )
 set(GCC_34_EXTENDED_WARNINGS "-Wformat=2 -Wcast-qual" )
 set(GCC_34_EXCLUDED_WARNINGS "-Wno-unknown-pragmas -Wno-switch -Wno-unused-function" )
+hdk_unset_if_empty(GCC_34_WARN_BUT_NO_ERROR GCC_34_EXTENDED_WARNINGS GCC_34_EXCLUDED_WARNINGS)
 
 ########################################
 # GCC 4.3 and above
@@ -88,11 +89,15 @@ set(GCC_34_EXCLUDED_WARNINGS "-Wno-unknown-pragmas -Wno-switch -Wno-unused-funct
 set(GCC_43_WARN_BUT_NO_ERROR "-Wlogical-op" )
 set(GCC_43_EXTENDED_WARNINGS "" )
 set(GCC_43_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_43_WARN_BUT_NO_ERROR GCC_43_EXTENDED_WARNINGS GCC_43_EXCLUDED_WARNINGS)
+
 
 # GCC 4.6 and above
 set(GCC_46_WARN_BUT_NO_ERROR "-Wdouble-promotion -Wsuggest-attribute=pure -Wsuggest-attribute=const -Wsuggest-attribute=noreturn" )
 set(GCC_46_EXTENDED_WARNINGS "" )
 set(GCC_46_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_46_WARN_BUT_NO_ERROR GCC_46_EXTENDED_WARNINGS GCC_46_EXCLUDED_WARNINGS)
+
 
 ########################################
 # GCC 4.8 and above
@@ -111,16 +116,22 @@ set(GCC_46_EXCLUDED_WARNINGS "" )
 set(GCC_48_WARN_BUT_NO_ERROR "-Wold-style-cast -Wmissing-noreturn" )
 set(GCC_48_EXTENDED_WARNINGS "-Wuseless-cast" )
 set(GCC_48_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_48_WARN_BUT_NO_ERROR GCC_48_EXTENDED_WARNINGS GCC_48_EXCLUDED_WARNINGS)
+
 
 # GCC 5.0 and above
 set(GCC_50_WARN_BUT_NO_ERROR "-Wsuggest-override" )
 set(GCC_50_EXTENDED_WARNINGS "" )
 set(GCC_50_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_50_WARN_BUT_NO_ERROR GCC_50_EXTENDED_WARNINGS GCC_50_EXCLUDED_WARNINGS)
+
 
 # GCC 5.1 and above
 set(GCC_51_WARN_BUT_NO_ERROR "-Wsuggest-final-methods -Wsuggest-final-types")
 set(GCC_51_EXTENDED_WARNINGS "" )
 set(GCC_51_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_51_WARN_BUT_NO_ERROR GCC_51_EXTENDED_WARNINGS GCC_51_EXCLUDED_WARNINGS)
+
 
 ########################################
 # GCC 6.0 and above
@@ -142,6 +153,8 @@ set(GCC_51_EXCLUDED_WARNINGS "" )
 set(GCC_60_WARN_BUT_NO_ERROR "" )
 set(GCC_60_EXTENDED_WARNINGS "-Wduplicated-cond -Wnull-dereference")
 set(GCC_60_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_60_WARN_BUT_NO_ERROR GCC_60_EXTENDED_WARNINGS GCC_60_EXCLUDED_WARNINGS)
+
 
 ########################################
 # GCC 7.0 and above
@@ -156,9 +169,12 @@ set(GCC_60_EXCLUDED_WARNINGS "" )
 set(GCC_70_WARN_BUT_NO_ERROR "" )
 set(GCC_70_EXTENDED_WARNINGS "-Wduplicated-branches" )
 set(GCC_70_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_70_WARN_BUT_NO_ERROR GCC_70_EXTENDED_WARNINGS GCC_70_EXCLUDED_WARNINGS)
+
 
 # GCC 8.0 and above
 set(GCC_80_WARN_BUT_NO_ERROR "-Wsuggest-attribute=malloc" )
 set(GCC_80_EXTENDED_WARNINGS "" )
 set(GCC_80_EXCLUDED_WARNINGS "" )
+hdk_unset_if_empty(GCC_80_WARN_BUT_NO_ERROR GCC_80_EXTENDED_WARNINGS GCC_80_EXCLUDED_WARNINGS)
 
