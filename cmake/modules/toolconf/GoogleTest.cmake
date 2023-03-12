@@ -44,6 +44,7 @@ if(${HDK_ROOT_PROJECT_NAME_UPPER}_TOOLCONF_USE_GOOGLE_TEST)
         NAME ${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.test 
         TYPE STATIC SOURCES ${HDK_ROOT_PROJECT_SOURCE_DIR}/.hadouken/cmake/modules/toolconf/GoogleTest.cpp 
         LINK PUBLIC GTest::GTest
+        NO_AUTO_COMPILATION_UNIT
     )
     hdk_log_debug("Auto-created `${HDK_ROOT_PROJECT_NAME}.hadouken_autotargets.test` target")
     hdk_log_unindent(1)
